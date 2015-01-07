@@ -563,8 +563,8 @@ jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("jetUserDataAK8")
-#jets.src = cms.InputTag("selectedPatJets")
+#jetsAK8.src = cms.InputTag("jetUserDataAK8")
+jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
 
 ###genPart
 genPart = copy.deepcopy(basic)
