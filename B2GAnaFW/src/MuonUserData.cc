@@ -225,8 +225,9 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
     // muon ID
-    bool isTightMuon = true;//m.isTightMuon(PV);
-    bool isSoftMuon  = true;//Mm.isSoftMuon(PV) ;
+    bool isSoftMuon  = m.isSoftMuon(PV);
+    bool isTightMuon = m.isTightMuon(PV);
+    bool isHighPtMuon = m.isHighPtMuon(PV);
     
     // impact parameters
     double d0    = m.dB ();
@@ -264,6 +265,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     m.addUserFloat("isSoftMuon",  isSoftMuon);
     m.addUserFloat("isTightMuon", isTightMuon);
+    m.addUserFloat("isHighPtMuon", isHighPtMuon);
     m.addUserFloat("d0",          d0);
     m.addUserFloat("d0err",       d0err);
     m.addUserFloat("dz",          dz);
