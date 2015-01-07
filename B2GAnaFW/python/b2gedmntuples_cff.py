@@ -339,6 +339,167 @@ jetVars = (
      tag = cms.untracked.string("HLTjetDeltaR"),
      quantity = cms.untracked.string("userFloat('HLTjetDeltaR')")
     ),
+### SUBJETS
+    cms.PSet(
+     tag = cms.untracked.string("tau1"),
+     quantity = cms.untracked.string("userFloat('tau1')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("tau2"),
+     quantity = cms.untracked.string("userFloat('tau2')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("tau3"),
+     quantity = cms.untracked.string("userFloat('tau3')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("tau4"),
+     quantity = cms.untracked.string("userFloat('tau4')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j0_pt"),
+     quantity = cms.untracked.string("userFloat('sjc2_j0_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j0_mass"),
+     quantity = cms.untracked.string("userFloat('sjc2_j0_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j0_eta"),
+     quantity = cms.untracked.string("userFloat('sjc2_j0_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j0_phi"),
+     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j1_pt"),
+     quantity = cms.untracked.string("userFloat('sjc2_j1_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j1_mass"),
+     quantity = cms.untracked.string("userFloat('sjc2_j1_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j1_eta"),
+     quantity = cms.untracked.string("userFloat('sjc2_j1_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc2_j1_ph1"),
+     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j0_pt"),
+     quantity = cms.untracked.string("userFloat('sjc3_j0_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j0_mass"),
+     quantity = cms.untracked.string("userFloat('sjc3_j0_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j0_eta"),
+     quantity = cms.untracked.string("userFloat('sjc3_j0_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j0_phi"),
+     quantity = cms.untracked.string("userFloat('sjc3_j0_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j1_pt"),
+     quantity = cms.untracked.string("userFloat('sjc3_j1_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j1_mass"),
+     quantity = cms.untracked.string("userFloat('sjc3_j1_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j1_eta"),
+     quantity = cms.untracked.string("userFloat('sjc3_j1_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j1_phi"),
+     quantity = cms.untracked.string("userFloat('sjc3_j1_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j2_pt"),
+     quantity = cms.untracked.string("userFloat('sjc3_j2_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j2_mass"),
+     quantity = cms.untracked.string("userFloat('sjc3_j2_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j2_eta"),
+     quantity = cms.untracked.string("userFloat('sjc3_j2_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc3_j2_phi"),
+     quantity = cms.untracked.string("userFloat('sjc3_j2_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j0_pt"),
+     quantity = cms.untracked.string("userFloat('sjc4_j0_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j0_mass"),
+     quantity = cms.untracked.string("userFloat('sjc4_j0_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j0_eta"),
+     quantity = cms.untracked.string("userFloat('sjc4_j0_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j0_phi"),
+     quantity = cms.untracked.string("userFloat('sjc4_j0_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j1_pt"),
+     quantity = cms.untracked.string("userFloat('sjc4_j1_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j1_mass"),
+     quantity = cms.untracked.string("userFloat('sjc4_j1_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j1_eta"),
+     quantity = cms.untracked.string("userFloat('sjc4_j1_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j1_phi"),
+     quantity = cms.untracked.string("userFloat('sjc4_j1_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j2_pt"),
+     quantity = cms.untracked.string("userFloat('sjc4_j2_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j2_mass"),
+     quantity = cms.untracked.string("userFloat('sjc4_j2_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j2_eta"),
+     quantity = cms.untracked.string("userFloat('sjc4_j2_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j2_phi"),
+     quantity = cms.untracked.string("userFloat('sjc4_j2_phi')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j3_pt"),
+     quantity = cms.untracked.string("userFloat('sjc4_j3_pt')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j3_mass"),
+     quantity = cms.untracked.string("userFloat('sjc4_j3_mass')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j3_eta"),
+     quantity = cms.untracked.string("userFloat('sjc4_j3_eta')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("sjc4_j3_phi"),
+     quantity = cms.untracked.string("userFloat('sjc4_j3_phi')")
+    ),
 ### CONSTITUENTS
     cms.PSet(
      tag = cms.untracked.string("muonMultiplicity"),
