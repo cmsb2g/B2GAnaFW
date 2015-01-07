@@ -166,6 +166,121 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   for (size_t i = 0; i< jetColl->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
+    // make fastjets out of daughters:
+    std::vector<fastjet::PseudoJet> FJparticles;
+    for (unsigned int k = 0; k < jet.numberOfDaughters(); k++) // Grabs all the constituents of the jet:
+    {
+	const edm::Ptr<reco::Candidate> & this_constituent = jet.daughterPtr(k);
+	FJparticles.push_back( fastjet::PseudoJet( this_constituent->px(), this_constituent->py(), this_constituent->pz(), this_constituent->energy() ) );
+    }
+    fastjet::PseudoJet combJet = fastjet::join(FJparticles);
+    Nsubjettiness t1(1, Njettiness::AxesMode::onepass_kt_axes, 1.0, 0.8);
+    Nsubjettiness t2(2, Njettiness::AxesMode::onepass_kt_axes, 1.0, 0.8);
+    Nsubjettiness t3(3, Njettiness::AxesMode::onepass_kt_axes, 1.0, 0.8);
+    Nsubjettiness t4(4, Njettiness::AxesMode::onepass_kt_axes, 1.0, 0.8);
+    double T1 = t1.result(combJet);
+    double T2 = t2.result(combJet);
+    double T3 = t3.result(combJet);
+    double T4 = t4.result(combJet);
+    std::cout<< "t1 = "<<T1<<" t2 = "<<T2<<" t3 = "<<T3<<" t4 = "<<T4<<endl;
+    jet.addUserFloat("tau1",   T1);
+    jet.addUserFloat("tau2",   T2);
+    jet.addUserFloat("tau3",   T3);
+    jet.addUserFloat("tau4",   T4);
+    // SUBJET POPULATOR:
+	// DiJet Case:
+	fastjet::JetDefinition jet_def_2(fastjet::antikt_algorithm, 1.5708);
+	fastjet::ClusterSequence clust_seq_2(FJparticles, jet_def_2);
+	int nSubJetsTwo = 2;
+	std::vector<fastjet::PseudoJet> subjets2 = sorted_by_pt(clust_seq_2.exclusive_jets_up_to(nSubJetsTwo));
+	double sjc2_j0_pt = subjets2[0].pt();
+	double sjc2_j1_pt = subjets2[1].pt();
+	jet.addUserFloat("sjc2_j0_pt",   sjc2_j0_pt);
+	jet.addUserFloat("sjc2_j1_pt",   sjc2_j1_pt);
+	std::cout<< " subjet pts (2 subjets): "<<sjc2_j0_pt<<", "<<sjc2_j1_pt<<endl;
+	double sjc2_j0_mass = subjets2[0].m();
+	double sjc2_j1_mass = subjets2[1].m();
+	jet.addUserFloat("sjc2_j0_mass",   sjc2_j0_mass);
+	jet.addUserFloat("sjc2_j1_mass",   sjc2_j1_mass);
+	std::cout<< " subjet masses (2 subjets): "<<sjc2_j0_mass<<", "<<sjc2_j1_mass<<endl;
+	double sjc2_j0_eta = subjets2[0].eta();
+	double sjc2_j1_eta = subjets2[1].eta();
+	double sjc2_j0_phi = subjets2[0].phi();
+	double sjc2_j1_phi = subjets2[1].phi();
+	jet.addUserFloat("sjc2_j0_eta",   sjc2_j0_eta);
+	jet.addUserFloat("sjc2_j1_eta",   sjc2_j1_eta);
+	jet.addUserFloat("sjc2_j0_phi",   sjc2_j0_phi);
+	jet.addUserFloat("sjc2_j1_phi",   sjc2_j1_phi);
+	// TriJet Case:
+	fastjet::JetDefinition jet_def_3(fastjet::antikt_algorithm, 1.5708);
+	fastjet::ClusterSequence clust_seq_3(FJparticles, jet_def_3);
+	int nSubJetsThree = 3;
+	std::vector<fastjet::PseudoJet> subjets3 = sorted_by_pt(clust_seq_3.exclusive_jets_up_to(nSubJetsThree));
+	double sjc3_j0_pt = subjets3[0].pt();
+	double sjc3_j1_pt = subjets3[1].pt();
+	double sjc3_j2_pt = subjets3[2].pt();
+	jet.addUserFloat("sjc3_j0_pt",   sjc3_j0_pt);
+	jet.addUserFloat("sjc3_j1_pt",   sjc3_j1_pt);
+	jet.addUserFloat("sjc3_j2_pt",   sjc3_j2_pt);
+	std::cout<< " subjet pts (3 subjets): "<<sjc3_j0_pt<<", "<<sjc3_j1_pt<<", "<<sjc3_j2_pt<<endl;
+	double sjc3_j0_mass = subjets3[0].m();
+	double sjc3_j1_mass = subjets3[1].m();
+	double sjc3_j2_mass = subjets3[2].m();
+	jet.addUserFloat("sjc3_j0_mass",   sjc3_j0_mass);
+	jet.addUserFloat("sjc3_j1_mass",   sjc3_j1_mass);
+	jet.addUserFloat("sjc3_j2_mass",   sjc3_j2_mass);
+	std::cout<< " subjet masses (3 subjets): "<<sjc3_j0_mass<<", "<<sjc3_j1_mass<<", "<<sjc3_j2_mass<<endl;
+	double sjc3_j0_eta = subjets3[0].eta();
+	double sjc3_j1_eta = subjets3[1].eta();
+	double sjc3_j2_eta = subjets3[2].eta();
+	double sjc3_j0_phi = subjets3[0].phi();
+	double sjc3_j1_phi = subjets3[1].phi();
+	double sjc3_j2_phi = subjets3[2].phi();
+	jet.addUserFloat("sjc3_j0_eta",   sjc3_j0_eta);
+	jet.addUserFloat("sjc3_j1_eta",   sjc3_j1_eta);
+	jet.addUserFloat("sjc3_j2_eta",   sjc3_j2_eta);
+	jet.addUserFloat("sjc3_j0_phi",   sjc3_j0_phi);
+	jet.addUserFloat("sjc3_j1_phi",   sjc3_j1_phi);
+	jet.addUserFloat("sjc3_j2_phi",   sjc3_j2_phi);
+	// QuadJet Case:
+	fastjet::JetDefinition jet_def_4(fastjet::antikt_algorithm, 1.5708);
+	fastjet::ClusterSequence clust_seq_4(FJparticles, jet_def_4);
+	int nSubJetsFour = 4;
+	std::vector<fastjet::PseudoJet> subjets4 = sorted_by_pt(clust_seq_4.exclusive_jets_up_to(nSubJetsFour));
+	double sjc4_j0_pt = subjets4[0].pt();
+	double sjc4_j1_pt = subjets4[1].pt();
+	double sjc4_j2_pt = subjets4[2].pt();
+	double sjc4_j3_pt = subjets4[3].pt();
+	jet.addUserFloat("sjc4_j0_pt",   sjc4_j0_pt);
+	jet.addUserFloat("sjc4_j1_pt",   sjc4_j1_pt);
+	jet.addUserFloat("sjc4_j2_pt",   sjc4_j2_pt);
+	jet.addUserFloat("sjc4_j3_pt",   sjc4_j3_pt);
+	std::cout<< " subjet pts (4 subjets): "<<sjc4_j0_pt<<", "<<sjc4_j1_pt<<", "<<sjc4_j2_pt<<", "<<sjc4_j3_pt<<endl;
+	double sjc4_j0_mass = subjets4[0].m();
+	double sjc4_j1_mass = subjets4[1].m();
+	double sjc4_j2_mass = subjets4[2].m();
+	double sjc4_j3_mass = subjets4[3].m();
+	jet.addUserFloat("sjc4_j0_mass",   sjc4_j0_mass);
+	jet.addUserFloat("sjc4_j1_mass",   sjc4_j1_mass);
+	jet.addUserFloat("sjc4_j2_mass",   sjc4_j2_mass);
+	jet.addUserFloat("sjc4_j3_mass",   sjc4_j3_mass);
+	std::cout<< " subjet masses (4 subjets): "<<sjc4_j0_mass<<", "<<sjc4_j1_mass<<", "<<sjc4_j2_mass<<", "<<sjc4_j3_mass<<endl;
+	double sjc4_j0_eta = subjets4[0].eta();
+	double sjc4_j1_eta = subjets4[1].eta();
+	double sjc4_j2_eta = subjets4[2].eta();
+	double sjc4_j3_eta = subjets4[3].eta();
+	double sjc4_j0_phi = subjets4[0].phi();
+	double sjc4_j1_phi = subjets4[1].phi();
+	double sjc4_j2_phi = subjets4[2].phi();
+	double sjc4_j3_phi = subjets4[3].phi();
+	jet.addUserFloat("sjc4_j0_eta",   sjc4_j0_eta);
+	jet.addUserFloat("sjc4_j1_eta",   sjc4_j1_eta);
+	jet.addUserFloat("sjc4_j2_eta",   sjc4_j2_eta);
+	jet.addUserFloat("sjc4_j3_eta",   sjc4_j3_eta);
+	jet.addUserFloat("sjc4_j0_phi",   sjc4_j0_phi);
+	jet.addUserFloat("sjc4_j1_phi",   sjc4_j1_phi);
+	jet.addUserFloat("sjc4_j2_phi",   sjc4_j2_phi);
+	jet.addUserFloat("sjc4_j3_phi",   sjc4_j3_phi);
     
     // BTAGGING
     // - working points : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP
