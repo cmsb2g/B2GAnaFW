@@ -12,6 +12,16 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 
+// Fastjet (for creating subjets)
+#include <fastjet/JetDefinition.hh>
+#include <fastjet/PseudoJet.hh>
+#include "fastjet/tools/Filter.hh"
+#include <fastjet/ClusterSequence.hh>
+#include <fastjet/ClusterSequenceArea.hh>
+// N-subjettiness algos
+#include "Nsubjettiness.hh"
+#include "Njettiness.hh"
+
 // Vertex
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -29,6 +39,7 @@
 #include <TGraphAsymmErrors.h>
 #include <vector>
 
+using namespace fastjet;
 using namespace reco;
 using namespace edm;
 using namespace std;
