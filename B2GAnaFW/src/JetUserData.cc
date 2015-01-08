@@ -19,8 +19,8 @@
 #include <fastjet/ClusterSequence.hh>
 #include <fastjet/ClusterSequenceArea.hh>
 // N-subjettiness algos
-#include "Nsubjettiness.hh"
-#include "Njettiness.hh"
+#include "B2GAnaFW/B2GAnaFW/interface/Nsubjettiness.hh"
+#include "B2GAnaFW/B2GAnaFW/interface/Njettiness.hh"
 
 // Vertex
 #include "DataFormats/VertexReco/interface/Vertex.h"
