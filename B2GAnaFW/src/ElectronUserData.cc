@@ -51,16 +51,16 @@ private:
   int debug_; 
   // ----------member data ---------------------------
 
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+  // edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
+  // edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
 
 
-  std::vector<Float_t> pt_;
-  std::vector<Float_t> etaSC_;
-  std::vector<Float_t> phiSC_;
+  //  std::vector<Float_t> pt_;
+  //  std::vector<Float_t> etaSC_;
+  //  std::vector<Float_t> phiSC_;
 
-  std::vector<Int_t>   passVetoId_;     
-  std::vector<Int_t>   passTightId_;     
+  //  std::vector<Int_t>   passVetoId_;     
+  //  std::vector<Int_t>   passTightId_;     
 
  };
 
@@ -72,9 +72,9 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
    triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
-   hltPath_ (iConfig.getParameter<std::string>("hltPath")),
-   electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
-   electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap")))
+   hltPath_ (iConfig.getParameter<std::string>("hltPath"))
+   //electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
+   //electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap")))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
   
@@ -118,12 +118,12 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // Electron ID
   // Get the electron ID data from the event stream.
-  edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
-  edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
-  iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
-  passVetoId_.clear();     
-  passTightId_.clear();   
+  //edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
+  //edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
+  //iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
+  //iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
+  //passVetoId_.clear();     
+  //passTightId_.clear();   
   
   // TRIGGER
   bool changedConfig = false;
@@ -215,7 +215,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
-    //    const Ptr<pat::Electron> elPtr(eleHandle, i);
     //const Ptr<pat::Electron> elPtr(eleHandle, i);
     //std::cout<<"ValueMap: "<<veto_id_decisions->contains(elPtr.id())<<std::endl;
     //bool isPassVeto  = (*veto_id_decisions)[ elPtr ];
@@ -234,7 +233,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("isMedium",   isMedium);
     el.addUserFloat("isTight",    isTight);
     //el.addUserFloat("isPassVeto",     isPassVeto);
-    //    el.addUserFloat("isPassTight",     isPassTight);
+    //el.addUserFloat("isPassTight",     isPassTight);
 
         
 
