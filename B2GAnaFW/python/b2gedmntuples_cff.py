@@ -695,12 +695,32 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('ooEmooP')")
         ),
    cms.PSet(
-        tag = cms.untracked.string("expectedMissInHits"),
-        quantity = cms.untracked.string("userFloat('missingInnerTrackerHits')")
+        tag = cms.untracked.string("missHits"),
+        quantity = cms.untracked.string("userFloat('missHits')")
         ),
    cms.PSet(
-        tag = cms.untracked.string("pssConVeto"),
-        quantity = cms.untracked.string("passConversionVeto")
+        tag = cms.untracked.string("hasMatchedConVeto"),
+        quantity = cms.untracked.string("userFloat('hasMatchConv')")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("isEB"),
+        quantity = cms.untracked.string("isEB")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("isVeto"),
+        quantity = cms.untracked.string("userFloat('isVeto')")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("isLoose"),
+        quantity = cms.untracked.string("userFloat('isLoose')")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("isTight"),
+        quantity = cms.untracked.string("userFloat('isTight')")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("isMedium"),
+        quantity = cms.untracked.string("userFloat('isMedium')")
         )
    
 )
