@@ -58,6 +58,7 @@ jLabel = 'slimmedJets'
 jLabelAK8 = 'slimmedJetsAK8'
 ak8jetLabel = 'patJetsSlimmedJetsAK8BTagged'
 pvLabel  = 'offlineSlimmedPrimaryVertices'
+convLabel = 'reducedEgamma:reducedConversions'
 particleFlowLabel = 'packedPFCandidates'    
 metLabel = 'slimmedMETs'
 
@@ -174,6 +175,10 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 #process.NjettinessAK8.cone = cms.double(0.8)
 #process.patJetsSlimmedJetsAK8BTagged.userData.userFloats.src += ['NjettinessAK8:tau1','NjettinessAK8:tau2','NjettinessAK8:tau3']
 
+
+
+
+
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
@@ -224,6 +229,32 @@ process.jetFilter = cms.EDFilter("CandViewCountFilter",
     filter = cms.bool(True)
 )
 
+
+
+### Electron ID
+
+# Load tools and function definitions
+#from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+
+# # Turn on VID producer
+### switchOnVIDElectronIdProducer(process)
+#process.load("RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cfi")
+#process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+
+#from PhysicsTools.SelectorUtils.centralIDRegistry import central_id_registry
+#process.egmGsfElectronIDSequence = cms.Sequence(process.egmGsfElectronIDs)
+
+# Define which IDs we want to produce
+# Each of these two example IDs contains all four standard 
+# cut-based ID working points (only two WP of the PU20bx25 are actually used here).
+
+#my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_PHYS14_PU20bx25_V0_miniAOD_cff']
+
+#Add them to the VID producer
+#for idmod in my_id_modules:
+#    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+
+
 process.muonUserData = cms.EDProducer(
     'MuonUserData',
     muonLabel = cms.InputTag("skimmedPatMuons"),
@@ -246,7 +277,7 @@ process.jetUserData = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
-    hlt2reco_deltaRmax = cms.double(0.2)
+    hlt2reco_deltaRmax = cms.double(0.2),
 )
 
 
@@ -266,10 +297,13 @@ process.electronUserData = cms.EDProducer(
     'ElectronUserData',
     eleLabel = cms.InputTag("skimmedPatElectrons"),
     pv        = cms.InputTag(pvLabel),
+    conversion        = cms.InputTag(convLabel),
     triggerResults = cms.InputTag(triggerResultsLabel),
     triggerSummary = cms.InputTag(triggerSummaryLabel),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
-    hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL")
+    hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
+    electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-PHYS14-PU20bx25-V0-miniAOD-standalone-veto"),
+    electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-PHYS14-PU20bx25-V0-miniAOD-standalone-tight"),
 )
 
 
@@ -305,7 +339,7 @@ process.analysisPath = cms.Path(
 
 #process.analysisPath+=process.jetFilter
 
-
+#process.analysisPath+=process.egmGsfElectronIDSequence
 process.analysisPath+=process.muonUserData
 process.analysisPath+=process.jetUserData
 #process.analysisPath+=process.jetUserDataAK8
