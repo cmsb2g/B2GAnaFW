@@ -14,9 +14,17 @@ $ cd CMSSW_7_2_0/src
 
 $ cmsenv
 
+
+$ git cms-addpkg RecoEgamma/ElectronIdentification 
+
+$ cp /afs/cern.ch/user/i/ikrav/public/EGMCode/GsfEleFull5x5SigmaIEtaIEtaCut72X.cc RecoEgamma/ElectronIdentification/plugins/cuts/
+
+$ cp /afs/cern.ch/user/i/ikrav/public/EGMCode/cutBasedElectronID_PHYS14_PU20bx25_V0_cff.py RecoEgamma/ElectronIdentification/python/Identification/ 
+
+
 Clone the github repository
 
-$ git clone https://github.com/cmsb2g/B2GAnaFW 
+$ git clone https://github.com/cmsb2g/B2GAnaFW.git 
 
 Compile
 
