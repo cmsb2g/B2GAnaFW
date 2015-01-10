@@ -209,9 +209,8 @@ process.skimmedPatJets = cms.EDFilter(
 process.skimmedPatJetsAK8 = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag(ak8jetLabel),
-    #    src = cms.InputTag("goodPatJets"), # 71x    
-    cut = cms.string("pt > 25 && abs(eta) < 4.")
-    )
+    cut = cms.string("pt > 100 && abs(eta) < 4.")    
+)
 
 
 #process.skimmedPatJetsAK8 = cms.EDFilter(
