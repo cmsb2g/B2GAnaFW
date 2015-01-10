@@ -321,7 +321,7 @@ class AxesFinderFromKmeansMinimization : public AxesFinder {
          _functor = new DefaultMeasure(paraNsub);
       }
       
-      ~AxesFinderFromKmeansMinimization() { delete _functor;}
+  //      ~AxesFinderFromKmeansMinimization() { delete _functor;}
       
       virtual std::vector<fastjet::PseudoJet> getAxes(int n_jets, const std::vector <fastjet::PseudoJet> & inputs, const std::vector<fastjet::PseudoJet>& currentAxes) {
          std::vector<fastjet::PseudoJet> seedAxes = _startingFinder->getAxes(n_jets, inputs, currentAxes);
@@ -347,7 +347,7 @@ class AxesFinderFromGeometricMinimization : public AxesFinder {
          _functor = new GeometricMeasure(_Rcutoff);
       }
 
-      ~AxesFinderFromGeometricMinimization() { delete _functor;}
+  //      ~AxesFinderFromGeometricMinimization() { delete _functor;}
       
       virtual std::vector<fastjet::PseudoJet> getAxes(int n_jets, const std::vector <fastjet::PseudoJet> & particles, const std::vector<fastjet::PseudoJet>& currentAxes) {
 
@@ -793,8 +793,8 @@ Njettiness::Njettiness(AxesMode axes, NsubParameters paraNsub) {
 }
 
 Njettiness::~Njettiness() {
-   delete _functor;
-   delete _axesFinder;
+  //   delete _functor;
+  //   delete _axesFinder;
 }
 
 
