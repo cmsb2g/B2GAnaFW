@@ -28,7 +28,7 @@
 #ifndef __NSUBJETTINESS_HH__
 #define __NSUBJETTINESS_HH__
 
-#include "Njettiness.hh"
+#include "B2GAnaFW/B2GAnaFW/interface/Njettiness.hh"
 
 #include "fastjet/FunctionOfPseudoJet.hh"
 
