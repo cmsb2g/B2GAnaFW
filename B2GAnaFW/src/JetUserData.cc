@@ -193,7 +193,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double T2 = t2.result(combJet);
     double T3 = t3.result(combJet);
     double T4 = t4.result(combJet);
-    std::cout<< "t1 = "<<T1<<" t2 = "<<T2<<" t3 = "<<T3<<" t4 = "<<T4<<endl;
+    //DMstd::cout<< "t1 = "<<T1<<" t2 = "<<T2<<" t3 = "<<T3<<" t4 = "<<T4<<endl;
     jet.addUserFloat("tau1",   T1);
     jet.addUserFloat("tau2",   T2);
     jet.addUserFloat("tau3",   T3);
@@ -208,12 +208,12 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	double sjc2_j1_pt = subjets2[1].pt();
 	jet.addUserFloat("sjc2_j0_pt",   sjc2_j0_pt);
 	jet.addUserFloat("sjc2_j1_pt",   sjc2_j1_pt);
-	std::cout<< " subjet pts (2 subjets): "<<sjc2_j0_pt<<", "<<sjc2_j1_pt<<endl;
+	//DMstd::cout<< " subjet pts (2 subjets): "<<sjc2_j0_pt<<", "<<sjc2_j1_pt<<endl;
 	double sjc2_j0_mass = subjets2[0].m();
 	double sjc2_j1_mass = subjets2[1].m();
 	jet.addUserFloat("sjc2_j0_mass",   sjc2_j0_mass);
 	jet.addUserFloat("sjc2_j1_mass",   sjc2_j1_mass);
-	std::cout<< " subjet masses (2 subjets): "<<sjc2_j0_mass<<", "<<sjc2_j1_mass<<endl;
+	//DMstd::cout<< " subjet masses (2 subjets): "<<sjc2_j0_mass<<", "<<sjc2_j1_mass<<endl;
 	double sjc2_j0_eta = subjets2[0].eta();
 	double sjc2_j1_eta = subjets2[1].eta();
 	double sjc2_j0_phi = subjets2[0].phi();
@@ -233,14 +233,14 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	jet.addUserFloat("sjc3_j0_pt",   sjc3_j0_pt);
 	jet.addUserFloat("sjc3_j1_pt",   sjc3_j1_pt);
 	jet.addUserFloat("sjc3_j2_pt",   sjc3_j2_pt);
-	std::cout<< " subjet pts (3 subjets): "<<sjc3_j0_pt<<", "<<sjc3_j1_pt<<", "<<sjc3_j2_pt<<endl;
+	//DMstd::cout<< " subjet pts (3 subjets): "<<sjc3_j0_pt<<", "<<sjc3_j1_pt<<", "<<sjc3_j2_pt<<endl;
 	double sjc3_j0_mass = subjets3[0].m();
 	double sjc3_j1_mass = subjets3[1].m();
 	double sjc3_j2_mass = subjets3[2].m();
 	jet.addUserFloat("sjc3_j0_mass",   sjc3_j0_mass);
 	jet.addUserFloat("sjc3_j1_mass",   sjc3_j1_mass);
 	jet.addUserFloat("sjc3_j2_mass",   sjc3_j2_mass);
-	std::cout<< " subjet masses (3 subjets): "<<sjc3_j0_mass<<", "<<sjc3_j1_mass<<", "<<sjc3_j2_mass<<endl;
+	//DMstd::cout<< " subjet masses (3 subjets): "<<sjc3_j0_mass<<", "<<sjc3_j1_mass<<", "<<sjc3_j2_mass<<endl;
 	double sjc3_j0_eta = subjets3[0].eta();
 	double sjc3_j1_eta = subjets3[1].eta();
 	double sjc3_j2_eta = subjets3[2].eta();
@@ -266,7 +266,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	jet.addUserFloat("sjc4_j1_pt",   sjc4_j1_pt);
 	jet.addUserFloat("sjc4_j2_pt",   sjc4_j2_pt);
 	jet.addUserFloat("sjc4_j3_pt",   sjc4_j3_pt);
-	std::cout<< " subjet pts (4 subjets): "<<sjc4_j0_pt<<", "<<sjc4_j1_pt<<", "<<sjc4_j2_pt<<", "<<sjc4_j3_pt<<endl;
+	//DMstd::cout<< " subjet pts (4 subjets): "<<sjc4_j0_pt<<", "<<sjc4_j1_pt<<", "<<sjc4_j2_pt<<", "<<sjc4_j3_pt<<endl;
 	double sjc4_j0_mass = subjets4[0].m();
 	double sjc4_j1_mass = subjets4[1].m();
 	double sjc4_j2_mass = subjets4[2].m();
@@ -275,7 +275,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	jet.addUserFloat("sjc4_j1_mass",   sjc4_j1_mass);
 	jet.addUserFloat("sjc4_j2_mass",   sjc4_j2_mass);
 	jet.addUserFloat("sjc4_j3_mass",   sjc4_j3_mass);
-	std::cout<< " subjet masses (4 subjets): "<<sjc4_j0_mass<<", "<<sjc4_j1_mass<<", "<<sjc4_j2_mass<<", "<<sjc4_j3_mass<<endl;
+	//DMstd::cout<< " subjet masses (4 subjets): "<<sjc4_j0_mass<<", "<<sjc4_j1_mass<<", "<<sjc4_j2_mass<<", "<<sjc4_j3_mass<<endl;
 	double sjc4_j0_eta = subjets4[0].eta();
 	double sjc4_j1_eta = subjets4[1].eta();
 	double sjc4_j2_eta = subjets4[2].eta();
