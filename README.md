@@ -16,7 +16,7 @@ $ cmsenv
 
 Clone the github repository
 
-$ git clone https://github.com/cmsb2g/B2GAnaFW 
+$ git clone https://github.com/cmsb2g/B2GAnaFW.git 
 
 Compile
 
