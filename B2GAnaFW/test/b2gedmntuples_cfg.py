@@ -221,7 +221,6 @@ addJetCollection(
     btagDiscriminators = ['None'],
     jetCorrections = ('AK7PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned'),
-    #getJetMCFlavour = False # jet flavor disabled
 )
 # fix references
 getattr(process,'patJetPartonMatchAK8PFCHSPruned').matched = cms.InputTag('prunedGenParticles')
@@ -241,7 +240,6 @@ addJetCollection(
     btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK7PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned','SubJets'),
-    #getJetMCFlavour = False # jet flavor disabled
 )
 # fix references
 getattr(process,'patJetPartonMatchAK8PFCHSPrunedSubjets').matched = cms.InputTag('prunedGenParticles')
@@ -344,6 +342,18 @@ process.muonUserData = cms.EDProducer(
     hltPath            = cms.string("HLT_IsoMu40_eta2p1_v11"),
     hlt2reco_deltaRmax = cms.double(0.1),
     # mainROOTFILEdir    = cms.string("../data/")
+)
+
+process.patjetUserData = cms.EDProducer(
+    'PatJetUserData',
+    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
+    pv        = cms.InputTag(pvLabel),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
+    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hlt2reco_deltaRmax = cms.double(0.2),
 )
 
 process.jetUserData = cms.EDProducer(

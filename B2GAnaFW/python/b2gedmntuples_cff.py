@@ -236,6 +236,25 @@ muonVars = (
    ),
 )
 
+patjetVars = (    
+### B-TAGGING
+    cms.PSet(
+     tag = cms.untracked.string("subjet1csv"),
+     #quantity = cms.untracked.string("daughter(0).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet1csv')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("subjet2csv"),
+     #quantity = cms.untracked.string("daughter(1).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet2csv')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("subjet3csv"),
+     #quantity = cms.untracked.string("daughter(2).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet3csv')")
+    )
+)
+
 ### jet variables
 jetVars = (    
 ### B-TAGGING
@@ -746,6 +765,12 @@ jetsAK8.variables += jetAK8Vars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
 jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
 
+###patjets
+patjets = copy.deepcopy(basic)
+#patjets.variables += patjetVars
+patjets.prefix = cms.untracked.string("patjet")
+patjets.src = cms.InputTag("patjetUserData")
+
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
@@ -806,13 +831,15 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_electrons_*_*",
     "keep *_jets_*_*",
     "keep *_jetsAK8_*_*",
+    "keep *_patjets_*_*",
     #"keep *_subjetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
     "keep *_eventInfo_*_*",
     "keep *_patJetsAK8PFCHSPruned_*_*",
-    "keep *_patJetsAK8PFCHSPrunedSubjets_*_*"
+    "keep *_patJetsAK8PFCHSPrunedSubjets_*_*",
+    "keep *_selectedPatJetsAK8PFCHSPrunedPacked_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
