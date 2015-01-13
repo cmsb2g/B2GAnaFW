@@ -100,8 +100,6 @@ for pset in process.GlobalTag.toGet.value():
 process.GlobalTag.RefreshEachRun = cms.untracked.bool( False )
 process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
     
-
-
 #for Inclusive Vertex Finder
 process.load("RecoBTag/Configuration/RecoBTag_cff")
 process.load('RecoVertex/AdaptiveVertexFinder/inclusiveVertexing_cff')
@@ -175,9 +173,90 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 #process.NjettinessAK8.cone = cms.double(0.8)
 #process.patJetsSlimmedJetsAK8BTagged.userData.userFloats.src += ['NjettinessAK8:tau1','NjettinessAK8:tau2','NjettinessAK8:tau3']
 
-
-
-
+### Subjet b-tagging
+# Build jet collection with reco tools
+from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
+# Gen jets, with neutrinos subtracted
+process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
+from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
+process.ak8GenJetsNoNuPruned = ak4GenJets.clone(
+    rParam = cms.double(0.8),
+    src = cms.InputTag("packedGenParticlesForJetsNoNu"),
+    usePruning = cms.bool(True),
+    writeCompound = cms.bool(True),
+    jetCollInstanceName=cms.string("SubJets"),
+    nFilt = cms.int32(3), # number of subjets, exclusive
+    zcut = cms.double(0.1),
+    rcut_factor = cms.double(0.5) 
+)
+# Reco jets, with CHS
+process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
+process.ak8PFJetsCHS = ak5PFJets.clone(
+					src = 'chs',
+					rParam = cms.double(0.8),
+					jetPtMin = cms.double(100.0),
+					jetAlgorithm = cms.string("AntiKt"))
+process.ak8PFJetsCHSPruned = ak5PFJets.clone(
+					src = 'chs',
+					rParam = cms.double(0.8),
+					jetPtMin = cms.double(100.0),
+					jetAlgorithm = cms.string("AntiKt"),
+					usePruning = cms.bool(True),
+					useExplicitGhosts = cms.bool(True),
+					jetCollInstanceName = cms.string("SubJets"),
+					writeCompound = cms.bool(True),
+					nFilt = cms.int32(3), # number of subjets, exclusive
+					zcut = cms.double(0.1),
+					rcut_factor = cms.double(0.5))
+bTagDiscriminators = [
+    'combinedSecondaryVertexBJetTags',
+    'combinedInclusiveSecondaryVertexV2BJetTags'
+]
+# Run Pat tools on AK8 jets
+addJetCollection(
+    process,
+    labelName = 'AK8PFCHSPruned',
+    jetSource = cms.InputTag('ak8PFJetsCHSPruned'),
+    trackSource = cms.InputTag('unpackedTracksAndVertices'),
+    btagDiscriminators = ['None'],
+    jetCorrections = ('AK7PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned'),
+    #getJetMCFlavour = False # jet flavor disabled
+)
+# fix references
+getattr(process,'patJetPartonMatchAK8PFCHSPruned').matched = cms.InputTag('prunedGenParticles')
+process.patJetGenJetMatchAK8PFCHSPruned.matched = "slimmedGenJets"
+process.patJetPartonMatchAK8PFCHSPruned.matched = "prunedGenParticles"
+process.patJetCorrFactorsAK8PFCHSPruned.primaryVertices = "unpackedTracksAndVertices"
+# Run Pat tools on AK8 subjets
+addJetCollection(
+    process,
+    labelName = 'AK8PFCHSPrunedSubjets',
+    jetSource = cms.InputTag('ak8PFJetsCHSPruned','SubJets'),
+    trackSource = cms.InputTag('unpackedTracksAndVertices'),
+    algo = 'ak',  # needed for subjet flavor clustering
+    rParam = 0.8, # needed for subjet flavor clustering
+    pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    pfCandidates = cms.InputTag('packedPFCandidates'),
+    btagDiscriminators = bTagDiscriminators,
+    jetCorrections = ('AK7PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned','SubJets'),
+    #getJetMCFlavour = False # jet flavor disabled
+)
+# fix references
+getattr(process,'patJetPartonMatchAK8PFCHSPrunedSubjets').matched = cms.InputTag('prunedGenParticles')
+process.patJetGenJetMatchAK8PFCHSPrunedSubjets.matched = "slimmedGenJets"
+process.patJetPartonMatchAK8PFCHSPrunedSubjets.matched = "prunedGenParticles"
+process.patJetCorrFactorsAK8PFCHSPrunedSubjets.primaryVertices = "unpackedTracksAndVertices"
+if hasattr(process,'pfInclusiveSecondaryVertexFinderTagInfosAK8PFCHSPrunedSubjets'):
+    getattr(process,'pfInclusiveSecondaryVertexFinderTagInfosAK8PFCHSPrunedSubjets').extSVCollection = cms.InputTag('slimmedSecondaryVertices')
+getattr(process,'patJetsAK8PFCHSPrunedSubjets').addAssociatedTracks = cms.bool(False) # no track collection present in MiniAOD
+getattr(process,'patJetsAK8PFCHSPrunedSubjets').addJetCharge = cms.bool(False)        # no track collection present in MiniAOD
+# Establish references between PATified fat jets and subjets using the BoostedJetMerger
+process.selectedPatJetsAK8PFCHSPrunedPacked = cms.EDProducer("BoostedJetMerger",
+    jetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPruned"),
+    subjetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
+)
 
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(

@@ -806,12 +806,13 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_electrons_*_*",
     "keep *_jets_*_*",
     "keep *_jetsAK8_*_*",
-    "keep *_subjetsAK8_*_*",
+    #"keep *_subjetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
     "keep *_eventInfo_*_*",
-    "keep *_patJets*_*_*"
+    "keep *_patJetsAK8PFCHSPruned_*_*",
+    "keep *_patJetsAK8PFCHSPrunedSubjets_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
