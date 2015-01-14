@@ -5,7 +5,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
-
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
 // dR and dPhi
@@ -76,158 +75,28 @@ PatJetUserData::PatJetUserData(const edm::ParameterSet& iConfig) :
 
 void PatJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
-  bool isMC = (!iEvent.isRealData());
-  
-  //PV
-  edm::Handle<std::vector<reco::Vertex> > pvHandle;
-  iEvent.getByLabel(pvLabel_, pvHandle);
-  //const reco::Vertex& PV= pvHandle->front();
-  
   //Jets
   edm::Handle<std::vector<pat::Jet> > jetHandle;
   iEvent.getByLabel(jLabel_, jetHandle);
+
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
-  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
-  // TRIGGER (this is not really needed ...)
-  bool changedConfig = false;
-  bool pathFound = false;
-  if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
-    std::cout << "Initialization of HLTConfigProvider failed!!" << std::endl;
-    return;
-  }
+  for ( std::vector<pat::Jet>::const_iterator jetBegin = jetColl->begin(),
+	  jetEnd = jetColl->end(), jet = jetBegin; jet != jetEnd; ++jet ) {
 
-  if (changedConfig){
-    std::cout << "the current menu is " << hltConfig.tableName() << std::endl;
-    triggerBit = -1;
-    for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
-      //std::cout << "hltConfig.triggerNames()[" << j << "]: " << hltConfig.triggerNames()[j] << std::endl;
-      if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) {triggerBit = j;pathFound=true;}
-    }
-    if (triggerBit == -1) std::cout << "HLT path not found" << std::endl;
-  }
-
-  edm::Handle<edm::TriggerResults> triggerResults;
-  iEvent.getByLabel(triggerResultsLabel_, triggerResults);
-  if (size_t(triggerBit) < triggerResults->size() && pathFound)
-    if (triggerResults->accept(triggerBit))
-      std::cout << "event pass : " << hltPath_ << std::endl;
-
-  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
-  // TRIGGER MATCHING
-  trigger::TriggerObjectCollection JetLegObjects;
-
-  edm::Handle<trigger::TriggerEvent> triggerSummary;
-  
-  if ( triggerSummary.isValid() ) {
-    iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
-    
-    // Results from TriggerEvent product - Attention: must look only for
-    // modules actually run in this path for this event!
-    if(pathFound){
-      const unsigned int triggerIndex(hltConfig.triggerIndex(hltPath_));
-      const vector<string>& moduleLabels(hltConfig.moduleLabels(triggerIndex));
-      const unsigned int moduleIndex(triggerResults->index(triggerIndex));
-      for (unsigned int j=0; j<=moduleIndex; ++j) {
-	const string& moduleLabel(moduleLabels[j]);
-	const string  moduleType(hltConfig.moduleType(moduleLabel));
-	// check whether the module is packed up in TriggerEvent product
-	const unsigned int filterIndex(triggerSummary->filterIndex(InputTag(moduleLabel,"","HLT")));
-	if (filterIndex<triggerSummary->sizeFilters()) {
-	  //      cout << " 'L3' filter in slot " << j << " - label/type " << moduleLabel << "/" << moduleType << endl;
-	  TString lable = moduleLabel.c_str();
-	  if (lable.Contains(hltJetFilterLabel_.label())) {
-	    
-	    const trigger::Vids& VIDS (triggerSummary->filterIds(filterIndex));
-	    const trigger::Keys& KEYS(triggerSummary->filterKeys(filterIndex));
-	    const size_type nI(VIDS.size());
-	    const size_type nK(KEYS.size());
-	    assert(nI==nK);
-	    const size_type n(max(nI,nK));
-	    //	cout << "   " << n  << " accepted TRIGGER objects found: " << endl;
-	    const trigger::TriggerObjectCollection& TOC(triggerSummary->getObjects());
-	    for (size_type i=0; i!=n; ++i) {
-	      const trigger::TriggerObject& TO(TOC[KEYS[i]]);
-	      JetLegObjects.push_back(TO);	  
-	      //	  cout << "   " << i << " " << VIDS[i] << "/" << KEYS[i] << ": "
-	      //	       << TO.id() << " " << TO.pt() << " " << TO.eta() << " " << TO.phi() << " " << TO.mass()
-	      //	       << endl;
-	    }
-	  }
-	}
-      }
-    }
-  }
-  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
-
-  for (size_t i = 0; i< jetColl->size(); i++){
-    pat::Jet & jet = (*jetColl)[i];
-    // BTAGGING
-    // - working points : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP
-    // - SF : https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#Recommendation_for_b_c_tagging_a
-    //float isCSVL = (jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags") >  0.244 ? 1. : 0.);
-    //float isCSVM = (jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags") >  0.679 ? 1. : 0.);
-    //float isCSVT = (jet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags") >  0.898 ? 1. : 0.);
-
-    //Individual jet operations to be added here
-    // trigger matched 
-    int idx       = -1;
-    double deltaR = -1.;
-    bool isMatched2trigger = isMatchedWithTrigger(jet, JetLegObjects, idx, deltaR, hlt2reco_deltaRmax_) ;
-    double hltEta = ( isMatched2trigger ? JetLegObjects[0].eta()    : -999.);
-    double hltPhi = ( isMatched2trigger ? JetLegObjects[0].phi()    : -999.);
-    double hltPt  = ( isMatched2trigger ? JetLegObjects[0].pt()     : -999.);
-    double hltE   = ( isMatched2trigger ? JetLegObjects[0].energy() : -999.);
- 
-    // SMEARING
-    // http://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-    reco::Candidate::LorentzVector smearedP4;
-    if(isMC) {
-      const reco::GenJet* genJet=jet.genJet();
-      if(genJet) {
-	float smearFactor=getResolutionRatio(jet.eta());
-	smearedP4=jet.p4()-genJet->p4();
-	smearedP4*=smearFactor; // +- 3*smearFactorErr;
-	smearedP4+=genJet->p4();
-      }
-    } else {
-      smearedP4=jet.p4();
-    }
-    // JER
-    double JERup   = getJERup  (jet.eta());
-    double JERdown = getJERdown(jet.eta());
- 
-    jet.addUserFloat("HLTjetEta",   hltEta);
-    jet.addUserFloat("HLTjetPhi",   hltPhi);
-    jet.addUserFloat("HLTjetPt",    hltPt);
-    jet.addUserFloat("HLTjetE",     hltE);
-    jet.addUserFloat("HLTjetDeltaR",deltaR);
-    
-    jet.addUserFloat("SmearedPEta", smearedP4.eta());
-    jet.addUserFloat("SmearedPhi",  smearedP4.phi());
-    jet.addUserFloat("SmearedPt",   smearedP4.pt());
-    jet.addUserFloat("SmearedE",    smearedP4.energy());
-    
-    jet.addUserFloat("JERup", JERup);
-    jet.addUserFloat("JERup", JERdown);
-
-    // SUBJETS
-    std::cout << "cast daughter..." << std::endl;
-    pat::Jet const * subjet1 = dynamic_cast<pat::Jet const *>(jet.daughter(0));
-    std::cout << "access daughter..." << std::endl;
-    double subjet1Bdisc = subjet1->pt();
-    //double subjet1Bdisc = subjet1->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
-    std::cout << "success..." << std::endl;
-
-    pat::Jet const * subjet2 = dynamic_cast<pat::Jet const *>(jet.daughter(1));
+    pat::Jet* subjet1 = dynamic_cast<pat::Jet*>((jet->daughter(0)));
+    double subjet1Bdisc = subjet1->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+    std::cout << "success..." << subjet1Bdisc << std::endl;
+    pat::Jet* subjet2 = dynamic_cast<pat::Jet*>((jet->daughter(1)));
     double subjet2Bdisc = subjet2->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
-
-    pat::Jet const * subjet3 = dynamic_cast<pat::Jet const *>(jet.daughter(2));
+    std::cout << "success..." << subjet2Bdisc << std::endl;
+    pat::Jet* subjet3 = dynamic_cast<pat::Jet*>((jet->daughter(2)));
     double subjet3Bdisc = subjet3->bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
-    
-    jet.addUserFloat("subjet1csv", subjet1Bdisc);
-    jet.addUserFloat("subjet2csv", subjet2Bdisc);
-    jet.addUserFloat("subjet3csv", subjet3Bdisc);
+    std::cout << "success..." << subjet3Bdisc << std::endl;
+
+    jet->addUserFloat("subjet1csv", subjet1Bdisc);
+    jet->addUserFloat("subjet2csv", subjet2Bdisc);
+    jet->addUserFloat("subjet3csv", subjet3Bdisc);
 
   }
 
