@@ -23,8 +23,7 @@ options.register('maxEvts',
 
 options.register('sample',
                  'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
-                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-0
-02590494CB2.root',
+                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -355,8 +354,7 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 # Build jet collection with reco tools
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 # Gen jets, with neutrinos subtracted
-process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14
- && abs(pdgId) != 16"))
+process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 process.ak8GenJetsNoNuPruned = ak4GenJets.clone(
     rParam = cms.double(0.8),
@@ -371,10 +369,12 @@ process.ak8GenJetsNoNuPruned = ak4GenJets.clone(
 # Reco jets, with CHS
 process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
 process.ak8PFJetsCHS = ak5PFJets.clone(
-                                        src = 'chs',
-                                        rParam = cms.double(0.8),
-                                        jetPtMin = cms.double(100.0),
-                                        jetAlgorithm = cms.string("AntiKt"))
+                                      src = 'chs',
+                                      rParam = cms.double(0.8),
+                                      jetPtMin = cms.double(100.0),
+                                      jetAlgorithm = cms.string("AntiKt")
+                                      )
+
 process.ak8PFJetsCHSPruned = ak5PFJets.clone(
                                         src = 'chs',
                                         rParam = cms.double(0.8),
@@ -386,8 +386,15 @@ process.ak8PFJetsCHSPruned = ak5PFJets.clone(
                                         writeCompound = cms.bool(True),
                                         nFilt = cms.int32(3), # number of subjets, exclusive
                                         zcut = cms.double(0.1),
-                                        rcut_factor = cms.double(0.5))
+                                        rcut_factor = cms.double(0.5)
+                                        )
 bTagDiscriminators = [
+    'trackCountingHighEffBJetTags',
+    'trackCountingHighPurBJetTags',
+    'jetProbabilityBJetTags',
+    'jetBProbabilityBJetTags',
+    'simpleSecondaryVertexHighEffBJetTags',
+    'simpleSecondaryVertexHighPurBJetTags',
     'combinedSecondaryVertexBJetTags',
     'combinedInclusiveSecondaryVertexV2BJetTags'
 ]
@@ -434,6 +441,15 @@ process.selectedPatJetsAK8PFCHSPrunedPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPruned"),
     subjetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
 )
+
+### Add Nsubjettiness
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
+process.Njettiness = Njettiness.clone(
+    src = cms.InputTag("ak8PFJetsCHS"),
+    cone = cms.double(0.8)
+    )
+
+process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
 
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
@@ -597,7 +613,6 @@ process.load("B2GAnaFW.B2GAnaFW.b2gedmntuples_cff")
 
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
-
 ### definition of Analysis sequence
 process.analysisPath = cms.Path(
     process.skimmedPatElectrons +
@@ -656,5 +671,6 @@ process.fullPath = cms.Schedule(
 
 #process.edmNtuplesOut.SelectEvents ='filterPath'
 
-
 process.endPath = cms.EndPath(process.edmNtuplesOut)
+
+open('junk.py','w').write(process.dumpPython())

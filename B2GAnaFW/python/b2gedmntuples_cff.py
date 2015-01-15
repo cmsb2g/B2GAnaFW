@@ -462,34 +462,34 @@ genPartVars = (
 ### jet variables
 jetAK8Vars = (
 #### SUBSTRUCTURE
-#     cms.PSet(
-#        tag = cms.untracked.string("tau1"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("tau2"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("tau3"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
-#        ),
-    cms.PSet(
-     tag = cms.untracked.string("tau1"),
-     quantity = cms.untracked.string("userFloat('tau1')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau2"),
-     quantity = cms.untracked.string("userFloat('tau2')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau3"),
-     quantity = cms.untracked.string("userFloat('tau3')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau4"),
-     quantity = cms.untracked.string("userFloat('tau4')")
-    ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau3')")
+        ),
+#    cms.PSet(
+#     tag = cms.untracked.string("tau1"),
+#     quantity = cms.untracked.string("userFloat('tau1')")
+#    ),
+#    cms.PSet(
+#     tag = cms.untracked.string("tau2"),
+#     quantity = cms.untracked.string("userFloat('tau2')")
+#    ),
+#    cms.PSet(
+#     tag = cms.untracked.string("tau3"),
+#     quantity = cms.untracked.string("userFloat('tau3')")
+#    ),
+#    cms.PSet(
+#     tag = cms.untracked.string("tau4"),
+#     quantity = cms.untracked.string("userFloat('tau4')")
+#    ),
     cms.PSet(
      tag = cms.untracked.string("subjetIndex0"),
      quantity = cms.untracked.string("userInt('subjetIndex0')")
@@ -837,9 +837,9 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
-#    "keep *_jetsAK8_*_*",
-    "keep *_patjets_*_*",
+    "keep *_patjets_*_*", 
     "keep *_subjetsAK8_*_*",
+#    "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
