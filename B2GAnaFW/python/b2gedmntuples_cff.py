@@ -474,174 +474,6 @@ jetAK8Vars = (
         tag = cms.untracked.string("tau3"),
         quantity = cms.untracked.string("userFloat('Njettiness:tau3')")
         ),
-#    cms.PSet(
-#     tag = cms.untracked.string("tau1"),
-#     quantity = cms.untracked.string("userFloat('tau1')")
-#    ),
-#    cms.PSet(
-#     tag = cms.untracked.string("tau2"),
-#     quantity = cms.untracked.string("userFloat('tau2')")
-#    ),
-#    cms.PSet(
-#     tag = cms.untracked.string("tau3"),
-#     quantity = cms.untracked.string("userFloat('tau3')")
-#    ),
-#    cms.PSet(
-#     tag = cms.untracked.string("tau4"),
-#     quantity = cms.untracked.string("userFloat('tau4')")
-#    ),
-    cms.PSet(
-     tag = cms.untracked.string("subjetIndex0"),
-     quantity = cms.untracked.string("userInt('subjetIndex0')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("subjetIndex1"),
-     quantity = cms.untracked.string("userInt('subjetIndex1')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1ph1"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_phi')")
-    ),
      cms.PSet(
         tag = cms.untracked.string("trimmedMass"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
@@ -766,24 +598,37 @@ jetsAK4.src = cms.InputTag("jetUserData")
 #jetsAK4.src = cms.InputTag("selectedPatJets")
 
 ###jetsAK8
+#jetsAK8 = copy.deepcopy(basic)
+#jetsAK8.variables += jetVars
+#jetsAK8.variables += jetAK8Vars
+#jetsAK8.prefix = cms.untracked.string("jetAK8old")
+#jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
+
+###patjets
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
-jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
-
-###patjets
-patjets = copy.deepcopy(basic)
-patjets.variables += jetVars
-patjets.variables += jetAK8Vars
-patjets.prefix = cms.untracked.string("patjet")
-patjets.src = cms.InputTag("patjetUserData")
+jetsAK8.prefix = cms.untracked.string("jetsAK8")
+jetsAK8.src = cms.InputTag("patjetUserData")
 
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
 subjetsAK8.src = cms.InputTag("skimmedPatSubJetsAK8")
+
+###patjets
+jetsCmsTopTag = copy.deepcopy(basic)
+jetsCmsTopTag.variables += jetVars
+jetsCmsTopTag.variables += jetAK8Vars
+jetsCmsTopTag.prefix = cms.untracked.string("jetsCmsTopTag")
+jetsCmsTopTag.src = cms.InputTag("cmstoptagjetUserData")
+
+###subjetsAK8
+subjetsCmsTopTag = copy.deepcopy(basic)
+subjetsCmsTopTag.variables += jetVars
+subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
+subjetsCmsTopTag.src = cms.InputTag("skimmedCMSTOPTAGSubJets")
 
 ###genPart
 genPart = copy.deepcopy(basic)
@@ -827,7 +672,6 @@ eventInfo =  cms.EDProducer(
     variables = cms.VPSet()
     )
 
-
 edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
     fileName = cms.untracked.string('B2GEdmNtuples.root'),
@@ -837,16 +681,14 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
-    "keep *_patjets_*_*", 
     "keep *_subjetsAK8_*_*",
-#    "keep *_jetsAK8_*_*",
+    "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
     "keep *_eventInfo_*_*",
-#    "keep *_patJetsAK8PFCHSPruned_*_*",
-#    "keep *_patJetsAK8PFCHSPrunedSubjets_*_*",
-#    "keep *_selectedPatJetsAK8PFCHSPrunedPacked_*_*"
+    "keep *_*CmsTopTag*_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
+print "DONE STANDARD"
