@@ -16,14 +16,15 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 100,# default value: process all events
+                 1,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
 
 options.register('sample',
                  'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
-                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
+                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB
+-002590494CB2.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -354,7 +355,8 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 # Build jet collection with reco tools
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 # Gen jets, with neutrinos subtracted
-process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
+process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) !=
+14 && abs(pdgId) != 16"))
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 process.ak8GenJetsNoNuPruned = ak4GenJets.clone(
     rParam = cms.double(0.8),
@@ -451,6 +453,96 @@ process.Njettiness = Njettiness.clone(
 
 process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
 
+#$#$#$#$#$#$#$#$#$#
+#   TOP TAG JETS  #
+# patJetsCMSTopTagCHS
+from RecoJets.JetProducers.PFJetParameters_cfi import *
+from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
+from RecoJets.JetProducers.CATopJetParameters_cfi import *
+process.cmsTopTagCHS = cms.EDProducer(
+    "CATopJetProducer",
+    PFJetParameters.clone( src = cms.InputTag('chs'),
+                           doAreaFastjet = cms.bool(True),
+                           doRhoFastjet = cms.bool(False),
+                           jetPtMin = cms.double(200.0)
+                           ),
+    AnomalousCellParameters,
+    CATopJetParameters.clone( jetCollInstanceName = cms.string("SubJets"),
+                              verbose = cms.bool(False),
+                              algorithm = cms.int32(1), # 0 = KT, 1 = CA, 2 = anti-KT
+                              tagAlgo = cms.int32(0), #0=legacy top
+                              useAdjacency = cms.int32(2), # modified adjacency
+                              centralEtaCut = cms.double(2.5), # eta for defining "central" jets
+                              sumEtBins = cms.vdouble(0,1600,2600), # sumEt bins over which cuts vary. vector={bin 0 lower bound, bin 1 lower bound, ...}
+                              rBins = cms.vdouble(0.8,0.8,0.8), # Jet distance paramter R. R values depend on sumEt bins.
+                              ptFracBins = cms.vdouble(0.05,0.05,0.05), # minimum fraction of central jet pt for subjets (deltap)
+                              deltarBins = cms.vdouble(0.19,0.19,0.19), # Applicable only if useAdjacency=1. deltar adjacency values for each sumEtBin
+                              nCellBins = cms.vdouble(1.9,1.9,1.9),
+                            ),
+    jetAlgorithm = cms.string("CambridgeAachen"),
+    rParam = cms.double(0.8),
+    writeCompound = cms.bool(True)
+    )
+process.CATopTagInfos = cms.EDProducer("CATopJetTagger",
+                                    src = cms.InputTag("cmsTopTagCHS"),
+                                    TopMass = cms.double(171),
+                                    TopMassMin = cms.double(0.),
+                                    TopMassMax = cms.double(250.),
+                                    WMass = cms.double(80.4),
+                                    WMassMin = cms.double(0.0),
+                                    WMassMax = cms.double(200.0),
+                                    MinMassMin = cms.double(0.0),
+                                    MinMassMax = cms.double(200.0),
+                                    verbose = cms.bool(False)
+                                    )
+addJetCollection(
+    process,
+    labelName = 'CMSTopTagCHS',
+    jetSource = cms.InputTag('cmsTopTagCHS'),
+    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    trackSource = cms.InputTag('unpackedTracksAndVertices'),
+    pvSource = cms.InputTag("unpackedTracksAndVertices"),
+    btagDiscriminators = ['combinedSecondaryVertexBJetTags'],
+    getJetMCFlavour = False
+    )
+process.patJetPartonMatchCMSTopTagCHS.matched='prunedGenParticles'
+process.patJetCorrFactorsCMSTopTagCHS.primaryVertices = "unpackedTracksAndVertices"
+process.patJetGenJetMatchCMSTopTagCHS.matched = 'slimmedGenJets'
+process.patJetPartonMatchCMSTopTagCHS.matched = 'prunedGenParticles'
+#process.jetTracksAssociatorAtVertexCMSTopTagCHS=process.ak5JetTracksAssociatorAtVertexPF.clone(jets = cms.InputTag('cmsTopTagCHS'), coneSize = 0.8)
+process.secondaryVertexTagInfosCMSTopTagCHS.trackSelection.jetDeltaRMax = cms.double(0.8) # default is 0.3
+process.secondaryVertexTagInfosCMSTopTagCHS.vertexCuts.maxDeltaRToJetAxis = cms.double(0.8) # default is 0.5
+process.combinedSecondaryVertexCMSTopTagCHS= process.combinedSecondaryVertex.clone()
+process.combinedSecondaryVertexCMSTopTagCHS.trackSelection.jetDeltaRMax = cms.double(0.8)
+process.combinedSecondaryVertexCMSTopTagCHS.trackPseudoSelection.jetDeltaRMax = cms.double(0.8)
+process.combinedSecondaryVertexBJetTagsCMSTopTagCHS.jetTagComputer = cms.string('combinedSecondaryVertexCMSTopTagCHS')
+process.patJetsCMSTopTagCHS.addTagInfos = True
+process.patJetsCMSTopTagCHS.tagInfoSources = cms.VInputTag(
+    cms.InputTag('CATopTagInfos')
+    )
+
+addJetCollection(
+    process,
+    labelName = 'CMSTopTagCHSSubjets',
+    jetSource = cms.InputTag('cmsTopTagCHS','SubJets'),
+    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    trackSource = cms.InputTag('unpackedTracksAndVertices'),
+    pvSource = cms.InputTag("unpackedTracksAndVertices"),
+    btagDiscriminators = ['combinedSecondaryVertexBJetTags'],
+    getJetMCFlavour = False,
+    )
+process.patJetPartonMatchCMSTopTagCHSSubjets.matched='prunedGenParticles'
+process.patJetCorrFactorsCMSTopTagCHSSubjets.primaryVertices = "unpackedTracksAndVertices"
+process.patJetGenJetMatchCMSTopTagCHSSubjets.matched = 'slimmedGenJets'
+process.patJetPartonMatchCMSTopTagCHSSubjets.matched = 'prunedGenParticles'
+
+process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
+    jetSrc=cms.InputTag("patJetsCMSTopTagCHS" ),
+    subjetSrc=cms.InputTag("patJetsCMSTopTagCHSSubjets")
+      )
+
+#$#$#$#$#$#$#$#$#$#
+
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
@@ -490,12 +582,11 @@ process.skimmedPatSubJetsAK8 = cms.EDFilter(
     cut = cms.string("pt > 1")
 )
 
-#process.skimmedPatJetsAK8 = cms.EDFilter(
-#    "PATJetSelector",
-#    src = cms.InputTag(jLabelAK8),
-#    cut = cms.string("pt > 100 && abs(eta) < 4.")
-#)
-
+process.skimmedCMSTOPTAGSubJets = cms.EDFilter(
+    "CandViewSelector",
+    src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets"),
+    cut = cms.string("pt > 1")
+)
 
 
 ### Asking for at least 2 jets satisfying the selection above
@@ -597,6 +688,22 @@ process.patjetUserData = cms.EDProducer(
     doSubjets          = cms.bool(True)
 )
 
+process.cmstoptagjetUserData = cms.EDProducer(
+    'PatJetUserData',
+    jetLabel  = cms.InputTag("patJetsCMSTopTagCHS"),
+    packedjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
+    subjetLabel  = cms.InputTag("patJetsCMSTopTagCHSSubjets"),
+    pv        = cms.InputTag(pvLabel),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
+    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hlt2reco_deltaRmax = cms.double(0.2),
+    doSubjets          = cms.bool(True)
+)
+
+
 from PhysicsTools.CandAlgos.EventShapeVars_cff import *
 process.eventShapePFVars = pfEventShapeVars.clone()
 process.eventShapePFVars.src = cms.InputTag(particleFlowLabel)
@@ -620,6 +727,7 @@ process.analysisPath = cms.Path(
     process.skimmedPatJets +
     process.skimmedPatJetsAK8 +
     process.skimmedPatSubJetsAK8+
+    process.skimmedCMSTOPTAGSubJets+
     process.skimmedPatMET +
     process.eventShapePFVars +
     process.eventShapePFJetVars +
@@ -632,7 +740,7 @@ process.analysisPath = cms.Path(
 process.analysisPath+=process.muonUserData
 process.analysisPath+=process.jetUserData
 process.analysisPath+=process.patjetUserData
-#process.analysisPath+=process.jetUserDataAK8
+process.analysisPath+=process.cmstoptagjetUserData
 process.analysisPath+=process.electronUserData
 process.analysisPath+=process.genPart
 process.analysisPath+=process.muons
