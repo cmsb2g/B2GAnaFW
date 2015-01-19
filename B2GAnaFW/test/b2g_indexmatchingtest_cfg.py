@@ -23,8 +23,7 @@ options.register('maxEvts',
 
 options.register('sample',
                  'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
-                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB
--002590494CB2.root',
+                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -355,8 +354,7 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 # Build jet collection with reco tools
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 # Gen jets, with neutrinos subtracted
-process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) !=
-14 && abs(pdgId) != 16"))
+process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) !=14 && abs(pdgId) != 16"))
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 process.ak8GenJetsNoNuPruned = ak4GenJets.clone(
     rParam = cms.double(0.8),
@@ -763,6 +761,7 @@ if(options.LHE):
     process.analysisPath+=process.LHEUserData
     process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
     process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
+    process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
 
 
 ### end LHE products

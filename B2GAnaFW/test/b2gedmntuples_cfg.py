@@ -70,7 +70,7 @@ hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 lheLabel = "source"
 
 
-process = cms.Process("ttDManalysisEDMNtuples")
+process = cms.Process("B2GEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.categories.append('HLTrigReport')
@@ -175,7 +175,7 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 
 ### Subjet b-tagging
 # Build jet collection with reco tools
-from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
+"""from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 # Gen jets, with neutrinos subtracted
 process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
@@ -255,7 +255,7 @@ process.selectedPatJetsAK8PFCHSPrunedPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPruned"),
     subjetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
 )
-
+"""
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
@@ -283,18 +283,18 @@ process.skimmedPatJets = cms.EDFilter(
 )
 
 
-process.skimmedPatJetsAK8 = cms.EDFilter(
-    "CandViewSelector",
-    src = cms.InputTag(ak8jetLabel),
-    cut = cms.string("pt > 100 && abs(eta) < 4.")    
-)
-
-
 #process.skimmedPatJetsAK8 = cms.EDFilter(
-#    "PATJetSelector",
-#    src = cms.InputTag(jLabelAK8),
-#    cut = cms.string("pt > 100 && abs(eta) < 4.")
+#    "CandViewSelector",
+#    src = cms.InputTag(ak8jetLabel),
+#    cut = cms.string("pt > 100 && abs(eta) < 4.")    
 #)
+
+
+process.skimmedPatJetsAK8 = cms.EDFilter(
+    "PATJetSelector",
+    src = cms.InputTag(ak8jetLabel),
+    cut = cms.string("pt > 100 && abs(eta) < 4.")
+)
 
 
 
@@ -346,7 +346,8 @@ process.muonUserData = cms.EDProducer(
 
 process.patjetUserData = cms.EDProducer(
     'PatJetUserData',
-    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
+    jetLabel  = cms.InputTag("skimmedPatJetsAK8"),
+#    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
     pv        = cms.InputTag(pvLabel),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
@@ -354,6 +355,9 @@ process.patjetUserData = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    doSubjets = cms.bool(False),#Since subjets are not checked, the following entries are placeholders
+       packedjetLabel  = cms.InputTag("skimmedPatJetsAK8"),
+       subjetLabel  = cms.InputTag("skimmedPatJetsAK8"),
 )
 
 process.jetUserData = cms.EDProducer(
@@ -430,13 +434,13 @@ process.analysisPath = cms.Path(
 #process.analysisPath+=process.egmGsfElectronIDSequence
 process.analysisPath+=process.muonUserData
 process.analysisPath+=process.jetUserData
-#process.analysisPath+=process.jetUserDataAK8
+process.analysisPath+=process.jetsAK4
+process.analysisPath+=process.jetUserDataAK8
+process.analysisPath+=process.jetsAK8
 process.analysisPath+=process.electronUserData
 process.analysisPath+=process.genPart
 process.analysisPath+=process.muons
 process.analysisPath+=process.electrons
-process.analysisPath+=process.jets
-process.analysisPath+=process.jetsAK8
 process.analysisPath+=process.met
 
 ### Creating the filter path to use in order to select events
@@ -453,6 +457,7 @@ if(options.LHE):
     process.analysisPath+=process.LHEUserData
     process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
     process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
+    process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
 
 
 ### end LHE products     
@@ -467,8 +472,10 @@ process.fullPath = cms.Schedule(
     process.filterPath
     )
 
-#process.edmNtuplesOut.SelectEvents ='filterPath'
+process.edmNtuplesOut.outputCommands+=('drop *_*CmsTopTag*_*_*',)
+process.edmNtuplesOut.outputCommands+=('drop *_*subjetsAK8*_*_*',)
 
+#process.edmNtuplesOut.SelectEvents ='filterPath'
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
