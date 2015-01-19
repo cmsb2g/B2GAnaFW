@@ -392,6 +392,34 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
     ),
     cms.PSet(
+     tag = cms.untracked.string("numberOfDaughters"),
+     quantity = cms.untracked.string("? isPFJet ? numberOfDaughters : -1")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("chargedMultiplicity"),
+     quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity : -1")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("neutralHadronMultiplicity"),
+     quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("neutralHadronEnergyFraction"),
+     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergyFraction : -1")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("neutralEmEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? neutralEmEnergyFraction : -1"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("chargedEmEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? chargedEmEnergyFraction : -1"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("chargedHadronEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergyFraction : -1"),
+    ),
+    cms.PSet(
      tag = cms.untracked.string("photonMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? photonMultiplicity : -1")
     ),
