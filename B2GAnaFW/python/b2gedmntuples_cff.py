@@ -66,7 +66,7 @@ met =  cms.EDProducer(
     )
     )
 
-### muon variables 
+### muon variables
 muonVars = (
 #   cms.PSet(
 #        tag = cms.untracked.string("dB"),
@@ -131,11 +131,11 @@ muonVars = (
    cms.PSet(
     tag = cms.untracked.string("IsGlobalMuon"),
     quantity = cms.untracked.string("isGlobalMuon")
-   ),   
+   ),
    cms.PSet(
     tag = cms.untracked.string("IsTrackerMuon"),
     quantity = cms.untracked.string("isTrackerMuon")
-   ),   
+   ),
    ### TIGHT
    cms.PSet(
     tag = cms.untracked.string("GlbTrkNormChi2"),
@@ -171,7 +171,7 @@ muonVars = (
     quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
    ),
 ## variables used in isolation
-## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco   
+## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
    cms.PSet(
     tag = cms.untracked.string("SumChargedHadronPt"),
     quantity = cms.untracked.string("pfIsolationR04().sumChargedHadronPt")
@@ -236,8 +236,27 @@ muonVars = (
    ),
 )
 
+patjetVars = (
+### B-TAGGING
+    cms.PSet(
+     tag = cms.untracked.string("subjet1csv"),
+     #quantity = cms.untracked.string("daughter(0).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet1csv')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("subjet2csv"),
+     #quantity = cms.untracked.string("daughter(1).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet2csv')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("subjet3csv"),
+     #quantity = cms.untracked.string("daughter(2).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("userFloat('subjet3csv')")
+    )
+)
+
 ### jet variables
-jetVars = (    
+jetVars = (
 ### B-TAGGING
     cms.PSet(
      tag = cms.untracked.string("IsCSVL"),
@@ -339,167 +358,6 @@ jetVars = (
      tag = cms.untracked.string("HLTjetDeltaR"),
      quantity = cms.untracked.string("userFloat('HLTjetDeltaR')")
     ),
-### SUBJETS
-    cms.PSet(
-     tag = cms.untracked.string("tau1"),
-     quantity = cms.untracked.string("userFloat('tau1')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau2"),
-     quantity = cms.untracked.string("userFloat('tau2')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau3"),
-     quantity = cms.untracked.string("userFloat('tau3')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("tau4"),
-     quantity = cms.untracked.string("userFloat('tau4')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc2_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc2j1ph1"),
-     quantity = cms.untracked.string("userFloat('sjc2_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j1phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j1_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2pt"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2mass"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2eta"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc3j2phi"),
-     quantity = cms.untracked.string("userFloat('sjc3_j2_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j0phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j0_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j1phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j1_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j2phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j2_phi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3pt"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_pt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3mass"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_mass')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3eta"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_eta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("sjc4j3phi"),
-     quantity = cms.untracked.string("userFloat('sjc4_j3_phi')")
-    ),
 ### CONSTITUENTS
     cms.PSet(
      tag = cms.untracked.string("muonMultiplicity"),
@@ -530,10 +388,34 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? chargedHadronMultiplicity : -1")
     ),
     cms.PSet(
+      tag = cms.untracked.string("numberOfDaughters"),
+      quantity = cms.untracked.string("? isPFJet ? numberOfDaughters : -1")
+       ),
+   cms.PSet(
+      tag = cms.untracked.string("chargedMultiplicity"),
+      quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity : -1")
+    ),
+    cms.PSet(
      tag = cms.untracked.string("neutralHadronMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
     ),
     cms.PSet(
+     tag = cms.untracked.string("neutralHadronEnergyFraction"),
+     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergyFraction : -1")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("neutralEmEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? neutralEmEnergyFraction : -1"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("chargedEmEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? chargedEmEnergyFraction : -1"),
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("chargedHadronEnergyFraction"),
+    quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergyFraction : -1"),
+    ),
+     cms.PSet(
      tag = cms.untracked.string("photonMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? photonMultiplicity : -1")
     ),
@@ -602,20 +484,20 @@ genPartVars = (
 
 
 ### jet variables
-jetAK8Vars = (    
+jetAK8Vars = (
 #### SUBSTRUCTURE
-#     cms.PSet(
-#        tag = cms.untracked.string("tau1"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("tau2"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("tau3"),
-#        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
-#        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('Njettiness:tau3')")
+        ),
      cms.PSet(
         tag = cms.untracked.string("trimmedMass"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
@@ -650,7 +532,7 @@ genPartVars = (
     )
 
 
-    
+
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
 muons = copy.deepcopy(basic)
@@ -722,7 +604,7 @@ electronVars = (
         tag = cms.untracked.string("isMedium"),
         quantity = cms.untracked.string("userFloat('isMedium')")
         )
-   
+
 )
 
 
@@ -733,25 +615,44 @@ electrons.src = cms.InputTag("electronUserData")
 
 
 ###jets
-jets = copy.deepcopy(basic)
-jets.variables += jetVars
-jets.prefix = cms.untracked.string("jet")
-jets.src = cms.InputTag("jetUserData")
-#jets.src = cms.InputTag("selectedPatJets")
+jetsAK4 = copy.deepcopy(basic)
+jetsAK4.variables += jetVars
+jetsAK4.prefix = cms.untracked.string("jetAK4")
+jetsAK4.src = cms.InputTag("jetUserData")
+#jetsAK4.src = cms.InputTag("selectedPatJets")
 
 ###jetsAK8
+#jetsAK8 = copy.deepcopy(basic)
+#jetsAK8.variables += jetVars
+#jetsAK8.variables += jetAK8Vars
+#jetsAK8.prefix = cms.untracked.string("jetAK8old")
+#jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
+
+###patjets
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
-jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
+jetsAK8.prefix = cms.untracked.string("jetsAK8")
+jetsAK8.src = cms.InputTag("patjetUserData")
 
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
-subjetsAK8.variables += jetAK8Vars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
 subjetsAK8.src = cms.InputTag("skimmedPatSubJetsAK8")
+
+###patjets
+jetsCmsTopTag = copy.deepcopy(basic)
+jetsCmsTopTag.variables += jetVars
+jetsCmsTopTag.variables += jetAK8Vars
+jetsCmsTopTag.prefix = cms.untracked.string("jetsCmsTopTag")
+jetsCmsTopTag.src = cms.InputTag("cmstoptagjetUserData")
+
+###subjetsAK8
+subjetsCmsTopTag = copy.deepcopy(basic)
+subjetsCmsTopTag.variables += jetVars
+subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
+subjetsCmsTopTag.src = cms.InputTag("skimmedCMSTOPTAGSubJets")
 
 ###genPart
 genPart = copy.deepcopy(basic)
@@ -795,7 +696,6 @@ eventInfo =  cms.EDProducer(
     variables = cms.VPSet()
     )
 
-
 edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
     fileName = cms.untracked.string('B2GEdmNtuples.root'),
@@ -804,14 +704,15 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_genPart_*_*",
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
-    "keep *_jets_*_*",
-    "keep *_jetsAK8_*_*",
+    "keep *_jetsAK4_*_*",
     "keep *_subjetsAK8_*_*",
+    "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
     "keep *_eventInfo_*_*",
-    "keep *_patJets*_*_*"
+    "keep *_*CmsTopTag*_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
+print "DONE STANDARD"
