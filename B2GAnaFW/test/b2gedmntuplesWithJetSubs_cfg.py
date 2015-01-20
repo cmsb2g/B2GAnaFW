@@ -269,6 +269,9 @@ getattr(process,'patJetPartonMatchAK8PFCHSPrunedSubjets').matched = cms.InputTag
 getattr(process,'patJetsAK8PFCHSPrunedSubjets').addAssociatedTracks = cms.bool(False) # needs to be disabled since there is no track collection present in MiniAOD
 getattr(process,'patJetsAK8PFCHSPrunedSubjets').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
 
+process.selectedPatJetsAK8PFCHS.cut = cms.string("pt > 100 && abs(eta)<4.") 
+
+
 ## Establish references between PATified fat jets and subjets using the BoostedJetMerger
 process.selectedPatJetsAK8PFCHSPrunedPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("selectedPatJetsAK8PFCHSPruned"),
@@ -449,8 +452,8 @@ process.patjetUserData = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
-    doSubjets = cms.bool(False),#Since subjets are not checked, the following entries are placeholders
-       packedjetLabel  = cms.InputTag("process.selectedPatJetsAK8PFCHSPrunedPacked"),
+    doSubjets = cms.bool(True),
+       packedjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
        subjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets"),
 )
 
