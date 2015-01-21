@@ -313,6 +313,15 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 
 process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
 
+### Add Nsubjettiness
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
+process.Njettiness = Njettiness.clone(
+    src = cms.InputTag("ak8PFJetsCHS"),
+    cone = cms.double(0.8)
+    )
+
+process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
+
 #$#$#$#$#$#$#$#$#$#
 #   TOP TAG JETS  #
 # patJetsCMSTopTagCHS
@@ -400,7 +409,6 @@ process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("patJetsCMSTopTagCHS" ),
     subjetSrc=cms.InputTag("patJetsCMSTopTagCHSSubjets")
     )
-
 
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
