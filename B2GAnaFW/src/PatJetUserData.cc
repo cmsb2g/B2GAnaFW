@@ -108,7 +108,7 @@ void PatJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByLabel(packedjLabel_, packedjetHandle);
     iEvent.getByLabel(sjLabel_, subjetHandle);
     if( packedjetHandle->size() > jetHandle->size() )
-      edm::LogError("TooManyGroomedJets") << "Groomed packed jet collection size " << jetHandle->size()
+      edm::LogError("TooManyGroomedJets") << "Groomed packed jet collection size " << packedjetHandle->size()
         << " bigger than original fat jet collection size " << jetHandle->size() ;
     matchPackedJets(jetHandle,packedjetHandle,matchedjetIndices);
 
