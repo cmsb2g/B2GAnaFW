@@ -698,7 +698,7 @@ eventInfo =  cms.EDProducer(
 
 edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string('B2GEdmNtuples.root'),
+    fileName = cms.untracked.string('B2GEdmNtuple.root'),
     outputCommands = cms.untracked.vstring(
     "drop *",
     "keep *_genPart_*_*",
