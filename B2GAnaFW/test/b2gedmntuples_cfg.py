@@ -482,6 +482,9 @@ process.jetFilter = cms.EDFilter("CandViewCountFilter",
 #for idmod in my_id_modules:
 #    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
+process.EventUserData = cms.EDProducer(
+    'EventUserData'
+)
 
 process.muonUserData = cms.EDProducer(
     'MuonUserData',
@@ -609,6 +612,9 @@ process.analysisPath+=process.jetUserData
 #process.analysisPath+=process.jetUserDataAK8
 #process.analysisPath+=process.subjetUserDataAK8
 process.analysisPath+=process.electronUserData
+
+process.analysisPath+=process.EventUserData
+
 process.analysisPath+=process.genPart
 process.analysisPath+=process.muons
 process.analysisPath+=process.electrons
