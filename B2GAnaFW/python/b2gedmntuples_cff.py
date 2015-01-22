@@ -487,6 +487,14 @@ genPartVars = (
 jetAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
+        tag = cms.untracked.string("subjetIndex0"),
+        quantity = cms.untracked.string("userInt('subjetIndex0')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex1"),
+        quantity = cms.untracked.string("userInt('subjetIndex1')")
+        ),
+     cms.PSet(
         tag = cms.untracked.string("tau1"),
         quantity = cms.untracked.string("userFloat('Njettiness:tau1')")
         ),
@@ -621,19 +629,12 @@ jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
 #jetsAK4.src = cms.InputTag("selectedPatJets")
 
-###jetsAK8
-#jetsAK8 = copy.deepcopy(basic)
-#jetsAK8.variables += jetVars
-#jetsAK8.variables += jetAK8Vars
-#jetsAK8.prefix = cms.untracked.string("jetAK8old")
-#jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
-
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
 jetsAK8.prefix = cms.untracked.string("jetsAK8")
-jetsAK8.src = cms.InputTag("patjetUserData")
+jetsAK8.src = cms.InputTag("ak8jetUserData")
 
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
@@ -698,19 +699,20 @@ eventInfo =  cms.EDProducer(
 
 edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string('B2GEdmNtuple.root'),
+    fileName = cms.untracked.string('B2GEDMNtuple.root'),
     outputCommands = cms.untracked.vstring(
     "drop *",
     "keep *_genPart_*_*",
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
+    "keep *_subjetsAK8EI_*_*",
+    "keep *_jetsAK8EI_*_*",
     "keep *_subjetsAK8_*_*",
     "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
-    "keep *_EventUserData_*_*",
     "keep *_eventInfo_*_*",
     "keep *_*CmsTopTag*_*_*"
     ),

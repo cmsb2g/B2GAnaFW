@@ -518,7 +518,7 @@ process.jetUserData = cms.EDProducer(
     )
 
 
-process.patjetUserData = cms.EDProducer(
+process.ak8jetUserData = cms.EDProducer(
     'PatJetUserData',
     jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHS"),
 #    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
