@@ -487,6 +487,14 @@ genPartVars = (
 jetAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
+        tag = cms.untracked.string("subjetIndex0"),
+        quantity = cms.untracked.string("userInt('subjetIndex0')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex1"),
+        quantity = cms.untracked.string("userInt('subjetIndex1')")
+        ),
+     cms.PSet(
         tag = cms.untracked.string("tau1"),
         quantity = cms.untracked.string("userFloat('Njettiness:tau1')")
         ),
