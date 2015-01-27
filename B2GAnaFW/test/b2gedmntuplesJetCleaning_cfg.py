@@ -452,6 +452,23 @@ process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filt
 
 process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
 
+### Add Nsubjettiness
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
+process.Njettiness = Njettiness.clone(
+    src = cms.InputTag("ak8PFJetsCHS"),
+    cone = cms.double(0.8)
+    )
+
+process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
+
+process.NjettinessEI = Njettiness.clone(
+    src = cms.InputTag("ak8PFJetsCHSEI"),
+    cone = cms.double(0.8)
+    )
+
+process.patJetsAK8PFCHSEI.userData.userFloats.src += ['NjettinessEI:tau1','NjettinessEI:tau2','NjettinessEI:tau3']
+
+
 #$#$#$#$#$#$#$#$#$#
 #   TOP TAG JETS  #
 # patJetsCMSTopTagCHS
@@ -624,6 +641,8 @@ process.jetUserData = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag("skimmedPatJets"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -668,6 +687,8 @@ process.ak8subjetsEIUserData = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag("skimmedPatSubJetsAK8EI"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -680,6 +701,8 @@ process.subjetUserDataAK8 = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag("skimmedPatSubJetsAK8"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),

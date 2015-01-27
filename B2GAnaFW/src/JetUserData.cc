@@ -7,6 +7,8 @@
 
 
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
 
 // dR and dPhi
 #include "DataFormats/Math/interface/deltaR.h"
@@ -37,6 +39,7 @@
 #include <TFile.h>
 #include <TH1F.h>
 #include <TGraphAsymmErrors.h>
+#include <TLorentzVector.h>
 #include <vector>
 
 using namespace fastjet;
@@ -60,7 +63,7 @@ private:
   edm::EDGetTokenT<std::vector<reco::Vertex> > pvToken_;
 
   //InputTag jetLabel_;
-  InputTag jLabel_, pvLabel_;
+  InputTag jLabel_, pvLabel_, elLabel_, muLabel_;
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltJetFilterLabel_;
   std::string hltPath_;
@@ -72,8 +75,10 @@ private:
 
 JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
  
-   jLabel_(iConfig.getParameter<edm::InputTag>("jetLabel")),
-   pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
+   jLabel_             (iConfig.getParameter<edm::InputTag>("jetLabel")),
+   pvLabel_            (iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
+   elLabel_            (iConfig.getParameter<edm::InputTag>("elLabel")),
+   muLabel_            (iConfig.getParameter<edm::InputTag>("muLabel")),
 
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
    triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
@@ -99,6 +104,14 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<std::vector<pat::Jet> > jetHandle;
   iEvent.getByLabel(jLabel_, jetHandle);
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+
+  //// Electrons 
+  edm::Handle<std::vector<pat::Electron> > elHandle ; 
+  iEvent.getByLabel(elLabel_, elHandle);
+
+  //// Muons
+  edm::Handle<std::vector<pat::Muon> > muHandle ; 
+  iEvent.getByLabel(muLabel_, muHandle);
 
   /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
   // TRIGGER (this is not really needed ...)
@@ -345,7 +358,48 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     
     jet.addUserFloat("JERup", JERup);
     jet.addUserFloat("JERup", JERdown);
-    
+
+
+    TLorentzVector jetp4 ; 
+    jetp4.SetPtEtaPhiE(jet.pt(), jet.eta(), jet.phi(), jet.energy()) ; 
+
+    //// Lepton matching
+    int matchedEl(-1), matchedMu(-1) ; 
+    edm::Ptr<reco::Candidate> elobj, muobj ; 
+    int elIdx(-1), muIdx(-1) ; 
+
+    double drmin = 999 ; 
+    for (std::vector<pat::Electron>::const_iterator iel = elHandle->begin(); iel != elHandle->end(); ++iel) {
+      TLorentzVector elp4 ; 
+      elp4.SetPtEtaPhiE(iel->pt(), iel->eta(), iel->phi(), iel->energy()) ; 
+      if (elp4.DeltaR(jetp4) < drmin) {
+        drmin = elp4.DeltaR(jetp4) ; 
+        elobj = iel->originalObjectRef() ; 
+        elIdx = std::distance(elHandle->begin(),iel) ; 
+      }
+    }
+
+
+    drmin = 999 ; 
+    for (std::vector<pat::Muon>::const_iterator imu = muHandle->begin(); imu != muHandle->end(); ++imu) {
+      TLorentzVector mup4 ; 
+      mup4.SetPtEtaPhiE(imu->pt(), imu->eta(), imu->phi(), imu->energy()) ; 
+      if (mup4.DeltaR(jetp4) < drmin) {
+        drmin = mup4.DeltaR(jetp4) ; 
+        muobj = imu->originalObjectRef() ; 
+        muIdx = std::distance(muHandle->begin(),imu) ; 
+      }
+    }
+
+    const std::vector<edm::Ptr<reco::Candidate> > daus = jet.daughterPtrVector() ; 
+    for (std::vector<edm::Ptr<reco::Candidate> >::const_iterator idau = daus.begin(); idau != daus.end(); ++idau) {
+      if (*idau == elobj) matchedEl = elIdx ; 
+      if (*idau == muobj) matchedMu = muIdx ; 
+    }
+
+    jet.addUserFloat("matchedMuIdx", matchedMu);
+    jet.addUserFloat("matchedElIdx", matchedEl);
+
   }
 
   iEvent.put( jetColl );
@@ -353,7 +407,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-bool
+  bool
 JetUserData::isMatchedWithTrigger(const pat::Jet& p, trigger::TriggerObjectCollection triggerObjects, int& index, double& deltaR, double deltaRmax = 0.2)
 {
   for (size_t i = 0 ; i < triggerObjects.size() ; i++){
@@ -368,7 +422,7 @@ JetUserData::isMatchedWithTrigger(const pat::Jet& p, trigger::TriggerObjectColle
   return false;
 }
 
-double
+  double
 JetUserData::getResolutionRatio(double eta)
 {
   eta=fabs(eta);
@@ -382,7 +436,7 @@ JetUserData::getResolutionRatio(double eta)
   return -1.;
 }
 
-double
+  double
 JetUserData::getJERup(double eta)
 {
   eta=fabs(eta);
@@ -396,7 +450,7 @@ JetUserData::getJERup(double eta)
   return -1.;  
 }
 
-double
+  double
 JetUserData::getJERdown(double eta)
 {
   eta=fabs(eta);

@@ -439,6 +439,15 @@ jetVars = (
      tag = cms.untracked.string("neutralMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
     ),
+#### FOR LEPTON MATCHING 
+    cms.PSet(
+     tag = cms.untracked.string("matchedMuIdx"),
+     quantity = cms.untracked.string("userFloat('matchedMuIdx')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("matchedElIdx"),
+     quantity = cms.untracked.string("userFloat('matchedElIdx')")
+    ),
 #### FOR SYSTEMATICS
     cms.PSet(
      tag = cms.untracked.string("SmearedPt"),
@@ -524,6 +533,29 @@ jetAK8Vars = (
      #    ),
 )
 
+jetAK8EIVars = (
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex0"),
+        quantity = cms.untracked.string("userInt('subjetIndex0')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex1"),
+        quantity = cms.untracked.string("userInt('subjetIndex1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('NjettinessEI:tau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('NjettinessEI:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('NjettinessEI:tau3')")
+        ),
+     )
+
 genPartVars = (
     cms.PSet(
     tag = cms.untracked.string("ID"),
@@ -538,8 +570,6 @@ genPartVars = (
     quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
     ),
     )
-
-
 
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
@@ -629,17 +659,10 @@ jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
 #jetsAK4.src = cms.InputTag("selectedPatJets")
 
-###jetsAK8
-#jetsAK8 = copy.deepcopy(basic)
-#jetsAK8.variables += jetVars
-#jetsAK8.variables += jetAK8Vars
-#jetsAK8.prefix = cms.untracked.string("jetAK8old")
-#jetsAK8.src = cms.InputTag("skimmedPatJetsAK8")
-
 ### AK8 jets with EI user data 
 jetsAK8EI = copy.deepcopy(basic)
 jetsAK8EI.variables += jetVars
-jetsAK8EI.variables += jetAK8Vars
+jetsAK8EI.variables += jetAK8EIVars
 jetsAK8EI.prefix = cms.untracked.string("jetsAK8EI")
 jetsAK8EI.src = cms.InputTag("ak8jetEIUserData")
 
