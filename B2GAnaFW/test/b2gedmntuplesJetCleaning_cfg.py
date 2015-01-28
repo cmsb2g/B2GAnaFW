@@ -1,12 +1,10 @@
 ### *****************************************************************************************
 ### Usage:
 ###
-### cmsRun topplusdmanaEDMntuples_cfg.py maxEvts=N sample="mySample/sample.root" version="71" outputLabel="myoutput"
+### cmsRun b2gedmntuples_cfg.py maxEvts=N 
 ###
 ### Default values for the options are set:
 ### maxEvts     = -1
-### sample      = 'file:/scratch/decosa/ttDM/testSample/tlbsm_53x_v3_mc_10_1_qPV.root'
-### outputLabel = 'analysisTTDM.root'
 ### *****************************************************************************************
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as opts
@@ -38,6 +36,12 @@ options.register('outputLabel',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Output label')
+
+options.register('globalTag',
+                 'PHYS14_25_V1',
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 'Global Tag')
 
 options.register('isData',
                  False,
@@ -108,16 +112,21 @@ process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
-process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:startup_GRun')
-process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
-process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
-for pset in process.GlobalTag.toGet.value():
-    pset.connect = pset.connect.value().replace('frontier://FrontierProd/', 'frontier://FrontierProd/')
-#   Fix for multi-run processing:
-process.GlobalTag.RefreshEachRun = cms.untracked.bool( False )
-process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
+
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.GlobalTag.globaltag = options.globalTag 
+
+#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+#from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
+#process.GlobalTag = customiseGlobalTag(process.GlobalTag, globaltag = 'auto:startup_GRun')
+#process.GlobalTag.connect   = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
+#process.GlobalTag.pfnPrefix = cms.untracked.string('frontier://FrontierProd/')
+#for pset in process.GlobalTag.toGet.value():
+#    pset.connect = pset.connect.value().replace('frontier://FrontierProd/', 'frontier://FrontierProd/')
+##   Fix for multi-run processing:
+#process.GlobalTag.RefreshEachRun = cms.untracked.bool( False )
+#process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
     
 ###
 ### Select leptons for jet cleaning
@@ -308,7 +317,7 @@ addJetCollection(
     pfCandidates = cms.InputTag('packedPFCandidates'),
     #svSource = cms.InputTag('slimmedSecondaryVertices'),
     btagDiscriminators = bTagDiscriminators,
-    jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu')
     )
 
@@ -322,7 +331,7 @@ addJetCollection(
     pfCandidates = cms.InputTag('packedPFCandidates'),
     #svSource = cms.InputTag('slimmedSecondaryVertices'),
     btagDiscriminators = bTagDiscriminators,
-    jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu')
     )
 
@@ -347,7 +356,7 @@ addJetCollection(
     labelName = 'AK8PFCHSEIPruned',
     jetSource = cms.InputTag('ak8PFJetsCHSEIPruned'),
     btagDiscriminators = ['None'],
-    jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
     getJetMCFlavour = False # jet flavor disabled
     )
@@ -359,7 +368,7 @@ addJetCollection(
     labelName = 'AK8PFCHSPruned',
     jetSource = cms.InputTag('ak8PFJetsCHSPruned'),
     btagDiscriminators = ['None'],
-    jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
     getJetMCFlavour = False # jet flavor disabled
     )
@@ -456,7 +465,7 @@ addJetCollection(
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pfCandidates = cms.InputTag('packedPFCandidates'), 
     pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+    jetCorrections = ('AK8PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
     btagDiscriminators = ['combinedSecondaryVertexBJetTags', 'combinedInclusiveSecondaryVertexV2BJetTags'],
     algo= 'AK', 
     rParam = 0.8
@@ -545,7 +554,7 @@ addJetCollection(
     process,
     labelName = 'CMSTopTagCHS',
     jetSource = cms.InputTag('cmsTopTagCHS'),
-    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK8PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag("unpackedTracksAndVertices"),
     btagDiscriminators = ['combinedSecondaryVertexBJetTags'],
@@ -846,7 +855,6 @@ process.analysisPath+=process.met
 process.filterPath = cms.Path(
     process.jetFilter
     )
-
 
 ### keep info from LHEProducts if they are stored in PatTuples
 if(options.LHE):

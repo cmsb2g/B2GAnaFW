@@ -429,6 +429,11 @@ jetVars = (
      tag = cms.untracked.string("matchedElIdx"),
      quantity = cms.untracked.string("userFloat('matchedElIdx')")
     ),
+#### FOR JEC
+    cms.PSet(
+        tag = cms.untracked.string("jecFactor0"),
+        quantity = cms.untracked.string("jecFactor(0)")
+        ),
 #### FOR SYSTEMATICS
     cms.PSet(
      tag = cms.untracked.string("SmearedPt"),
