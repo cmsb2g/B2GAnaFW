@@ -422,12 +422,8 @@ jetVars = (
     ),
 #### FOR LEPTON MATCHING 
     cms.PSet(
-     tag = cms.untracked.string("matchedMuIdx"),
-     quantity = cms.untracked.string("userFloat('matchedMuIdx')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("matchedElIdx"),
-     quantity = cms.untracked.string("userFloat('matchedElIdx')")
+     tag = cms.untracked.string("pfKeys"),
+     quantity = cms.untracked.string("userData('pfKeys')")
     ),
 #### FOR JEC
     cms.PSet(
@@ -483,11 +479,19 @@ jetAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
         tag = cms.untracked.string("subjetIndex0"),
-        quantity = cms.untracked.string("userInt('subjetIndex0')")
+        quantity = cms.untracked.string("? numberOfDaughters > 0 ? daughterPtr(0).key() : -1 ")
         ),
      cms.PSet(
         tag = cms.untracked.string("subjetIndex1"),
-        quantity = cms.untracked.string("userInt('subjetIndex1')")
+        quantity = cms.untracked.string("? numberOfDaughters > 1 ? daughterPtr(1).key() : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex2"),
+        quantity = cms.untracked.string("? numberOfDaughters > 2 ? daughterPtr(2).key() : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetIndex4"),
+        quantity = cms.untracked.string("? numberOfDaughters > 3 ? daughterPtr(3).key() : -1 ")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
@@ -519,40 +523,6 @@ jetAK8Vars = (
      #    ),
 )
 
-jetAK8EIVars = (
-     cms.PSet(
-        tag = cms.untracked.string("trimmedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSEIPrunedMass')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("filteredMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("subjetIndex0"),
-        quantity = cms.untracked.string("userInt('subjetIndex0')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("subjetIndex1"),
-        quantity = cms.untracked.string("userInt('subjetIndex1')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau1')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau2')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau3')")
-        ),
-     )
 
 genPartVars = (
     cms.PSet(
@@ -655,19 +625,6 @@ jetsAK4 = copy.deepcopy(basic)
 jetsAK4.variables += jetVars
 jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
-
-### AK8 jets with EI user data 
-jetsAK8EI = copy.deepcopy(basic)
-jetsAK8EI.variables += jetVars
-jetsAK8EI.variables += jetAK8EIVars
-jetsAK8EI.prefix = cms.untracked.string("jetAK8EI")
-jetsAK8EI.src = cms.InputTag("ak8jetEIUserData")
-
-###subjetsAK8 with EI 
-subjetsAK8EI = copy.deepcopy(basic)
-subjetsAK8EI.variables += jetVars
-subjetsAK8EI.prefix = cms.untracked.string("subjetAK8EI")
-subjetsAK8EI.src = cms.InputTag("skimmedPatSubJetsAK8EI")
 
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
