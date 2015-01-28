@@ -236,25 +236,6 @@ muonVars = (
    ),
 )
 
-patjetVars = (
-### B-TAGGING
-    cms.PSet(
-     tag = cms.untracked.string("subjet1csv"),
-     #quantity = cms.untracked.string("daughter(0).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
-     quantity = cms.untracked.string("userFloat('subjet1csv')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("subjet2csv"),
-     #quantity = cms.untracked.string("daughter(1).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
-     quantity = cms.untracked.string("userFloat('subjet2csv')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("subjet3csv"),
-     #quantity = cms.untracked.string("daughter(2).bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
-     quantity = cms.untracked.string("userFloat('subjet3csv')")
-    )
-)
-
 ### jet variables
 jetVars = (
 ### B-TAGGING
@@ -521,7 +502,7 @@ jetAK8Vars = (
         ),
      cms.PSet(
         tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedLinks')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
         ),
      cms.PSet(
         tag = cms.untracked.string("filteredMass"),
@@ -534,6 +515,18 @@ jetAK8Vars = (
 )
 
 jetAK8EIVars = (
+     cms.PSet(
+        tag = cms.untracked.string("trimmedMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("prunedMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSEIPrunedMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("filteredMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
+        ),
      cms.PSet(
         tag = cms.untracked.string("subjetIndex0"),
         quantity = cms.untracked.string("userInt('subjetIndex0')")
@@ -657,13 +650,12 @@ jetsAK4 = copy.deepcopy(basic)
 jetsAK4.variables += jetVars
 jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
-#jetsAK4.src = cms.InputTag("selectedPatJets")
 
 ### AK8 jets with EI user data 
 jetsAK8EI = copy.deepcopy(basic)
 jetsAK8EI.variables += jetVars
 jetsAK8EI.variables += jetAK8EIVars
-jetsAK8EI.prefix = cms.untracked.string("jetsAK8EI")
+jetsAK8EI.prefix = cms.untracked.string("jetAK8EI")
 jetsAK8EI.src = cms.InputTag("ak8jetEIUserData")
 
 ###subjetsAK8 with EI 
@@ -676,7 +668,7 @@ subjetsAK8EI.src = cms.InputTag("skimmedPatSubJetsAK8EI")
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
-jetsAK8.prefix = cms.untracked.string("jetsAK8")
+jetsAK8.prefix = cms.untracked.string("jetAK8")
 jetsAK8.src = cms.InputTag("ak8jetUserData")
 
 ###subjetsAK8

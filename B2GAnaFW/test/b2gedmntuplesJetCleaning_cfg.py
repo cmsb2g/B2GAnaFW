@@ -27,6 +27,11 @@ options.register('sample',
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
 
+options.register('lheLabel',
+                 'source',
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 'LHE module label')
 
 options.register('outputLabel',
                  'B2GEDMNtuple.root',
@@ -70,16 +75,17 @@ triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
-lheLabel = "source"
 
 FileNames = [
     #/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/746BDDDC-3568-E411-BAA1-3417EBE2F0DF.root', 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/C691EB8B-0568-E411-AB94-00A0D1EEDDA8.root', 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/14B4987B-2F68-E411-9FAD-00266CFAE740.root', 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/24E57485-F467-E411-A9C6-F04DA275101A.root', 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/4AB1C47F-DB67-E411-B18F-7845C4FC3A4C.root', 
-    '/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/D83DC464-EB67-E411-904F-3417EBE2F0DF.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/746BDDDC-3568-E411-BAA1-3417EBE2F0DF.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/C691EB8B-0568-E411-AB94-00A0D1EEDDA8.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/14B4987B-2F68-E411-9FAD-00266CFAE740.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/24E57485-F467-E411-A9C6-F04DA275101A.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/4AB1C47F-DB67-E411-B18F-7845C4FC3A4C.root', 
+    #'/store/mc/Phys14DR/ZPrimeToTTJets_M3000GeV_W30GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/10000/D83DC464-EB67-E411-904F-3417EBE2F0DF.root', 
+    #/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM
+    '/store/mc/Phys14DR/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/00C90EFC-3074-E411-A845-002590DB9262.root'
     ]
 
 process = cms.Process("b2gEDMNtuples")
@@ -119,23 +125,31 @@ process.GlobalTag.ReconnectEachRun = cms.untracked.bool( False )
 process.selectedMuons = cms.EDFilter("CandPtrSelector", 
     src = cms.InputTag("slimmedMuons"), 
     cut = cms.string(
+    #'''abs(eta)<2.5 && pt>10. &&
+    #(pfIsolationR04().sumChargedHadronPt+
+    #max(0.,pfIsolationR04().sumNeutralHadronEt+
+    #pfIsolationR04().sumPhotonEt-
+    #0.50*pfIsolationR04().sumPUPt))/pt < 0.20 && 
+    #(isPFMuon && (isGlobalMuon || isTrackerMuon) )'''
     '''abs(eta)<2.5 && pt>10. &&
-    (pfIsolationR04().sumChargedHadronPt+
-    max(0.,pfIsolationR04().sumNeutralHadronEt+
-    pfIsolationR04().sumPhotonEt-
-    0.50*pfIsolationR04().sumPUPt))/pt < 0.20 && 
-    (isPFMuon && (isGlobalMuon || isTrackerMuon) )''')
+    (isPFMuon && (isGlobalMuon || isTrackerMuon) )'''
+    )
     )
 
 process.selectedElectrons = cms.EDFilter("CandPtrSelector", 
     src = cms.InputTag("slimmedElectrons"), 
-    cut = cms.string('''abs(eta)<2.5 && pt>20. &&
+    cut = cms.string(
+    #'''abs(eta)<2.5 && pt>20. &&
+    #gsfTrack.isAvailable() &&
+    #gsfTrack.hitPattern().numberOfLostHits(\'MISSING_INNER_HITS\') < 2 &&
+    #(pfIsolationVariables().sumChargedHadronPt+
+    #max(0.,pfIsolationVariables().sumNeutralHadronEt+
+    #pfIsolationVariables().sumPhotonEt-
+    #0.5*pfIsolationVariables().sumPUPt))/pt < 0.15'''
+    '''abs(eta)<2.5 && pt>20. &&
     gsfTrack.isAvailable() &&
-    gsfTrack.hitPattern().numberOfLostHits(\'MISSING_INNER_HITS\') < 2 &&
-    (pfIsolationVariables().sumChargedHadronPt+
-    max(0.,pfIsolationVariables().sumNeutralHadronEt+
-    pfIsolationVariables().sumPhotonEt-
-    0.5*pfIsolationVariables().sumPUPt))/pt < 0.15''')
+    gsfTrack.hitPattern().numberOfLostHits(\'MISSING_INNER_HITS\') < 2''' 
+    )
     )
 
 ### Do projections
@@ -230,6 +244,21 @@ process.ak8PFJetsCHSPruned = ak5PFJetsPruned.clone(
    jetCollInstanceName=cms.string("SubJets"),
    jetPtMin = cms.double(50.)
    )
+
+from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import *
+process.ak8PFJetsCHSPrunedMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+    src = cms.InputTag("ak8PFJetsCHS"),
+    matched = cms.InputTag("ak8PFJetsCHSPruned"),
+    distMax = cms.double(0.8),
+    value = cms.string('mass')
+    )
+
+process.ak8PFJetsCHSEIPrunedMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+    src = cms.InputTag("ak8PFJetsCHSEI"),
+    matched = cms.InputTag("ak8PFJetsCHSEIPruned"),
+    distMax = cms.double(0.8),
+    value = cms.string('mass')
+    )
 
 #################################################
 ## Make PAT jets
@@ -459,14 +488,14 @@ process.Njettiness = Njettiness.clone(
     cone = cms.double(0.8)
     )
 
-process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
+process.patJetsAK8PFCHS.userData.userFloats.src += ['ak8PFJetsCHSPrunedMass','Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
 
 process.NjettinessEI = Njettiness.clone(
     src = cms.InputTag("ak8PFJetsCHSEI"),
     cone = cms.double(0.8)
     )
 
-process.patJetsAK8PFCHSEI.userData.userFloats.src += ['NjettinessEI:tau1','NjettinessEI:tau2','NjettinessEI:tau3']
+process.patJetsAK8PFCHSEI.userData.userFloats.src += ['ak8PFJetsCHSEIPrunedMass','NjettinessEI:tau1','NjettinessEI:tau2','NjettinessEI:tau3']
 
 
 #$#$#$#$#$#$#$#$#$#
@@ -563,13 +592,13 @@ process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4")
+    cut = cms.string("pt > 10 && abs(eta) < 2.5 && (isPFMuon && (isGlobalMuon || isTrackerMuon) )")
     )
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
     src = cms.InputTag(elLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.5")
+    cut = cms.string("pt > 20 && abs(eta) < 2.5 && gsfTrack.isAvailable() && gsfTrack.hitPattern().numberOfLostHits(\'MISSING_INNER_HITS\') < 2")
     )
 
 process.skimmedPatMET = cms.EDFilter(
@@ -639,8 +668,11 @@ process.muonUserData = cms.EDProducer(
 
 process.jetUserData = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag("skimmedPatJets"),
     pv        = cms.InputTag(pvLabel),
+    jetLabel  = cms.InputTag("skimmedPatJets"),
+    packedjetLabel  = cms.InputTag(""),
+    subjetLabel  = cms.InputTag(""),
+    doSubjets = cms.bool(False),
     elLabel   = cms.InputTag("skimmedPatElectrons"), 
     muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
@@ -652,9 +684,11 @@ process.jetUserData = cms.EDProducer(
     )
 
 process.ak8jetEIUserData = cms.EDProducer(
-    'PatJetUserData',
+    'JetUserData',
     jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSEI"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -662,16 +696,18 @@ process.ak8jetEIUserData = cms.EDProducer(
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
     doSubjets = cms.bool(True),
-       packedjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSEIPrunedPacked"),
-       subjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSEIPrunedSubjets"),
+    packedjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSEIPrunedPacked"),
+    subjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSEIPrunedSubjets"),
 )
 
 
 process.ak8jetUserData = cms.EDProducer(
-    'PatJetUserData',
+    'JetUserData',
     jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHS"),
 #    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -685,8 +721,11 @@ process.ak8jetUserData = cms.EDProducer(
 
 process.ak8subjetsEIUserData = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag("skimmedPatSubJetsAK8EI"),
     pv        = cms.InputTag(pvLabel),
+    jetLabel  = cms.InputTag("skimmedPatSubJetsAK8EI"),
+    packedjetLabel  = cms.InputTag(""),
+    subjetLabel  = cms.InputTag(""),
+    doSubjets = cms.bool(False),
     elLabel   = cms.InputTag("skimmedPatElectrons"), 
     muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
@@ -699,8 +738,11 @@ process.ak8subjetsEIUserData = cms.EDProducer(
 
 process.subjetUserDataAK8 = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag("skimmedPatSubJetsAK8"),
     pv        = cms.InputTag(pvLabel),
+    jetLabel  = cms.InputTag("skimmedPatSubJetsAK8EI"),
+    packedjetLabel  = cms.InputTag(""),
+    subjetLabel  = cms.InputTag(""),
+    doSubjets = cms.bool(False),
     elLabel   = cms.InputTag("skimmedPatElectrons"), 
     muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
@@ -713,11 +755,13 @@ process.subjetUserDataAK8 = cms.EDProducer(
 
 
 process.cmstoptagjetUserData = cms.EDProducer(
-    'PatJetUserData',
+    'JetUserData',
     jetLabel  = cms.InputTag("patJetsCMSTopTagCHS"),
     packedjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
     subjetLabel  = cms.InputTag("patJetsCMSTopTagCHSSubjets"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -807,18 +851,15 @@ process.filterPath = cms.Path(
 ### keep info from LHEProducts if they are stored in PatTuples
 if(options.LHE):
   process.LHEUserData = cms.EDProducer("LHEUserData",
-  lheLabel = cms.InputTag("source")
+  lheLabel = cms.InputTag(options.lheLabel)
   )
-
-process.analysisPath+=process.LHEUserData
-
-process.edmNtuplesOut.fileName=options.outputLabel
-process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
-process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
-
-
+  process.analysisPath+=process.LHEUserData
+  process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
+  process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
 ### end LHE products     
+
+process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
+process.edmNtuplesOut.fileName=options.outputLabel
 
 process.edmNtuplesOut.SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('filterPath')

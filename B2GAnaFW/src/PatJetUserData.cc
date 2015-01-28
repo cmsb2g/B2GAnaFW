@@ -134,7 +134,7 @@ void PatJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
         subjet1Id = itsubjets.at(1) - subjetHandle->begin() ;
         jet->addUserInt("subjetIndex0", subjet0Id) ;
         jet->addUserInt("subjetIndex1", subjet1Id) ;
-        std::cout << " 2 subjet found with indices " << subjet0Id << " and " << subjet1Id << "\n" ;
+        //std::cout << " 2 subjet found with indices " << subjet0Id << " and " << subjet1Id << "\n" ;
       }
     } //// Looping over all jets
 
