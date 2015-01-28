@@ -322,6 +322,27 @@ process.Njettiness = Njettiness.clone(
 
 process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
 
+
+from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPruned, ak8PFJetsCHSFiltered, ak8PFJetsCHSTrimmed 
+process.ak8PFJetsCHSPruned   = ak8PFJetsCHSPruned.clone(src = cms.InputTag("chs"))
+process.ak8PFJetsCHSTrimmed  = ak8PFJetsCHSTrimmed.clone(src = cms.InputTag("chs"))
+process.ak8PFJetsCHSFiltered = ak8PFJetsCHSFiltered.clone(src = cms.InputTag("chs"))
+
+from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import *
+process.ak8PFJetsCHSPrunedMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+                                         src = cms.InputTag("ak8PFJetsCHS"),
+                                         matched = cms.InputTag("ak8PFJetsCHSPruned"),
+                                         distMax = cms.double(0.8),
+                                         value = cms.string('mass')
+                        )
+process.ak8PFJetsCHSTrimmedMass = process.ak8PFJetsCHSPrunedMass.clone(matched = cms.InputTag("ak8PFJetsCHSTrimmed"))
+process.ak8PFJetsCHSFilteredMass = process.ak8PFJetsCHSPrunedMass.clone(matched = cms.InputTag("ak8PFJetsCHSFiltered"))
+
+process.patJetsAK8PFCHS.userData.userFloats.src += ['ak8PFJetsCHSPrunedMass', 'ak8PFJetsCHSTrimmedMass', 'ak8PFJetsCHSFilteredMass']
+
+
+
+
 #$#$#$#$#$#$#$#$#$#
 #   TOP TAG JETS  #
 # patJetsCMSTopTagCHS
