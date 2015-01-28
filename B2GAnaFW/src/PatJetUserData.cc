@@ -108,7 +108,7 @@ void PatJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByLabel(packedjLabel_, packedjetHandle);
     iEvent.getByLabel(sjLabel_, subjetHandle);
     if( packedjetHandle->size() > jetHandle->size() )
-      edm::LogError("TooManyGroomedJets") << "Groomed packed jet collection size " << jetHandle->size()
+      edm::LogError("TooManyGroomedJets") << "Groomed packed jet collection size " << packedjetHandle->size()
         << " bigger than original fat jet collection size " << jetHandle->size() ;
     matchPackedJets(jetHandle,packedjetHandle,matchedjetIndices);
 
@@ -134,7 +134,7 @@ void PatJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
         subjet1Id = itsubjets.at(1) - subjetHandle->begin() ;
         jet->addUserInt("subjetIndex0", subjet0Id) ;
         jet->addUserInt("subjetIndex1", subjet1Id) ;
-        std::cout << " 2 subjet found with indices " << subjet0Id << " and " << subjet1Id << "\n" ;
+        //std::cout << " 2 subjet found with indices " << subjet0Id << " and " << subjet1Id << "\n" ;
       }
     } //// Looping over all jets
 
