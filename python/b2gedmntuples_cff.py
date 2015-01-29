@@ -524,21 +524,6 @@ jetAK8Vars = (
 )
 
 
-genPartVars = (
-    cms.PSet(
-    tag = cms.untracked.string("ID"),
-    quantity = cms.untracked.string("pdgId")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Status"),
-    quantity = cms.untracked.string("status")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("MomID"),
-    quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
-    ),
-    )
-
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
 muons = copy.deepcopy(basic)
@@ -703,8 +688,6 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
-    "keep *_subjetsAK8EI_*_*",
-    "keep *_jetsAK8EI_*_*",
     "keep *_subjetsAK8_*_*",
     "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
