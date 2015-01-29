@@ -471,8 +471,20 @@ genPartVars = (
     quantity = cms.untracked.string("status")
     ),
     cms.PSet(
-    tag = cms.untracked.string("MomID"),
+    tag = cms.untracked.string("Mom0ID"),
     quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Mom1ID"),
+    quantity = cms.untracked.string("?numberOfMothers>1 ? mother(1).pdgId : -900")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Dau0ID"),
+    quantity = cms.untracked.string("?numberOfDaughters>0 ? daughter(0).pdgId : -900")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("Dau1ID"),
+    quantity = cms.untracked.string("?numberOfDaughters>1 ? daughter(1).pdgId : -900")
     ),
     )
 
@@ -553,21 +565,6 @@ jetAK8EIVars = (
         quantity = cms.untracked.string("userFloat('NjettinessEI:tau3')")
         ),
      )
-
-genPartVars = (
-    cms.PSet(
-    tag = cms.untracked.string("ID"),
-    quantity = cms.untracked.string("pdgId")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Status"),
-    quantity = cms.untracked.string("status")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("MomID"),
-    quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
-    ),
-    )
 
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
