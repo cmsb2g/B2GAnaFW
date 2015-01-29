@@ -531,41 +531,6 @@ jetAK8Vars = (
      #    ),
 )
 
-jetAK8EIVars = (
-     cms.PSet(
-        tag = cms.untracked.string("trimmedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSEIPrunedMass')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("filteredMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("subjetIndex0"),
-        quantity = cms.untracked.string("userInt('subjetIndex0')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("subjetIndex1"),
-        quantity = cms.untracked.string("userInt('subjetIndex1')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau1')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau2')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('NjettinessEI:tau3')")
-        ),
-     )
-
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
 muons = copy.deepcopy(basic)
@@ -653,19 +618,6 @@ jetsAK4.variables += jetVars
 jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
 
-### AK8 jets with EI user data 
-jetsAK8EI = copy.deepcopy(basic)
-jetsAK8EI.variables += jetVars
-jetsAK8EI.variables += jetAK8EIVars
-jetsAK8EI.prefix = cms.untracked.string("jetAK8EI")
-jetsAK8EI.src = cms.InputTag("ak8jetEIUserData")
-
-###subjetsAK8 with EI 
-subjetsAK8EI = copy.deepcopy(basic)
-subjetsAK8EI.variables += jetVars
-subjetsAK8EI.prefix = cms.untracked.string("subjetAK8EI")
-subjetsAK8EI.src = cms.InputTag("skimmedPatSubJetsAK8EI")
-
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
@@ -743,8 +695,6 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
-    "keep *_subjetsAK8EI_*_*",
-    "keep *_jetsAK8EI_*_*",
     "keep *_subjetsAK8_*_*",
     "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",

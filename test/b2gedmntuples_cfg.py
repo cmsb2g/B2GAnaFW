@@ -237,12 +237,19 @@ addJetCollection(
     process,
     labelName = 'AK8PFCHSPruned',
     jetSource = cms.InputTag('ak8PFJetsCHSPruned'),
-    btagDiscriminators = ['None'],
+    algo = 'ak',  # needed for subjet flavor clustering
+    rParam = 0.8, # needed for subjet flavor clustering
+    pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    pfCandidates = cms.InputTag('packedPFCandidates'),
+    btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
-    getJetMCFlavour = False # jet flavor disabled
     )
+if hasattr( process, 'jetTracksAssociatorAtVertex' + 'AK8PFCHSPruned' ):
+  process.jetTracksAssociatorAtVertexAK8PFCHSPruned.tracks = cms.InputTag("unpackedTracksAndVertices")
 getattr(process,'patJetPartonMatchAK8PFCHSPruned').matched = cms.InputTag('prunedGenParticles')
+getattr(process,'patJetsAK8PFCHSPruned').addAssociatedTracks = cms.bool(False) # needs to be disabled since there is no track collection present in MiniAOD
+getattr(process,'patJetsAK8PFCHSPruned').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
 
 ### PATify pruned subjets
 addJetCollection(
@@ -257,6 +264,7 @@ addJetCollection(
     btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned','SubJets'),
+    getJetMCFlavour = False # jet flavor disabled
     #Apparently only in CMSSW_7_3_X explicitJTA = True,  # needed for subjet b tagging
     #Apparently only in CMSSW_7_3_X svClustering = True, # needed for subjet b tagging
     #Apparently only in CMSSW_7_3_X fatJets=cms.InputTag('ak8PFJetsCHS'),             # needed for subjet flavor clustering
@@ -281,7 +289,7 @@ getattr(process,'patJetsAK8PFCHSPrunedSubjets').addAssociatedTracks = cms.bool(F
 getattr(process,'patJetsAK8PFCHSPrunedSubjets').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
 
 process.selectedPatJetsAK8PFCHS.cut = cms.string("pt > 100 && abs(eta)<4.") 
-
+process.selectedPatJetsAK8PFCHSPruned.cut = cms.string("pt > 100 && abs(eta)<4.") 
 
 ## Establish references between PATified fat jets and subjets using the BoostedJetMerger
 process.selectedPatJetsAK8PFCHSPrunedPacked = cms.EDProducer("BoostedJetMerger",
@@ -324,8 +332,6 @@ process.jetTracksAssociatorAtVertexSlimmedJetsAK8BTagged.coneSize = 0.8
 process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
 process.combinedSecondaryVertex.trackMultiplicityMin = 1 #silly sv, uses un filtered tracks.. i.e. any pt
 
-process.chs = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV()>0"))
-
 ### Add Nsubjettiness
 from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
 process.Njettiness = Njettiness.clone(
@@ -335,11 +341,10 @@ process.Njettiness = Njettiness.clone(
 
 process.patJetsAK8PFCHS.userData.userFloats.src += ['Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
 
-
 from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPruned, ak8PFJetsCHSFiltered, ak8PFJetsCHSTrimmed 
-process.ak8PFJetsCHSPruned   = ak8PFJetsCHSPruned.clone(src = cms.InputTag("chs"))
-process.ak8PFJetsCHSTrimmed  = ak8PFJetsCHSTrimmed.clone(src = cms.InputTag("chs"))
-process.ak8PFJetsCHSFiltered = ak8PFJetsCHSFiltered.clone(src = cms.InputTag("chs"))
+process.ak8PFJetsCHSPruned   = ak8PFJetsCHSPruned.clone(src = cms.InputTag("pfCHS"))
+process.ak8PFJetsCHSTrimmed  = ak8PFJetsCHSTrimmed.clone(src = cms.InputTag("pfCHS"))
+process.ak8PFJetsCHSFiltered = ak8PFJetsCHSFiltered.clone(src = cms.InputTag("pfCHS"))
 
 from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import *
 process.ak8PFJetsCHSPrunedMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
@@ -364,7 +369,7 @@ from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
 from RecoJets.JetProducers.CATopJetParameters_cfi import *
 process.cmsTopTagCHS = cms.EDProducer(
     "CATopJetProducer",
-    PFJetParameters.clone( src = cms.InputTag('chs'),
+    PFJetParameters.clone( src = cms.InputTag('pfCHS'),
                            doAreaFastjet = cms.bool(True),
                            doRhoFastjet = cms.bool(False),
                            jetPtMin = cms.double(200.0)
@@ -470,7 +475,6 @@ process.skimmedPatJets = cms.EDFilter(
     cut = cms.string(" pt > 25 && abs(eta) < 4.")
     )
 
-
 process.skimmedPatJetsAK8 = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag(ak8jetLabel),
@@ -480,7 +484,7 @@ process.skimmedPatJetsAK8 = cms.EDFilter(
 process.skimmedPatSubJetsAK8 = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag(ak8subjetLabel),
-    cut = cms.string("")
+    cut = cms.string("pt > 0")
     )
 
 process.skimmedCMSTOPTAGSubJets = cms.EDFilter(
@@ -543,6 +547,11 @@ process.jetUserData = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag("skimmedPatJets"),
     pv        = cms.InputTag(pvLabel),
+    packedjetLabel  = cms.InputTag(""),
+    subjetLabel  = cms.InputTag(""),
+    doSubjets = cms.bool(False),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -551,12 +560,12 @@ process.jetUserData = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2),
     )
 
-
 process.ak8jetUserData = cms.EDProducer(
-    'PatJetUserData',
+    'JetUserData',
     jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHS"),
-#    jetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -564,14 +573,19 @@ process.ak8jetUserData = cms.EDProducer(
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
     doSubjets = cms.bool(True),
-       packedjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
-       subjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets"),
-)
+    packedjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedPacked"),
+    subjetLabel  = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets"),
+    )
 
 process.subjetUserDataAK8 = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag("skimmedPatSubJetsAK8"),
     pv        = cms.InputTag(pvLabel),
+    packedjetLabel  = cms.InputTag(""),
+    subjetLabel  = cms.InputTag(""),
+    doSubjets = cms.bool(False),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -580,13 +594,14 @@ process.subjetUserDataAK8 = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2)
     )
 
-
 process.cmstoptagjetUserData = cms.EDProducer(
-    'PatJetUserData',
+    'JetUserData',
     jetLabel  = cms.InputTag("patJetsCMSTopTagCHS"),
     packedjetLabel  = cms.InputTag("patJetsCMSTopTagCHSPacked"),
     subjetLabel  = cms.InputTag("patJetsCMSTopTagCHSSubjets"),
     pv        = cms.InputTag(pvLabel),
+    elLabel   = cms.InputTag("skimmedPatElectrons"), 
+    muLabel   = cms.InputTag("skimmedPatMuons"), 
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
