@@ -244,6 +244,7 @@ addJetCollection(
     btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK8PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
+    getJetMCFlavour = False # jet flavor disabled
     )
 if hasattr( process, 'jetTracksAssociatorAtVertex' + 'AK8PFCHSPruned' ):
   process.jetTracksAssociatorAtVertexAK8PFCHSPruned.tracks = cms.InputTag("unpackedTracksAndVertices")
