@@ -212,6 +212,8 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     jet.addUserData("pfKeys", constituentIndices );
 
+    jet.addUserData("dummy", math::XYZVector() );
+
   } //// Loop over all jets 
 
   iEvent.put( jetColl );

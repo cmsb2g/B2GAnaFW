@@ -421,10 +421,14 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
     ),
 #### FOR LEPTON MATCHING 
-    cms.PSet(
-     tag = cms.untracked.string("pfKeys"),
-     quantity = cms.untracked.string("userData('pfKeys')")
-    ),
+#    cms.PSet(
+#     tag = cms.untracked.string("pfKeys"),
+#     quantity = cms.untracked.string("? hasUserData('pfKeys') ? userData('pfKeys') : 0")
+#    ),
+#    cms.PSet(
+#     tag = cms.untracked.string("dummy"),
+#     quantity = cms.untracked.string("? hasUserData('dummy') ? userData('dummy') : 0")
+#    ),    
 #### FOR JEC
     cms.PSet(
         tag = cms.untracked.string("jecFactor0"),
@@ -616,7 +620,7 @@ jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("ak8jetUserData")
+jetsAK8.src = cms.InputTag("jetUserDataAK8")
 
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
