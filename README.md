@@ -6,11 +6,11 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 Checkout Instructions
 =====================
 
-Make a new CMSSW area in 7_2_X
+Make a new CMSSW area in 7_3_X
 
-$ cmsrel CMSSW_7_2_0
+$ cmsrel CMSSW_7_3_0
 
-$ cd CMSSW_7_2_0/src
+$ cd CMSSW_7_3_0/src
 
 $ cmsenv
 
