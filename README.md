@@ -14,13 +14,24 @@ $ cd CMSSW_7_2_0/src
 
 $ cmsenv
 
+(check out any CMSSW packages needed)
+
+Make an Analysis directory :
+
+$ mkdir Analysis
+
+$ cd Analysis
+
+
 Clone the github repository
 
-$ git clone https://github.com/cmsb2g/B2GAnaFW.git 
+$ git clone https://github.com/cmsb2g/B2GAnaFW.git
+
+$ cd ..
 
 Compile
 
-$ scram b
+$ scram b -j 10
 
 Running
 =======
