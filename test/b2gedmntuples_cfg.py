@@ -123,6 +123,7 @@ process.ak8GenJetsNoNu = ak4GenJets.clone(
     rParam = cms.double(0.8),
     src = cms.InputTag("packedGenParticlesForJetsNoNu")
 )
+
 ## Pruned fat GenJets (two jet collections are produced, fat jets and subjets)
 from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
@@ -146,15 +147,20 @@ process.ak8PFJetsCHS = ak4PFJets.clone(
     doAreaFastjet = cms.bool(True),
     jetPtMin = cms.double(50.)
 )
+process.ak8PFJetsCHSConstituents = cms.EDFilter("PatJetConstituentSelector",
+                                        src = cms.InputTag("ak8PFJetsCHS"),
+                                        cut = cms.string("pt > 100.0 && abs(rapidity()) < 2.4")
+                                        )
+
 ## Pruned fat PFJets (two jet collections are produced, fat jets and subjets)
 from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
 process.ak8PFJetsCHSPruned = ak5PFJetsPruned.clone(
     rParam = cms.double(0.8),
-    src = cms.InputTag("pfCHS"),
+    src = cms.InputTag("ak8PFJetsCHSConstituents", "constituents"),
     doAreaFastjet = cms.bool(True),
     writeCompound = cms.bool(True),
     jetCollInstanceName=cms.string("SubJets"),
-    jetPtMin = cms.double(50.)
+    jetPtMin = cms.double(100.)
 )
 
 
@@ -213,8 +219,6 @@ addJetCollection(
     process,
     labelName = 'AK8PFCHSPrunedSubjets',
     jetSource = cms.InputTag('ak8PFJetsCHSPruned','SubJets'),
-    algo = 'ak',  # needed for subjet flavor clustering
-    rParam = 0.8, # needed for subjet flavor clustering
     pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
     pfCandidates = cms.InputTag('packedPFCandidates'),
     svSource = cms.InputTag('slimmedSecondaryVertices'),
@@ -223,8 +227,6 @@ addJetCollection(
     genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned','SubJets'),
     explicitJTA = True,  # needed for subjet b tagging
     svClustering = True, # needed for subjet b tagging
-    fatJets=cms.InputTag('ak8PFJetsCHS'),             # needed for subjet flavor clustering
-    groomedFatJets=cms.InputTag('ak8PFJetsCHSPruned') # needed for subjet flavor clustering
 )
 getattr(process,'patJetPartonMatchAK8PFCHSPrunedSubjets').matched = cms.InputTag('prunedGenParticles')
 if hasattr(process,'pfInclusiveSecondaryVertexFinderTagInfosAK8PFCHSPrunedSubjets'):
@@ -247,10 +249,10 @@ from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
 from RecoJets.JetProducers.CATopJetParameters_cfi import *
 process.cmsTopTagCHS = cms.EDProducer(
     "CATopJetProducer",
-    PFJetParameters.clone( src = cms.InputTag('pfCHS'),
+    PFJetParameters.clone( src = cms.InputTag("ak8PFJetsCHSConstituents", "constituents"),
                            doAreaFastjet = cms.bool(True),
                            doRhoFastjet = cms.bool(False),
-                           jetPtMin = cms.double(200.0)
+                           jetPtMin = cms.double(100.0)
                            ),
     AnomalousCellParameters,
     CATopJetParameters.clone( jetCollInstanceName = cms.string("SubJets"),
@@ -308,15 +310,25 @@ addJetCollection(
     process,
     labelName = 'CMSTopTagCHSSubjets',
     jetSource = cms.InputTag('cmsTopTagCHS','SubJets'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
-    trackSource = cms.InputTag('unpackedTracksAndVertices'),
-    pvSource = cms.InputTag("unpackedTracksAndVertices"),
-    btagDiscriminators = ['combinedSecondaryVertexBJetTags'],
+    pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    pfCandidates = cms.InputTag('packedPFCandidates'),
+    svSource = cms.InputTag('slimmedSecondaryVertices'),
+    btagDiscriminators = ['pfCombinedSecondaryVertexBJetTags'],
+    jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+    #genJetCollection = cms.InputTag('ak8GenJetsNoNuPruned','SubJets'),
+    explicitJTA = True,  # needed for subjet b tagging
+    svClustering = True, # needed for subjet b tagging
     getJetMCFlavour = False,
+    genJetCollection =  cms.InputTag('ak8GenJetsNoNu')
     )
-process.patJetPartonMatchCMSTopTagCHSSubjets.matched='prunedGenParticles'
-process.patJetCorrFactorsCMSTopTagCHSSubjets.primaryVertices = "unpackedTracksAndVertices"
-process.patJetGenJetMatchCMSTopTagCHSSubjets.matched = 'slimmedGenJets'
+
+getattr(process,'patJetPartonMatchCMSTopTagCHSSubjets').matched = cms.InputTag('prunedGenParticles')
+if hasattr(process,'pfInclusiveSecondaryVertexFinderTagInfosCMSTopTagCHSSubjets'):
+    getattr(process,'pfInclusiveSecondaryVertexFinderTagInfosCMSTopTagCHSSubjets').extSVCollection = cms.InputTag('slimmedSecondaryVertices')
+getattr(process,'patJetsCMSTopTagCHSSubjets').addAssociatedTracks = cms.bool(False) # needs to be disabled since there is no track collection present in MiniAOD
+getattr(process,'patJetsCMSTopTagCHSSubjets').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
+
+
 
 process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("patJetsCMSTopTagCHS" ),
@@ -395,6 +407,7 @@ process.jetUserData = cms.EDProducer(
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
     )
+
 
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',

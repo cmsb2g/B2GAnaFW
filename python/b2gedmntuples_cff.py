@@ -240,18 +240,6 @@ muonVars = (
 jetVars = (
 ### B-TAGGING
     cms.PSet(
-     tag = cms.untracked.string("IsCSVL"),
-     quantity = cms.untracked.string("? bDiscriminator(\"combinedInclusiveSecondaryVertexV2BJetTags\") > 0.423 ? 1. : 0.")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("IsCSVM"),
-     quantity = cms.untracked.string("? bDiscriminator(\"combinedInclusiveSecondaryVertexV2BJetTags\") > 0.819 ? 1. : 0.")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("IsCSVT"),
-     quantity = cms.untracked.string(" ? bDiscriminator(\"combinedInclusiveSecondaryVertexV2BJetTags\") > 0.941 ? 1. : 0.")
-    ),
-    cms.PSet(
      tag = cms.untracked.string("CSV"),
      quantity = cms.untracked.string("bDiscriminator(\"combinedInclusiveSecondaryVertexV2BJetTags\")")
     ),
@@ -421,13 +409,13 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
     ),
 #### FOR LEPTON MATCHING 
-#    cms.PSet(
-#     tag = cms.untracked.string("pfKeys"),
-#     quantity = cms.untracked.string("? hasUserData('pfKeys') ? userData('pfKeys') : 0")
-#    ),
+    cms.PSet(
+     tag = cms.untracked.string("pfKeys"),
+     quantity = cms.untracked.string("? hasUserData('pfKeys') ? userData('pfKeys') : 0")
+    ),
 #    cms.PSet(
 #     tag = cms.untracked.string("dummy"),
-#     quantity = cms.untracked.string("? hasUserData('dummy') ? userData('dummy') : 0")
+#     quantity = cms.untracked.string("? hasUserData('dummy') ? 1 : 0")
 #    ),    
 #### FOR JEC
     cms.PSet(
