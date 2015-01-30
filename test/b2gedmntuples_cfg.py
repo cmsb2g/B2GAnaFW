@@ -504,6 +504,11 @@ process.analysisPath+=process.electrons
 process.analysisPath+=process.jetsAK4
 process.analysisPath+=process.jetsAK8
 process.analysisPath+=process.subjetsAK8
+process.analysisPath+=process.jetKeysAK4
+process.analysisPath+=process.jetKeysAK8
+process.analysisPath+=process.subjetKeysAK8
+process.analysisPath+=process.jetCmsTopTagKeys
+process.analysisPath+=process.subjetsCmsTopTagKeys
 process.analysisPath+=process.met
 
 
