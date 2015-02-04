@@ -502,6 +502,5 @@ process.edmNtuplesOut.fileName=options.outputLabel
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-process.options.reportEvery = 1000
 
 #open('B2GEntupleFileDump.py','w').write(process.dumpPython())
