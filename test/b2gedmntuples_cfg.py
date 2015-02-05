@@ -495,6 +495,14 @@ process.centrality = cms.EDProducer("CentralityUserData",
     src = cms.InputTag("skimmedPatJets")
     )                                    
 
+process.TriggerUserData = cms.EDProducer(
+    'TriggerUserData',
+    bits = cms.InputTag("TriggerResults","","HLT"),
+    prescales = cms.InputTag("patTrigger"),
+    objects = cms.InputTag("selectedPatTrigger")
+    )                                 
+
+
 ### Including ntuplizer 
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 

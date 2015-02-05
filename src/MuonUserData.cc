@@ -80,14 +80,14 @@ private:
 
 
 MuonUserData::MuonUserData(const edm::ParameterSet& iConfig):
-   muLabel_(iConfig.getParameter<edm::InputTag>("muonLabel")),
-   pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
-   triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
-   triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
-   hltMuonFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltMuonFilter")),   //trigger objects we want to match
-   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
-   hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
-   mainROOTFILEdir_    (iConfig.getUntrackedParameter<std::string>("mainROOTFILEdir",""))
+  muLabel_(iConfig.getParameter<edm::InputTag>("muonLabel")),
+  pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
+  triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
+  triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
+  hltMuonFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltMuonFilter")),   //trigger objects we want to match
+  hltPath_            (iConfig.getParameter<std::string>("hltPath")),
+  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
+  mainROOTFILEdir_    (iConfig.getUntrackedParameter<std::string>("mainROOTFILEdir",""))
  {
   produces<std::vector<pat::Muon> >();
 
@@ -173,7 +173,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   trigger::TriggerObjectCollection MuonLegObjects;
 
   edm::Handle<trigger::TriggerEvent> triggerSummary;
-
+ 
 
   if ( triggerSummary.isValid() ) {
     iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
@@ -241,7 +241,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double sumPhotonPt        = m.pfIsolationR04().sumPhotonEt;
     double sumPUPt            = m.pfIsolationR04().sumPUPt;
     double pt                 = m.pt();
-    double iso04 = sumChargedHadronPt+TMath::Max(0.,sumNeutralHadronPt+sumPhotonPt-0.5*sumPUPt)/pt;
+    double iso04 = (sumChargedHadronPt+TMath::Max(0.,sumNeutralHadronPt+sumPhotonPt-0.5*sumPUPt))/pt;
 
 
     // trigger matched 
@@ -308,9 +308,24 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 bool
 MuonUserData::isMatchedWithTrigger(const pat::Muon p, trigger::TriggerObjectCollection triggerObjects, int& index, double& deltaR, double deltaRmax = 0.1)
 {
-  for (size_t i = 0 ; i < triggerObjects.size() ; i++){
-    float dR = sqrt(pow(triggerObjects[i].eta()-p.eta(),2)+ pow(acos(cos(triggerObjects[i].phi()-p.phi())),2)) ;
-    //    std::cout << "dR: " << dR << std::endl;
+   for (size_t i = 0 ; i < triggerObjects.size() ; i++){
+  //float dR = sqrt(pow(triggerObjects[i].eta()-p.eta(),2)+ pow(acos(cos(triggerObjects[i].phi()-p.phi())),2)) ;
+    
+    float dR = 0;
+    float DeltaPhi = 0;
+    
+    if((triggerObjects[i].phi()-p.phi()) > acos(-1)) {
+      DeltaPhi = pow((triggerObjects[i].phi() - p.phi())- 2*acos(-1),2);
+    }
+    else if((triggerObjects[i].phi()-p.phi()) <= -acos(-1)) {
+      DeltaPhi = pow((triggerObjects[i].phi() - p.phi()) + 2*acos(-1),2);
+    }
+    else{
+      DeltaPhi = pow((triggerObjects[i].phi()-p.phi()),2);
+    }
+    
+    dR=sqrt(pow(triggerObjects[i].eta()-p.eta(),2)+ pow(DeltaPhi,2)) ;
+    
     if (dR<deltaRmax) {
       deltaR = dR;
       index  = i;
