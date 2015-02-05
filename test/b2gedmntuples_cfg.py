@@ -251,30 +251,6 @@ from RecoJets.JetProducers.PFJetParameters_cfi import *
 from RecoJets.JetProducers.GenJetParameters_cfi import *
 from RecoJets.JetProducers.AnomalousCellParameters_cfi import *
 from RecoJets.JetProducers.CATopJetParameters_cfi import *
-process.cmsTopTagGen = cms.EDProducer(
-    "CATopJetProducer",
-    GenJetParameters.clone( src = cms.InputTag("packedGenParticlesForJetsNoNu"),
-                           doAreaFastjet = cms.bool(True),
-                           doRhoFastjet = cms.bool(False),
-                           jetPtMin = cms.double(100.0)
-                           ),
-    AnomalousCellParameters,
-    CATopJetParameters.clone( jetCollInstanceName = cms.string("SubJets"),
-                              verbose = cms.bool(False),
-                              algorithm = cms.int32(1), # 0 = KT, 1 = CA, 2 = anti-KT
-                              tagAlgo = cms.int32(0), #0=legacy top
-                              useAdjacency = cms.int32(2), # modified adjacency
-                              centralEtaCut = cms.double(2.5), # eta for defining "central" jets
-                              sumEtBins = cms.vdouble(0,1600,2600), # sumEt bins over which cuts vary. vector={bin 0 lower bound, bin 1 lower bound, ...}
-                              rBins = cms.vdouble(0.8,0.8,0.8), # Jet distance paramter R. R values depend on sumEt bins.
-                              ptFracBins = cms.vdouble(0.05,0.05,0.05), # minimum fraction of central jet pt for subjets (deltap)
-                              deltarBins = cms.vdouble(0.19,0.19,0.19), # Applicable only if useAdjacency=1. deltar adjacency values for each sumEtBin
-                              nCellBins = cms.vdouble(1.9,1.9,1.9),
-                            ),
-    jetAlgorithm = cms.string("CambridgeAachen"),
-    rParam = cms.double(0.8),
-    writeCompound = cms.bool(True)
-    )
 
 process.cmsTopTagCHS = cms.EDProducer(
     "CATopJetProducer",
@@ -347,7 +323,7 @@ addJetCollection(
     explicitJTA = True,  # needed for subjet b tagging
     svClustering = True, # needed for subjet b tagging
     getJetMCFlavour = False,
-    genJetCollection =  cms.InputTag('cmsTopTagGen', 'SubJets')
+    genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
     )
 
 getattr(process,'patJetPartonMatchCMSTopTagCHSSubjets').matched = cms.InputTag('prunedGenParticles')
@@ -533,5 +509,6 @@ process.edmNtuplesOut.fileName=options.outputLabel
 #    )
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
+
 
 #open('B2GEntupleFileDump.py','w').write(process.dumpPython())
