@@ -18,10 +18,10 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/mc/Phys14DR/RSGluonToTT_M-3000_Tune4C_13TeV-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/4EFDC292-9D67-E411-A370-0025905AA9CC.root',
+                 #'/store/mc/Phys14DR/RSGluonToTT_M-3000_Tune4C_13TeV-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/4EFDC292-9D67-E411-A370-0025905AA9CC.root',
                  #'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
                  #'/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM',
-                 #'/store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
+                 'root://cmsxrootd.fnal.gov///store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -80,7 +80,6 @@ hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFil
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 lheLabel = "source"
-
 
 process = cms.Process("b2gEDMNtuples")
 
@@ -201,6 +200,24 @@ if hasattr(process,'pfInclusiveSecondaryVertexFinderTagInfosAK8PFCHS'):
     getattr(process,'pfInclusiveSecondaryVertexFinderTagInfosAK8PFCHS').extSVCollection = cms.InputTag('slimmedSecondaryVertices')
 getattr(process,'patJetsAK8PFCHS').addAssociatedTracks = cms.bool(False) # needs to be disabled since there is no track collection present in MiniAOD
 getattr(process,'patJetsAK8PFCHS').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
+
+from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import *
+process.ak8PFJetsCHSPrunedMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+    src = cms.InputTag("ak8PFJetsCHS"),
+    matched = cms.InputTag("ak8PFJetsCHSPruned"),
+    distMax = cms.double(0.8),
+    value = cms.string('mass')
+    )
+
+### Add Nsubjettiness
+from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
+process.Njettiness = Njettiness.clone(
+    src = cms.InputTag("ak8PFJetsCHS"),
+    cone = cms.double(0.8)
+    )
+
+process.patJetsAK8PFCHS.userData.userFloats.src += ['ak8PFJetsCHSPrunedMass','Njettiness:tau1','Njettiness:tau2','Njettiness:tau3']
+
 ## PATify pruned fat jets
 addJetCollection(
     process,
@@ -331,8 +348,6 @@ if hasattr(process,'pfInclusiveSecondaryVertexFinderTagInfosCMSTopTagCHSSubjets'
     getattr(process,'pfInclusiveSecondaryVertexFinderTagInfosCMSTopTagCHSSubjets').extSVCollection = cms.InputTag('slimmedSecondaryVertices')
 getattr(process,'patJetsCMSTopTagCHSSubjets').addAssociatedTracks = cms.bool(False) # needs to be disabled since there is no track collection present in MiniAOD
 getattr(process,'patJetsCMSTopTagCHSSubjets').addJetCharge = cms.bool(False)        # needs to be disabled since there is no track collection present in MiniAOD
-
-
 
 process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
     jetSrc=cms.InputTag("patJetsCMSTopTagCHS" ),

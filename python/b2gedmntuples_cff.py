@@ -492,15 +492,15 @@ jetAK8Vars = (
         ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('Njettiness:tau1')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('Njettiness:tau2')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('Njettiness:tau3')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
         ),
      cms.PSet(
         tag = cms.untracked.string("trimmedMass"),
