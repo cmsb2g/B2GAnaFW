@@ -515,6 +515,18 @@ jetAK8Vars = (
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
         ),
      cms.PSet(
+        tag = cms.untracked.string("topMass"),
+        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().topMass : 0")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("wMass"),
+        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().wMass : 0")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("nSubJets"),
+        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().nSubJets : 0")
+        ),
+     cms.PSet(
         tag = cms.untracked.string("minmass"),
         quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().minMass : 0")
         ),
