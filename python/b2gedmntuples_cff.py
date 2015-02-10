@@ -369,20 +369,20 @@ jetVars = (
      quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
     ),
     cms.PSet(
-     tag = cms.untracked.string("neutralHadronEnergyFraction"),
-     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergyFraction : -1")
+     tag = cms.untracked.string("neutralHadronEnergy"),
+     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergy : -1")
     ),
     cms.PSet(
-    tag = cms.untracked.string("neutralEmEnergyFraction"),
-    quantity = cms.untracked.string("? isPFJet ? neutralEmEnergyFraction : -1"),
+    tag = cms.untracked.string("neutralEmEnergy"),
+    quantity = cms.untracked.string("? isPFJet ? neutralEmEnergy : -1"),
     ),
     cms.PSet(
-    tag = cms.untracked.string("chargedEmEnergyFraction"),
-    quantity = cms.untracked.string("? isPFJet ? chargedEmEnergyFraction : -1"),
+    tag = cms.untracked.string("chargedEmEnergy"),
+    quantity = cms.untracked.string("? isPFJet ? chargedEmEnergy : -1"),
     ),
     cms.PSet(
-    tag = cms.untracked.string("chargedHadronEnergyFraction"),
-    quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergyFraction : -1"),
+    tag = cms.untracked.string("chargedHadronEnergy"),
+    quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergy : -1"),
     ),
      cms.PSet(
      tag = cms.untracked.string("photonMultiplicity"),
@@ -421,6 +421,10 @@ jetVars = (
     cms.PSet(
         tag = cms.untracked.string("jecFactor0"),
         quantity = cms.untracked.string("jecFactor(0)")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("jetArea"),
+        quantity = cms.untracked.string("jetArea")
         ),
 #### FOR SYSTEMATICS
     cms.PSet(
@@ -603,6 +607,10 @@ electronVars = (
   cms.PSet(
         tag = cms.untracked.string("isMedium"),
         quantity = cms.untracked.string("userFloat('isMedium')")
+        ),
+  cms.PSet(
+        tag = cms.untracked.string("scEta"),
+        quantity = cms.untracked.string("superCluster().eta()")
         )
 
 )
