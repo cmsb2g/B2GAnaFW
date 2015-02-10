@@ -504,20 +504,20 @@ jetAK8Vars = (
         ),
      cms.PSet(
         tag = cms.untracked.string("trimmedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
         ),
      cms.PSet(
         tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedLinks')")
         ),
      cms.PSet(
         tag = cms.untracked.string("filteredMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
         ),
-     # cms.PSet(
-     #    tag = cms.untracked.string("minmass"),
-     #    quantity = cms.untracked.string("tagInfo(\"caTop\"))->properties().minMass")
-     #    ),
+     cms.PSet(
+        tag = cms.untracked.string("minmass"),
+        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().minMass : 0")
+        ),
 )
 
 
