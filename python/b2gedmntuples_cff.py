@@ -236,6 +236,13 @@ muonVars = (
    ),
 )
 
+subjetVars = (
+    cms.PSet(
+     tag = cms.untracked.string("subjetCSV"),
+     quantity = cms.untracked.string("bDiscriminator(\"pfCombinedInclusiveSecondaryVertexV2BJetTags\")")
+    ),
+    )
+
 ### jet variables
 jetVars = (
 ### B-TAGGING
@@ -642,6 +649,7 @@ jetKeysAK8.jetLabel = cms.InputTag("jetUserDataAK8")
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
+subjetsAK8.variables += subjetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
 subjetsAK8.src = cms.InputTag("skimmedPatSubJetsAK8")
 subjetKeysAK8 = copy.deepcopy( jetKeys )
