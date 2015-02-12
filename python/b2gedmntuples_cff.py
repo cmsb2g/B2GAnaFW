@@ -222,26 +222,26 @@ muonVars = (
     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.charge : -900")
    ),
 ### trigger matching
-   cms.PSet(
-    tag = cms.untracked.string("HLTmuonDeltaR"),
-    quantity = cms.untracked.string("userFloat('HLTmuonDeltaR')")
-   ),
-   cms.PSet(
-    tag = cms.untracked.string("HLTmuonPt"),
-    quantity = cms.untracked.string("userFloat('HLTmuonPt')")
-   ),
-   cms.PSet(
-    tag = cms.untracked.string("HLTmuonEta"),
-    quantity = cms.untracked.string("userFloat('HLTmuonEta')")
-   ),
-   cms.PSet(
-    tag = cms.untracked.string("HLTmuonPhi"),
-    quantity = cms.untracked.string("userFloat('HLTmuonPhi')")
-   ),
-   cms.PSet(
-    tag = cms.untracked.string("HLTmuonE"),
-    quantity = cms.untracked.string("userFloat('HLTmuonE')")
-   ),
+ #  cms.PSet(
+ #   tag = cms.untracked.string("HLTmuonDeltaR"),
+ #   quantity = cms.untracked.string("userFloat('HLTmuonDeltaR')")
+ #  ),
+ #  cms.PSet(
+ #   tag = cms.untracked.string("HLTmuonPt"),
+ #   quantity = cms.untracked.string("userFloat('HLTmuonPt')")
+ #  ),
+ #  cms.PSet(
+ #   tag = cms.untracked.string("HLTmuonEta"),
+ #   quantity = cms.untracked.string("userFloat('HLTmuonEta')")
+ #  ),
+ #  cms.PSet(
+ #   tag = cms.untracked.string("HLTmuonPhi"),
+ #   quantity = cms.untracked.string("userFloat('HLTmuonPhi')")
+ #  ),
+ #  cms.PSet(
+ #   tag = cms.untracked.string("HLTmuonE"),
+ #   quantity = cms.untracked.string("userFloat('HLTmuonE')")
+ #  ),
 )
 
 subjetVars = (
@@ -322,26 +322,26 @@ jetVars = (
      quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.charge : -900")
     ),
 ### TRIGGER MATHING
-    cms.PSet(
-     tag = cms.untracked.string("HLTjetEta"),
-     quantity = cms.untracked.string("userFloat('HLTjetEta')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("HLTjetPhi"),
-     quantity = cms.untracked.string("userFloat('HLTjetPhi')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("HLTjetPt"),
-     quantity = cms.untracked.string("userFloat('HLTjetPt')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("HLTjetE"),
-     quantity = cms.untracked.string("userFloat('HLTjetE')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("HLTjetDeltaR"),
-     quantity = cms.untracked.string("userFloat('HLTjetDeltaR')")
-    ),
+   # cms.PSet(
+   #  tag = cms.untracked.string("HLTjetEta"),
+   #  quantity = cms.untracked.string("userFloat('HLTjetEta')")
+   # ),
+   # cms.PSet(
+   #  tag = cms.untracked.string("HLTjetPhi"),
+   #  quantity = cms.untracked.string("userFloat('HLTjetPhi')")
+   # ),
+   # cms.PSet(
+   #  tag = cms.untracked.string("HLTjetPt"),
+   #  quantity = cms.untracked.string("userFloat('HLTjetPt')")
+   # ),
+   # cms.PSet(
+   #  tag = cms.untracked.string("HLTjetE"),
+   #  quantity = cms.untracked.string("userFloat('HLTjetE')")
+   # ),
+   # cms.PSet(
+   #  tag = cms.untracked.string("HLTjetDeltaR"),
+   #  quantity = cms.untracked.string("userFloat('HLTjetDeltaR')")
+   # ),
 ### CONSTITUENTS
     cms.PSet(
      tag = cms.untracked.string("muonMultiplicity"),
