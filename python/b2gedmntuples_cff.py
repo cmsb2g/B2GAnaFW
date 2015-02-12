@@ -89,16 +89,20 @@ muonVars = (
 #        quantity = cms.untracked.string("userFloat('dBBS3D')")
 #   ),
    cms.PSet(
-        tag = cms.untracked.string("Iso03"),
-        quantity = cms.untracked.string("userFloat('iso03')")
+        tag = cms.untracked.string("Iso04"),
+        quantity = cms.untracked.string("userFloat('iso04')")
    ),
    cms.PSet(
         tag = cms.untracked.string("D0"),
-        quantity = cms.untracked.string("userFloat('d0')")
+        quantity = cms.untracked.string("dB")
    ),
    cms.PSet(
         tag = cms.untracked.string("D0err"),
-        quantity = cms.untracked.string("userFloat('d0err')")
+        quantity = cms.untracked.string("edB")
+   ),
+   cms.PSet(
+        tag = cms.untracked.string("Dxy"),
+        quantity = cms.untracked.string("userFloat('dxy')")
    ),
    cms.PSet(
         tag = cms.untracked.string("Dz"),
@@ -106,7 +110,7 @@ muonVars = (
         ),
    cms.PSet(
         tag = cms.untracked.string("Dzerr"),
-        quantity = cms.untracked.string("userFloat('dzerr')")
+        quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.dzError : -900")
         ),
 ### the following variables need have track embedded in the pat::muon
     cms.PSet(
@@ -589,11 +593,11 @@ electronVars = (
         ),
    cms.PSet(
         tag = cms.untracked.string("missHits"),
-        quantity = cms.untracked.string("userFloat('missHits')")
+        quantity = cms.untracked.string("userInt('missHits')")
         ),
    cms.PSet(
         tag = cms.untracked.string("hasMatchedConVeto"),
-        quantity = cms.untracked.string("userFloat('hasMatchConv')")
+        quantity = cms.untracked.string("userInt('hasMatchConv')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isEB"),
@@ -601,19 +605,19 @@ electronVars = (
         ),
   cms.PSet(
         tag = cms.untracked.string("isVeto"),
-        quantity = cms.untracked.string("userFloat('isVeto')")
+        quantity = cms.untracked.string("userInt('isVeto')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isLoose"),
-        quantity = cms.untracked.string("userFloat('isLoose')")
+        quantity = cms.untracked.string("userInt('isLoose')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isTight"),
-        quantity = cms.untracked.string("userFloat('isTight')")
+        quantity = cms.untracked.string("userInt('isTight')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isMedium"),
-        quantity = cms.untracked.string("userFloat('isMedium')")
+        quantity = cms.untracked.string("userInt('isMedium')")
         ),
   cms.PSet(
         tag = cms.untracked.string("scEta"),
