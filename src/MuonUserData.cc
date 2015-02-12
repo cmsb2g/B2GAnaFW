@@ -232,8 +232,10 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     // impact parameters
     //double d0    = m.dB ();
     double dxy = m.muonBestTrack()->dxy(PV.position());     
+    double dxyErr = m.muonBestTrack()->dxyError();     
     //double d0err = m.edB();
-    double dz    = fabs(m.vz()-PV.z());
+    double dz  = m.muonBestTrack()->dz(PV.position());
+    double dzErr  = m.muonBestTrack()->dzError();
 
     // isolation (delta beta corrections)
     // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
@@ -271,6 +273,8 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //m.addUserFloat("d0err",       d0err);
     m.addUserFloat("dxy",          dxy);
     m.addUserFloat("dz",          dz);
+    m.addUserFloat("dxyErr",          dxyErr);
+    m.addUserFloat("dzErr",          dzErr);
     m.addUserFloat("iso04",       iso04);
     
     m.addUserFloat("HLTmuonEta",   hltEta);

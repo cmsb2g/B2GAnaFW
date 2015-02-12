@@ -105,12 +105,16 @@ muonVars = (
         quantity = cms.untracked.string("userFloat('dxy')")
    ),
    cms.PSet(
+        tag = cms.untracked.string("Dxyerr"),
+        quantity = cms.untracked.string("userFloat('dxyErr')")
+   ),
+   cms.PSet(
         tag = cms.untracked.string("Dz"),
         quantity = cms.untracked.string("userFloat('dz')")
         ),
    cms.PSet(
         tag = cms.untracked.string("Dzerr"),
-        quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.dzError : -900")
+        quantity = cms.untracked.string("userFloat('dzErr')")
         ),
 ### the following variables need have track embedded in the pat::muon
     cms.PSet(
