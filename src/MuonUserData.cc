@@ -230,8 +230,9 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     bool isHighPtMuon = m.isHighPtMuon(PV);
     
     // impact parameters
-    double d0    = m.dB ();
-    double d0err = m.edB();
+    //double d0    = m.dB ();
+    double dxy = m.muonBestTrack()->dxy(PV.position());     
+    //double d0err = m.edB();
     double dz    = fabs(m.vz()-PV.z());
 
     // isolation (delta beta corrections)
@@ -266,8 +267,9 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     m.addUserFloat("isSoftMuon",  isSoftMuon);
     m.addUserFloat("isTightMuon", isTightMuon);
     m.addUserFloat("isHighPtMuon", isHighPtMuon);
-    m.addUserFloat("d0",          d0);
-    m.addUserFloat("d0err",       d0err);
+    //m.addUserFloat("d0",          d0);
+    //m.addUserFloat("d0err",       d0err);
+    m.addUserFloat("dxy",          dxy);
     m.addUserFloat("dz",          dz);
     m.addUserFloat("iso04",       iso04);
     
