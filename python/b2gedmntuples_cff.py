@@ -754,7 +754,8 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_jetCmsTopTagKeys_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_TriggerUserData_trigger*_*",
-    "keep *_fixedGridRhoFastjetAll_*_*"
+    "keep *_fixedGridRhoFastjetAll_*_*",
+    "keep *_eventUserData_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
