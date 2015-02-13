@@ -89,6 +89,10 @@ muonVars = (
 #        quantity = cms.untracked.string("userFloat('dBBS3D')")
 #   ),
    cms.PSet(
+        tag = cms.untracked.string("Key"),
+        quantity = cms.untracked.string("originalObjectRef().key()")
+   ),
+   cms.PSet(
         tag = cms.untracked.string("Iso04"),
         quantity = cms.untracked.string("userFloat('iso04')")
    ),
@@ -563,6 +567,10 @@ muons.src = cms.InputTag("muonUserData")
 ###electrons
 electronVars = (
     ###Cut-based ID variables
+   cms.PSet(
+        tag = cms.untracked.string("Key"),
+        quantity = cms.untracked.string("originalObjectRef().key()")
+   ),
   cms.PSet(
         tag = cms.untracked.string("Iso03"),
         quantity = cms.untracked.string("userFloat('iso03')")
