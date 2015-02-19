@@ -251,7 +251,11 @@ muonVars = (
 subjetVars = (
     cms.PSet(
      tag = cms.untracked.string("subjetCSV"),
-     quantity = cms.untracked.string("bDiscriminator(\"pfCombinedInclusiveSecondaryVertexV2BJetTags\")")
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
+    ),
+    cms.PSet(
+     tag = cms.untracked.string("subjetCSVV1"),
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexBJetTags')")
     ),
     )
 
@@ -260,11 +264,11 @@ jetVars = (
 ### B-TAGGING
     cms.PSet(
      tag = cms.untracked.string("CSV"),
-     quantity = cms.untracked.string("bDiscriminator(\"combinedInclusiveSecondaryVertexV2BJetTags\")")
+     quantity = cms.untracked.string("bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
     ),
     cms.PSet(
      tag = cms.untracked.string("CSVV1"),
-     quantity = cms.untracked.string("bDiscriminator(\"combinedSecondaryVertexV1BJetTags\")")
+     quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexV1BJetTags')")
     ),
 ### GEN PARTON
     cms.PSet(
@@ -498,20 +502,28 @@ genPartVars = (
 jetAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
-        tag = cms.untracked.string("subjetIndex0"),
-        quantity = cms.untracked.string("? numberOfDaughters > 0 ? daughterPtr(0).key() : -1 ")
+        tag = cms.untracked.string("vSubjetIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("subjetIndex1"),
-        quantity = cms.untracked.string("? numberOfDaughters > 1 ? daughterPtr(1).key() : -1 ")
+        tag = cms.untracked.string("vSubjetIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("subjetIndex2"),
-        quantity = cms.untracked.string("? numberOfDaughters > 2 ? daughterPtr(2).key() : -1 ")
+        tag = cms.untracked.string("topSubjetIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
         ),
      cms.PSet(
-        tag = cms.untracked.string("subjetIndex4"),
-        quantity = cms.untracked.string("? numberOfDaughters > 3 ? daughterPtr(3).key() : -1 ")
+        tag = cms.untracked.string("topSubjetIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("topSubjetIndex2"),
+        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("topSubjetIndex3"),
+        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
@@ -539,19 +551,19 @@ jetAK8Vars = (
         ),
      cms.PSet(
         tag = cms.untracked.string("topMass"),
-        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().topMass : 0")
+        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().topMass : 0")
         ),
      cms.PSet(
         tag = cms.untracked.string("wMass"),
-        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().wMass : 0")
+        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().wMass : 0")
         ),
      cms.PSet(
         tag = cms.untracked.string("nSubJets"),
-        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().nSubJets : 0")
+        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().nSubJets : 0")
         ),
      cms.PSet(
         tag = cms.untracked.string("minmass"),
-        quantity = cms.untracked.string("? hasTagInfo(\"caTop\") ? tagInfo(\"caTop\").properties().minMass : 0")
+        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().minMass : 0")
         ),
 )
 
@@ -657,8 +669,9 @@ jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
+jetsAK8.variables += subjetVars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("jetUserDataAK8")
+jetsAK8.src = cms.InputTag("boostedJetUserDataAK8")
 jetKeysAK8 = copy.deepcopy( jetKeys )
 jetKeysAK8.jetLabel = cms.InputTag("jetUserDataAK8")
 
@@ -667,25 +680,16 @@ subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
 subjetsAK8.variables += subjetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
-subjetsAK8.src = cms.InputTag("skimmedPatSubJetsAK8")
+subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
 subjetKeysAK8 = copy.deepcopy( jetKeys )
 subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
-
-
-###patjets
-jetsCmsTopTag = copy.deepcopy(basic)
-jetsCmsTopTag.variables += jetVars
-jetsCmsTopTag.variables += jetAK8Vars
-jetsCmsTopTag.prefix = cms.untracked.string("jetsCmsTopTag")
-jetsCmsTopTag.src = cms.InputTag("cmstoptagjetUserData")
-jetCmsTopTagKeys = copy.deepcopy( jetKeys )
-jetCmsTopTagKeys.jetLabel = cms.InputTag("cmstoptagjetUserData")
 
 ###subjetsAK8
 subjetsCmsTopTag = copy.deepcopy(basic)
 subjetsCmsTopTag.variables += jetVars
+subjetsCmsTopTag.variables += subjetVars
 subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
-subjetsCmsTopTag.src = cms.InputTag("skimmedCMSTOPTAGSubJets")
+subjetsCmsTopTag.src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
 subjetsCmsTopTagKeys = copy.deepcopy( jetKeys )
 subjetsCmsTopTagKeys.jetLabel = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
 
@@ -741,17 +745,16 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_electrons_*_*",
     "keep *_jetsAK4_*_*",
-    "keep *_subjetsAK8_*_*",
     "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
     "keep *_eventInfo_*_*",
-    "keep *_*CmsTopTag*_*_*",
+    "keep *_subjetsAK8_*_*",
+    "keep *_subjetsCmsTopTag*_*_*",
     "keep *_jetKeysAK4_*_*",
     "keep *_jetKeysAK8_*_*",
     "keep *_subjetKeysAK8_*_*",
-    "keep *_jetCmsTopTagKeys_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_TriggerUserData_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
