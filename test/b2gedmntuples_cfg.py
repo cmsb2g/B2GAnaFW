@@ -40,7 +40,7 @@ options.register('outputLabel',
                  'Output label')
 
 options.register('globalTag',
-                 'PHYS14_25_V1',
+                 'PHYS14_25_V2',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
