@@ -12,7 +12,7 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 200,# default value: process all events
+                 100,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
@@ -334,19 +334,19 @@ addJetCollection(
     process,
     labelName = 'CMSTopTagCHSSubjets',
     jetSource = cms.InputTag('cmsTopTagCHS','SubJets'),
-    #algo = 'ak',  # needed for subjet flavor clustering
-    #rParam = 0.8, # needed for subjet flavor clustering    
+    algo = 'ak',  # needed for subjet flavor clustering
+    rParam = 0.8, # needed for subjet flavor clustering    
     pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
     pfCandidates = cms.InputTag('packedPFCandidates'),
     svSource = cms.InputTag('slimmedSecondaryVertices'),
-    btagDiscriminators = ['pfCombinedSecondaryVertexBJetTags'],
+    btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     explicitJTA = True,  # needed for subjet b tagging
     svClustering = True, # needed for subjet b tagging
     getJetMCFlavour = False,
     genJetCollection = cms.InputTag('ak8GenJetsNoNu'),
-    #fatJets=cms.InputTag('ak8PFJetsCHS'),             # needed for subjet flavor clustering
-    #groomedFatJets=cms.InputTag('patJetsCMSTopTagCHS') # needed for subjet flavor clustering
+    fatJets=cms.InputTag('ak8PFJetsCHS'),             # needed for subjet flavor clustering
+    groomedFatJets=cms.InputTag('patJetsCMSTopTagCHS') # needed for subjet flavor clustering
     )
 
 getattr(process,'patJetPartonMatchCMSTopTagCHSSubjets').matched = cms.InputTag('prunedGenParticles')
