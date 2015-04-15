@@ -20,7 +20,6 @@ Add additional packages:
 
 $ git cms-merge-topic rappoccio:RecoJetsFromMiniAOD
 
-$ rm -r Fireworks
 
 Make an Analysis directory :
 
