@@ -18,11 +18,7 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 #'/store/mc/Phys14DR/RSGluonToTT_M-3000_Tune4C_13TeV-pythia8/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/4EFDC292-9D67-E411-A370-0025905AA9CC.root',
-                 #'file:/afs/cern.ch/work/d/decosa/public/DMtt/miniAOD_Phys14.root',
-                 #'/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM',
-                 '/store/relval/CMSSW_7_4_0_pre9/RelValRSKKGluon_m3000GeV_13/MINIAODSIM/MCRUN2_74_V7-v1/00000/DE268836-68D4-E411-94BB-00248C55CC9D.root',
-                 #'root://cmsxrootd.fnal.gov///store/mc/Phys14DR/TprimeJetToTH_allHdecays_M1200GeV_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/20000/94117DA2-009A-E411-9DFB-002590494CB2.root',
+                 '/store/relval/CMSSW_7_4_0/RelValRSKKGluon_m3000GeV_13/MINIAODSIM/MCRUN2_74_V7_GENSIM_7_1_15-v1/00000/28526A23-89DD-E411-AF48-0025905A611C.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
