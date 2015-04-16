@@ -538,16 +538,20 @@ jetAK8Vars = (
         quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
         ),
      cms.PSet(
+        tag = cms.untracked.string("softDropMass"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSSoftDropMass')")
+        ),
+     cms.PSet(
         tag = cms.untracked.string("trimmedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedLinks')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
         ),
      cms.PSet(
         tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedLinks')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
         ),
      cms.PSet(
         tag = cms.untracked.string("filteredMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredLinks')")
+        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
         ),
      cms.PSet(
         tag = cms.untracked.string("topMass"),
@@ -671,7 +675,7 @@ jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
 jetsAK8.variables += subjetVars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
-jetsAK8.src = cms.InputTag("boostedJetUserDataAK8")
+jetsAK8.src = cms.InputTag("jetUserDataAK8")
 jetKeysAK8 = copy.deepcopy( jetKeys )
 jetKeysAK8.jetLabel = cms.InputTag("jetUserDataAK8")
 
@@ -680,18 +684,18 @@ subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
 subjetsAK8.variables += subjetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
-subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
+subjetsAK8.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
 subjetKeysAK8 = copy.deepcopy( jetKeys )
-subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSPrunedSubjets")
+subjetKeysAK8.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8
 subjetsCmsTopTag = copy.deepcopy(basic)
 subjetsCmsTopTag.variables += jetVars
 subjetsCmsTopTag.variables += subjetVars
 subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
-subjetsCmsTopTag.src = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
+subjetsCmsTopTag.src = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
 subjetsCmsTopTagKeys = copy.deepcopy( jetKeys )
-subjetsCmsTopTagKeys.jetLabel = cms.InputTag("selectedPatJetsCMSTopTagCHSSubjets")
+subjetsCmsTopTagKeys.jetLabel = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
 
 
 ###genPart
@@ -700,6 +704,14 @@ genPart.variables += genPartVars
 genPart.prefix = cms.untracked.string("genPart")
 genPart.src = cms.InputTag("prunedGenParticles")
 
+###genJetsAK8
+genJetsAK8 = copy.deepcopy(basic)
+genJetsAK8.prefix = cms.untracked.string("genJetsAK8")
+genJetsAK8.src = cms.InputTag("ak8GenJetsNoNu")
+
+genJetsAK8SoftDrop = copy.deepcopy(basic)
+genJetsAK8SoftDrop.prefix = cms.untracked.string("genJetsAK8SoftDrop")
+genJetsAK8SoftDrop.src = cms.InputTag("ak8GenJetsNoNuSoftDrop")
 
 ###event variables
 eventShapeVar = (
@@ -756,6 +768,8 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_jetKeysAK8_*_*",
     "keep *_subjetKeysAK8_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
+    "keep *_genJetsAK8_*_*",
+    "keep *_genJetsAK8SoftDrop_*_*",
     "keep *_TriggerUserData_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*"

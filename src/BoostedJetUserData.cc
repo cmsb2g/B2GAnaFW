@@ -52,19 +52,11 @@ class BoostedJetUserData : public edm::EDProducer {
 
 
     edm::EDGetTokenT<std::vector<pat::Jet> >     jToken_;
-    edm::EDGetTokenT<std::vector<pat::Jet> >     tToken_;
-    edm::EDGetTokenT<std::vector<pat::Jet> >     vToken_;
-
-    double distMax_;
-
 };
 
 
 BoostedJetUserData::BoostedJetUserData(const edm::ParameterSet& iConfig) :
-  jToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("jetLabel") )),
-  tToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("topjetLabel")) ),
-  vToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("vjetLabel")) ),
-  distMax_            ( iConfig.getParameter<double>( "distMax" ) )
+  jToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("jetLabel") ))
 {
   produces<vector<pat::Jet> >();
 }
@@ -72,10 +64,8 @@ BoostedJetUserData::BoostedJetUserData(const edm::ParameterSet& iConfig) :
 
 void BoostedJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<std::vector<pat::Jet> > jetHandle, topjetHandle, vjetHandle;
+  edm::Handle<std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(jToken_, jetHandle);
-  iEvent.getByToken(tToken_, topjetHandle);
-  iEvent.getByToken(vToken_, vjetHandle);
 
 
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
@@ -84,44 +74,32 @@ void BoostedJetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSe
   for (size_t i = 0; i< jetHandle->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
 
-    for ( auto const & topJet : *topjetHandle ) {
-      float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),topJet.eta(),topJet.phi());
-      if ( temp_dR2 < distMax_ ) {
-	int topSubjet0=-1, topSubjet1=-1, topSubjet2=-1, topSubjet3=-1;
-	if ( topJet.numberOfDaughters() > 0 )
-	  topSubjet0 = topJet.daughterPtr(0).key();
-	if ( topJet.numberOfDaughters() > 1 )
-	  topSubjet1 = topJet.daughterPtr(1).key();
-	if ( topJet.numberOfDaughters() > 2 )
-	  topSubjet2 = topJet.daughterPtr(2).key();
-	if ( topJet.numberOfDaughters() > 3 )
-	  topSubjet3 = topJet.daughterPtr(3).key();
-	jet.addUserInt("TopSubjet0", topSubjet0  );
-	jet.addUserInt("TopSubjet1", topSubjet1  );
-	jet.addUserInt("TopSubjet2", topSubjet2  );
-	jet.addUserInt("TopSubjet3", topSubjet3  );	
-	break;
-      }
+    // Get top tagged subjets and their keys
+    auto const & topSubjets = jet.subjets("CMSTopTag");
+    int topSubjet0=-1, topSubjet1=-1, topSubjet2=-1, topSubjet3=-1;
+    if ( topSubjets.size() > 0 )
+      topSubjet0 = topSubjets[0].key();
+    if ( topSubjets.size() > 1 )
+      topSubjet1 = topSubjets[1].key();
+    if ( topSubjets.size() > 2 )
+      topSubjet2 = topSubjets[2].key();
+    if ( topSubjets.size() > 3 )
+      topSubjet3 = topSubjets[3].key();
+    jet.addUserInt("TopSubjet0", topSubjet0  );
+    jet.addUserInt("TopSubjet1", topSubjet1  );
+    jet.addUserInt("TopSubjet2", topSubjet2  );
+    jet.addUserInt("TopSubjet3", topSubjet3  );	
 
-    }
-
-
-
-    for ( auto const & vJet : *vjetHandle ) {
-      float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),vJet.eta(),vJet.phi());
-      if ( temp_dR2 < distMax_ ) {
-
-	int vSubjet0=-1, vSubjet1=-1;
-	if ( vJet.numberOfDaughters() > 0 )
-	  vSubjet0 = vJet.daughterPtr(0).key();
-	if ( vJet.numberOfDaughters() > 1 )
-	  vSubjet1 = vJet.daughterPtr(1).key();
-	jet.addUserInt("VSubjet0", vSubjet0  );
-	jet.addUserInt("VSubjet1", vSubjet1  );
-	break;
-      }
-
-    }
+    // Get V-tagged subjets and their keys
+    auto const & vSubjets = jet.subjets("SoftDrop");
+    
+    int vSubjet0=-1, vSubjet1=-1;
+    if ( vSubjets.size() > 0 )
+      vSubjet0 = vSubjets[0].key();
+    if ( vSubjets.size() > 1 )
+      vSubjet1 = vSubjets[1].key();
+    jet.addUserInt("VSubjet0", vSubjet0  );
+    jet.addUserInt("VSubjet1", vSubjet1  );
 
   } //// Loop over all jets 
 
