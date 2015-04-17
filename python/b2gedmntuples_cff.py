@@ -248,27 +248,16 @@ muonVars = (
  #  ),
 )
 
-subjetVars = (
-    cms.PSet(
-     tag = cms.untracked.string("subjetCSV"),
-     quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
-    ),
-    cms.PSet(
-     tag = cms.untracked.string("subjetCSVV1"),
-     quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexBJetTags')")
-    ),
-    )
-
 ### jet variables
 jetVars = (
 ### B-TAGGING
     cms.PSet(
      tag = cms.untracked.string("CSV"),
-     quantity = cms.untracked.string("bDiscriminator('combinedInclusiveSecondaryVertexV2BJetTags')")
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
     ),
     cms.PSet(
      tag = cms.untracked.string("CSVV1"),
-     quantity = cms.untracked.string("bDiscriminator('combinedSecondaryVertexV1BJetTags')")
+     quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
     ),
 ### GEN PARTON
     cms.PSet(
@@ -673,7 +662,6 @@ jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
 jetsAK8.variables += jetAK8Vars
-jetsAK8.variables += subjetVars
 jetsAK8.prefix = cms.untracked.string("jetAK8")
 jetsAK8.src = cms.InputTag("jetUserDataAK8")
 jetKeysAK8 = copy.deepcopy( jetKeys )
@@ -682,7 +670,6 @@ jetKeysAK8.jetLabel = cms.InputTag("jetUserDataAK8")
 ###subjetsAK8
 subjetsAK8 = copy.deepcopy(basic)
 subjetsAK8.variables += jetVars
-subjetsAK8.variables += subjetVars
 subjetsAK8.prefix = cms.untracked.string("subjetAK8")
 subjetsAK8.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
 subjetKeysAK8 = copy.deepcopy( jetKeys )
@@ -691,8 +678,7 @@ subjetKeysAK8.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJ
 ###subjetsAK8
 subjetsCmsTopTag = copy.deepcopy(basic)
 subjetsCmsTopTag.variables += jetVars
-subjetsCmsTopTag.variables += subjetVars
-subjetsCmsTopTag.prefix = cms.untracked.string("subjetsCmsTopTag")
+subjetsCmsTopTag.prefix = cms.untracked.string("subjetCmsTopTag")
 subjetsCmsTopTag.src = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
 subjetsCmsTopTagKeys = copy.deepcopy( jetKeys )
 subjetsCmsTopTagKeys.jetLabel = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
