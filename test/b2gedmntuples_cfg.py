@@ -135,13 +135,13 @@ process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4")
+    cut = cms.string("pt > 20 && abs(eta) < 2.4")
     )
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
     src = cms.InputTag(elLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.5")
+    cut = cms.string("pt > 20 && abs(eta) < 2.5")
     )
 
 process.skimmedPatMET = cms.EDFilter(
@@ -154,13 +154,13 @@ process.skimmedPatMET = cms.EDFilter(
 process.skimmedPatJets = cms.EDFilter(
     "PATJetSelector",
     src = cms.InputTag(jLabel),
-    cut = cms.string(" pt > 25 && abs(eta) < 4.")
+    cut = cms.string(" pt > 25 && abs(eta) < 5.")
     )
 
 process.skimmedPatJetsAK8 = cms.EDFilter(
     "CandViewSelector",
     src = cms.InputTag(jLabelAK8),
-    cut = cms.string("pt > 100 && abs(eta) < 4.")    
+    cut = cms.string("pt > 100 && abs(eta) < 5.")    
     )
 
 
