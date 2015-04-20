@@ -367,13 +367,13 @@ process.patJetsCMSTopTagCHSPacked = cms.EDProducer("BoostedJetMerger",
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4")
+    cut = cms.string("pt > 10 && abs(eta) < 2.4")
     )
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
     src = cms.InputTag(elLabel),
-    cut = cms.string("pt > 30 && abs(eta) < 2.5")
+    cut = cms.string("pt > 10 && abs(eta) < 2.5")
     )
 
 process.skimmedPatMET = cms.EDFilter(
