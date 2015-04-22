@@ -492,27 +492,27 @@ jetAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
         tag = cms.untracked.string("vSubjetIndex0"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
+        quantity = cms.untracked.string("? subjets(0).size() > 0 ? subjets(0).at(0).key() : -1 ")
         ),
      cms.PSet(
         tag = cms.untracked.string("vSubjetIndex1"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+        quantity = cms.untracked.string("? subjets(0).size() > 1 ? subjets(0).at(1).key() : -1  ")
         ),
      cms.PSet(
         tag = cms.untracked.string("topSubjetIndex0"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
+        quantity = cms.untracked.string("? subjets(1).size() > 0 ? subjets(1).at(0).key() : -1  ")
         ),
      cms.PSet(
         tag = cms.untracked.string("topSubjetIndex1"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
+        quantity = cms.untracked.string("? subjets(1).size() > 1 ? subjets(1).at(1).key() : -1  ")
         ),
      cms.PSet(
         tag = cms.untracked.string("topSubjetIndex2"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
+        quantity = cms.untracked.string("? subjets(1).size() > 2 ? subjets(1).at(2).key() : -1  ")
         ),
      cms.PSet(
         tag = cms.untracked.string("topSubjetIndex3"),
-        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
+        quantity = cms.untracked.string("? subjets(1).size() > 3 ? subjets(1).at(3).key() : -1  ")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
