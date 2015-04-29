@@ -269,36 +269,36 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
 
   if(WP == "VETO"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.016315) && (fabs(dPhiIn) < 0.252044) && (full5x5 < 0.011100) && (hoe < 0.345843) && (fabs(d0) < 0.060279) && (fabs(dz) < 0.800538) && (fabs(ooemoop) < 0.248070) && !conv && (missHits < 3);
+      pass = (fabs(dEtaIn) < 0.016315) && (fabs(dPhiIn) < 0.252044) && (full5x5 < 0.011100) && (hoe < 0.345843) && (fabs(d0) < 0.060279) && (fabs(dz) < 0.800538) && (fabs(ooemoop) < 0.248070) && reliso < 0.164369 && !conv && (missHits < 3);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010671) && (fabs(dPhiIn) < 0.245263) && (full5x5 < 0.033987) && (hoe < 0.134691) && (fabs(d0) < 0.273097) && (fabs(dz) < 0.885860) && (fabs(ooemoop) < 0.157160) && !conv && (missHits < 4);
+      pass = (fabs(dEtaIn) < 0.010671) && (fabs(dPhiIn) < 0.245263) && (full5x5 < 0.033987) && (hoe < 0.134691) && (fabs(d0) < 0.273097) && (fabs(dz) < 0.885860) && (fabs(ooemoop) < 0.157160) && reliso < 0.212604 && !conv && (missHits < 4);
     }
   }
   if(WP == "LOOSE"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.012442) && (fabs(dPhiIn) < 0.072624) && (full5x5 < 0.010557) && (hoe < 0.121476) && (fabs(d0) < 0.022664) && (fabs(dz) < 0.173670) && (fabs(ooemoop) < 0.221803) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.012442) && (fabs(dPhiIn) < 0.072624) && (full5x5 < 0.010557) && (hoe < 0.121476) && (fabs(d0) < 0.022664) && (fabs(dz) < 0.173670) && (fabs(ooemoop) < 0.221803) && reliso < 0.120026 && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010654) && (fabs(dPhiIn) < 0.145129) && (full5x5 < 0.032602) && (hoe < 0.131862) && (fabs(d0) < 0.097358) && (fabs(dz) < 0.198444) && (fabs(ooemoop) < 0.142283) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.010654) && (fabs(dPhiIn) < 0.145129) && (full5x5 < 0.032602) && (hoe < 0.131862) && (fabs(d0) < 0.097358) && (fabs(dz) < 0.198444) && (fabs(ooemoop) < 0.142283) && reliso < 0.162914 && !conv && (missHits < 2);
     }
       }
 
   if(WP == "MEDIUM"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.0076741) && (fabs(dPhiIn) < 0.032643) && (full5x5 < 0.010399) && (hoe < 0.060662) && (fabs(d0) < 0.011811) && (fabs(dz) < 0.070775) && (fabs(ooemoop) < 0.153897) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.0076741) && (fabs(dPhiIn) < 0.032643) && (full5x5 < 0.010399) && (hoe < 0.060662) && (fabs(d0) < 0.011811) && (fabs(dz) < 0.070775) && (fabs(ooemoop) < 0.153897) && reliso < 0.097213 && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.009285) && (fabs(dPhiIn) < 0.042447) && (full5x5 < 0.029524) && (hoe < 0.104263) && (fabs(d0) < 0.051682) && (fabs(dz) < 0.180720) && (fabs(ooemoop) < 0.137468)  && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.009285) && (fabs(dPhiIn) < 0.042447) && (full5x5 < 0.029524) && (hoe < 0.104263) && (fabs(d0) < 0.051682) && (fabs(dz) < 0.180720) && (fabs(ooemoop) < 0.137468) && reliso < 0.116708 && !conv && (missHits < 2);
     }
       }
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.006574) && (fabs(dPhiIn) < 0.022868) && (full5x5 < 0.010181) && (hoe < 0.037553) && (fabs(d0) < 0.009924) && (fabs(dz) < 0.015310) && (fabs(ooemoop) < 0.131191) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.006574) && (fabs(dPhiIn) < 0.022868) && (full5x5 < 0.010181) && (hoe < 0.037553) && (fabs(d0) < 0.009924) && (fabs(dz) < 0.015310) && (fabs(ooemoop) < 0.131191) && reliso < 0.074355 && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.005681) && (fabs(dPhiIn) < 0.032046) && (full5x5 < 0.028766) && (hoe < 0.081902) && (fabs(d0) < 0.027261) && (fabs(dz) < 0.147154) && (fabs(ooemoop) < 0.106055) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.005681) && (fabs(dPhiIn) < 0.032046) && (full5x5 < 0.028766) && (hoe < 0.081902) && (fabs(d0) < 0.027261) && (fabs(dz) < 0.147154) && (fabs(ooemoop) < 0.106055) && reliso < 0.090185 && !conv && (missHits < 2);
     }
       }
   return pass;
