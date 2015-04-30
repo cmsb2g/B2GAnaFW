@@ -18,7 +18,7 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/relval/CMSSW_7_4_0/RelValRSKKGluon_m3000GeV_13/MINIAODSIM/MCRUN2_74_V7_GENSIM_7_1_15-v1/00000/28526A23-89DD-E411-AF48-0025905A611C.root',
+                 '/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
