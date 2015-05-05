@@ -16,6 +16,11 @@ $ cmsenv
 
 (check out any CMSSW packages needed)
 
+Add additional packages:
+
+$ git cms-merge-topic rappoccio:RecoJetsFromMiniAOD
+
+
 Make an Analysis directory :
 
 $ mkdir Analysis
