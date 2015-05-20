@@ -48,6 +48,7 @@ import sys
 from DataFormats.FWLite import Events, Handle
 ROOT.gROOT.Macro("rootlogon.C")
 import copy
+import random
 
 
 h_NPV = Handle("std::int")
@@ -125,7 +126,16 @@ l_subjetsAK8Mass = ("subjetsAK8", "subjetAK8Mass")
 f = ROOT.TFile(options.outname, "RECREATE")
 f.cd()
 
-h_mttbar = ROOT.TH1F("h_mttbar", ";m_{t#bar{t}} (GeV)", 200, 0, 6000)
+h_mjj0 = ROOT.TH1F("h_mjj0", ";m_{jj} (GeV), Stage 0", 200, 0, 6000)
+h_mjj1 = ROOT.TH1F("h_mjj1", ";m_{jj} (GeV), Stage 1", 200, 0, 6000)
+h_mjj2 = ROOT.TH1F("h_mjj2", ";m_{jj} (GeV), Stage 2", 200, 0, 6000)
+h_mjj3 = ROOT.TH1F("h_mjj3", ";m_{jj} (GeV), Stage 3", 200, 0, 6000)
+
+h_rhoProbe0 = ROOT.TH2F("h_rhoProbe0", "AK8 SoftDrop Jet #rho, Stage 0; (m/p_{T}R)^{2}", 100, 0, 1.0, 25, 0, 500)
+h_rhoProbe1 = ROOT.TH2F("h_rhoProbe1", "AK8 SoftDrop Jet #rho, Stage 1; (m/p_{T}R)^{2}", 100, 0, 1.0, 25, 0, 500)
+h_rhoProbe2 = ROOT.TH2F("h_rhoProbe2", "AK8 SoftDrop Jet #rho, Stage 2; (m/p_{T}R)^{2}", 100, 0, 1.0, 25, 0, 500)
+h_rhoProbe3 = ROOT.TH2F("h_rhoProbe3", "AK8 SoftDrop Jet #rho, Stage 3; (m/p_{T}R)^{2}", 100, 0, 1.0, 25, 0, 500)
+
 
 h_ptAK8 = ROOT.TH1F("h_ptAK8", "AK8 Jet p_{T};p_{T} (GeV)", 300, 0, 3000)
 h_etaAK8 = ROOT.TH1F("h_etaAK8", "AK8 Jet #eta;#eta", 120, -6, 6)
@@ -243,39 +253,20 @@ for ifile in files :
         AK8vSubJetsPhi = h_subjetsAK8Phi.product()
         AK8vSubJetsMass = h_subjetsAK8Mass.product()
 
+        AK8Rho = []
+        goodJetIndices = []
+
 
         if options.verbose : 
             print '------- Subjets'
             for isubjet in range(0,len(AK8vSubJetsPt)):
                 print '%3d, pt=%6.2f eta=%6.2f phi=%6.2f m=%6.2f' % ( isubjet, AK8vSubJetsPt[isubjet], AK8vSubJetsEta[isubjet], AK8vSubJetsPhi[isubjet], AK8vSubJetsMass[isubjet])
             print '------- AK8 jets'
-            
+
+
+        # Make plots of all jets that pass the pt and eta cuts. 
         for i in range(0,len(AK8Pt)): 
             
-
-            if AK8Pt[i] < options.minAK8Pt or abs(AK8Eta[i]) > options.maxAK8Rapidity :
-                continue
-
-            for check in [AK8vSubjetIndex0[i],AK8vSubjetIndex1[i]] :
-                if int(check) > len(AK8vSubJetsPt) :
-                    print '===================='
-                    print ' Catastrophic failure. Index is out of range. Setup is completely wrong.'
-                    print '===================='
-                    exit(1)
-
-
-
-            if options.verbose : 
-                print '%3d, pt=%6.2f eta=%6.2f phi=%6.2f m=%6.2f sdm=%6.2f, sj0=%3d sj1=%3d' % ( i, AK8Pt[i], AK8Eta[i], AK8Phi[i], AK8Mass[i], AK8SoftDropM[i], AK8vSubjetIndex0[i], AK8vSubjetIndex1[i] )
-            mAK8Pruned = AK8PrunedM[i] 
-            mAK8Filtered = AK8FilteredM[i] 
-            mAK8Trimmed = AK8TrimmedM[i]
-            mAK8SoftDrop = AK8SoftDropM[i]
-            tau1 = AK8Tau1[i]  
-            tau2 = AK8Tau2[i] 
-            tau3 = AK8Tau3[i]
-
-
             sp4_0 = None
             sp4_1 = None
             ival = int(AK8vSubjetIndex0[i])            
@@ -297,11 +288,42 @@ for ifile in files :
 
 
             if sp4_0 == None or sp4_1 == None :
+                AK8Rho.append(0.0)
                 continue 
             softdrop_p4 = sp4_0 + sp4_1
             jetR = 0.8
             jetrho = softdrop_p4.M() / (softdrop_p4.Perp() * jetR)
             jetrho *= jetrho
+
+
+            AK8Rho.append( jetrho )
+            
+            if AK8Pt[i] < options.minAK8Pt or abs(AK8Eta[i]) > options.maxAK8Rapidity :
+                continue
+
+
+            goodJetIndices.append(i)
+            for check in [AK8vSubjetIndex0[i],AK8vSubjetIndex1[i]] :
+                if int(check) > len(AK8vSubJetsPt) :
+                    print '===================='
+                    print ' Catastrophic failure. Index is out of range. Setup is completely wrong.'
+                    print '===================='
+                    exit(1)
+
+
+
+            if options.verbose : 
+                print '%3d, pt=%6.2f eta=%6.2f phi=%6.2f m=%6.2f sdm=%6.2f, sj0=%3d sj1=%3d' % ( i, AK8Pt[i], AK8Eta[i], AK8Phi[i], AK8Mass[i], AK8SoftDropM[i], AK8vSubjetIndex0[i], AK8vSubjetIndex1[i] )
+            mAK8Pruned = AK8PrunedM[i] 
+            mAK8Filtered = AK8FilteredM[i] 
+            mAK8Trimmed = AK8TrimmedM[i]
+            mAK8SoftDrop = AK8SoftDropM[i]
+            tau1 = AK8Tau1[i]  
+            tau2 = AK8Tau2[i] 
+            tau3 = AK8Tau3[i]
+
+
+
             
             h_ptAK8.Fill( AK8Pt[i] )
             h_etaAK8.Fill( AK8Eta[i] )
@@ -315,6 +337,77 @@ for ifile in files :
             if options.verbose :
                 print '  << - good subjets, check m_softdrop = %6.2f' % (AK8SoftDropM[i])
 
+
+
+        if len(goodJetIndices) < 2 :
+            continue
+        
+        # Make plots of jets that pass the dijet selections
+        jetP4_0 = ROOT.TLorentzVector()
+        jetP4_0.SetPtEtaPhiM( AK8Pt[goodJetIndices[0]],
+                              AK8Eta[goodJetIndices[0]],
+                              AK8Phi[goodJetIndices[0]],
+                              AK8Mass[goodJetIndices[0]] )
+
+        jetP4_1 = ROOT.TLorentzVector()
+        jetP4_1.SetPtEtaPhiM( AK8Pt[goodJetIndices[1]],
+                              AK8Eta[goodJetIndices[1]],
+                              AK8Phi[goodJetIndices[1]],
+                              AK8Mass[goodJetIndices[1]] )
+
+        tau1_0 = AK8Tau1[goodJetIndices[0]]
+        tau2_0 = AK8Tau2[goodJetIndices[0]]
+        tau3_0 = AK8Tau3[goodJetIndices[0]]
+
+        tau1_1 = AK8Tau1[goodJetIndices[1]]
+        tau2_1 = AK8Tau2[goodJetIndices[1]]
+        tau3_1 = AK8Tau3[goodJetIndices[1]]
+
+        rho_0 = AK8Rho[goodJetIndices[0]]
+        rho_1 = AK8Rho[goodJetIndices[1]]
+
+        tau21_0 = 0.0
+        if tau1_0 > 0.01 :
+            tau21_0 = tau2_0 / tau1_0
+        tau21_1 = 0.0
+        if tau1_1 > 0.01 :
+            tau21_1 = tau2_1 / tau1_1        
+            
+
+        mjj = (jetP4_0 + jetP4_1).M()
+
+        dijetsP4 = [ jetP4_0, jetP4_1 ]
+        dijetsTau21 = [tau21_0, tau21_1 ]
+        dijetsRho = [rho_0, rho_1]
+
+
+        itag = random.randint(0,1)
+        tagJetP4 = dijetsP4[itag]
+        probeJetP4 = dijetsP4[1 - itag]
+        tagJetTau21 = dijetsTau21[itag]
+        probeJetTau21 = dijetsTau21[1 - itag]
+        tagJetRho = dijetsRho[itag]
+        probeJetRho = dijetsRho[1-itag]
+
+        h_mjj0.Fill( mjj )
+        h_rhoProbe0.Fill( probeJetRho, probeJetP4.Perp())
+
+                
+        if abs ( jetP4_0.Rapidity() - jetP4_1.Rapidity() ) > 1.0 :
+            h_mjj1.Fill( mjj )
+            h_rhoProbe1.Fill( probeJetRho, probeJetP4.Perp() )
+
+            if tagJetP4.M() > 60. and tagJetTau21 < 0.6 :
+                h_mjj2.Fill( mjj )
+                h_rhoProbe2.Fill( probeJetRho, probeJetP4.Perp() )
+
+                if probeJetP4.M() > 60. and probeJetTau21 < 0.6 :
+                    h_mjj3.Fill( mjj )
+                    h_rhoProbe3.Fill( probeJetRho, probeJetP4.Perp() )
+
+                
+        
+        
 #CLEANUP
 
 f.cd()
