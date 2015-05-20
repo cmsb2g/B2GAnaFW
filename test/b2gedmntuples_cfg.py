@@ -19,6 +19,7 @@ options.register('maxEvts',
 
 options.register('sample',
                  '/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
+		 #'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx50/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx50_1000_1_Z6C.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -52,6 +53,12 @@ options.register('LHE',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Keep LHEProducts')
+
+options.register('is74XSample',
+                 True,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'Sample made in newest release? (74X or above)')
 
 options.parseArguments()
 
@@ -102,34 +109,41 @@ process.GlobalTag.globaltag = options.globalTag
 
 
 
-#################################################
-## After 7.4.0, only need to make AK8 gen jets.
-## The rest are stored by default in MiniAOD directly. 
-#################################################
-
-## Filter out neutrinos from packed GenParticles
-process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
-## Fat GenJets
-from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-process.ak8GenJetsNoNu = ak4GenJets.clone(
-    rParam = cms.double(0.8),
-    src = cms.InputTag("packedGenParticlesForJetsNoNu")
-)
-
-## SoftDrop fat GenJets (two jet collections are produced, fat jets and subjets)
+from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
 from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
 from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
-    rParam = cms.double(0.8),
-    src = cms.InputTag("packedGenParticlesForJetsNoNu"),
-    useSoftDrop = cms.bool(True),
-    zcut = cms.double(0.1),
-    beta = cms.double(0.0),
-    R0   = cms.double(0.8),
-    useExplicitGhosts = cms.bool(True),
-    writeCompound = cms.bool(True),
-    jetCollInstanceName=cms.string("SubJets")    
-)
+
+if not (options.is74XSample) :
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True )
+	jLabelAK8 = 'selectedPatJetsAK8PFCHS'
+else:
+	#################################################
+	## After 7.4.0, only need to make AK8 gen jets.
+	## The rest are stored by default in MiniAOD directly. 
+	#################################################
+
+	## Filter out neutrinos from packed GenParticles
+	process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
+	## Fat GenJets
+	from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
+	process.ak8GenJetsNoNu = ak4GenJets.clone(
+	    rParam = cms.double(0.8),
+	    src = cms.InputTag("packedGenParticlesForJetsNoNu")
+	)
+
+	## SoftDrop fat GenJets (two jet collections are produced, fat jets and subjets)
+	process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
+	    rParam = cms.double(0.8),
+	    src = cms.InputTag("packedGenParticlesForJetsNoNu"),
+	    useSoftDrop = cms.bool(True),
+	    zcut = cms.double(0.1),
+	    beta = cms.double(0.0),
+	    R0   = cms.double(0.8),
+	    useExplicitGhosts = cms.bool(True),
+	    writeCompound = cms.bool(True),
+	    jetCollInstanceName=cms.string("SubJets")    
+	)
 
 ### Selected leptons and jets
 process.skimmedPatMuons = cms.EDFilter(
@@ -207,6 +221,14 @@ process.jetUserDataAK8 = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2)
 )
 
+process.boostedJetUserDataAK8 = cms.EDProducer(
+    'BoostedJetToolboxUserData',
+    jetLabel  = cms.InputTag('jetUserDataAK8'),
+    topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
+    distMax = cms.double(0.8)
+)
+
 
 process.electronUserData = cms.EDProducer(
     'ElectronUserData',
@@ -250,6 +272,16 @@ process.TriggerUserData = cms.EDProducer(
 
 ### Including ntuplizer 
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+from Analysis.B2GAnaFW.b2gedmntuples_cff import jetAK8Vars, jetToolboxAK8Vars
+if (options.is74XSample):
+	process.jetsAK8.variables += jetAK8Vars
+else:
+	process.subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+	process.subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+	process.subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
+	process.subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
+	process.jetsAK8.src = 'boostedJetUserDataAK8'
+	process.jetsAK8.variables += jetToolboxAK8Vars
 
 
 process.options.allowUnscheduled = cms.untracked.bool(True)
