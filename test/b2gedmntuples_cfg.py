@@ -18,7 +18,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
+                 'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
+                 #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -36,7 +37,7 @@ options.register('outputLabel',
                  'Output label')
 
 options.register('globalTag',
-                 'MCRUN2_74_V7',
+                 'MCRUN2_74_V9',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
@@ -48,7 +49,7 @@ options.register('isData',
                  'Is data?')
 
 options.register('LHE',
-                 True,
+                 False,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Keep LHEProducts')

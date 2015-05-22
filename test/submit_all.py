@@ -20,7 +20,7 @@ def getOptions() :
         metavar="DIR")
     parser.add_option("-f", "--datasets", dest="datasets",
         help=("File listing datasets to run over"),
-        metavar="FILE")    
+        metavar="FILE")
     (options, args) = parser.parse_args()
 
 
@@ -69,6 +69,7 @@ def main():
         try:
             crabCommand('submit', config = config)
         except HTTPException, hte:
+            print 'Cannot execute commend'
             print hte.headers
 
     #############################################################################################
@@ -91,8 +92,14 @@ def main():
         config.General.requestName = 'b2ganafw741_' + ptbin + '_' + cond
         config.Data.inputDataset = job
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
+        print 'Configuration :'
+        #print config
         try :
-            submit(config)
+            from multiprocessing import Process
+            p = Process(target=submit, args=(config,))
+            p.start()
+            p.join()
+            #submit(config)
         except :
             print 'Not submitted.'
         
