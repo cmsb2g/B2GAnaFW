@@ -63,7 +63,9 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
 
+  bool storePrescales_ ; 
   TString mainROOTFILEdir_;
+  std::string hltProcName_ ; 
 
   HLTConfigProvider hltConfig;
   int triggerBit;
@@ -74,18 +76,19 @@ private:
 TriggerUserData::TriggerUserData(const edm::ParameterSet& iConfig):
   triggerBits_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))),
   triggerPrescales_(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))),
-  
-  mainROOTFILEdir_    (iConfig.getUntrackedParameter<std::string>("mainROOTFILEdir",""))
+  storePrescales_(iConfig.getUntrackedParameter<bool>("storePrescales")), 
+  mainROOTFILEdir_(iConfig.getUntrackedParameter<std::string>("mainROOTFILEdir","")),
+  hltProcName_(iConfig.getUntrackedParameter<std::string>("hltProcName"))
 {
   produces<std::vector<float>>("triggerBitTree");
-  produces<std::vector<int>>("triggerPrescaleTree");  
+  if ( storePrescales_ ) produces<std::vector<int>>("triggerPrescaleTree");  
   produces<std::vector<std::string>>("triggerNameTree");  
  }
 
 void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   bool changedConfig = false;
 
-  if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
+  if (!hltConfig.init(iEvent.getRun(), iSetup, hltProcName_, changedConfig)) {
     std::cout << "Initialization of HLTConfigProvider failed!!" << std::endl;
     return;
   }
@@ -98,12 +101,12 @@ void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
 
   iEvent.getByToken(triggerBits_, triggerBits);
-  iEvent.getByToken(triggerPrescales_, triggerPrescales);
+  if ( storePrescales_ ) iEvent.getByToken(triggerPrescales_, triggerPrescales);
 
   for (unsigned int i = 0, n = triggerBits->size(); i < n; ++i) {
 
     triggerBitTree->push_back(triggerBits->accept(i));
-    triggerPrescaleTree->push_back(triggerPrescales->getPrescaleForIndex(i));
+    if ( storePrescales_ ) triggerPrescaleTree->push_back(triggerPrescales->getPrescaleForIndex(i));
     //std::cout << "TEST " <<  (hltConfig.triggerNames()[i]) << std::endl;
     //const char * name = TString(hltConfig.triggerNames()[i]);
     triggerNameTree->push_back((hltConfig.triggerNames()[i]));
@@ -111,7 +114,7 @@ void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup
   }
   
   iEvent.put( triggerBitTree, "triggerBitTree" );
-  iEvent.put( triggerPrescaleTree, "triggerPrescaleTree" );
+  if ( storePrescales_ ) iEvent.put( triggerPrescaleTree, "triggerPrescaleTree" );
   iEvent.put( triggerNameTree, "triggerNameTree" );
 
 }

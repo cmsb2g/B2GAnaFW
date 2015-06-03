@@ -756,7 +756,7 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_genJetsAK8_*_*",
     "keep *_genJetsAK8SoftDrop_*_*",
-    "keep *_TriggerUserData_trigger*_*",
+    "keep *_TriggerUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*"
     ),
