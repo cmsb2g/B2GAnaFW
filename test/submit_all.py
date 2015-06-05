@@ -54,7 +54,7 @@ def main():
     config.Data.inputDataset = None
     config.Data.splitting = 'FileBased'
     config.Data.unitsPerJob = 1
-    config.Data.ignoreLocality = True
+    config.Data.ignoreLocality = False
     config.Data.publication = True    
     
     config.section_("Site")
