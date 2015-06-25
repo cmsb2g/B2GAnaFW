@@ -89,7 +89,7 @@ def main():
 
         ptbin = job.split('/')[1]
         cond = job.split('/')[2]
-        config.General.requestName = 'b2ganafw745p1_' + ptbin + '_' + cond
+        config.General.requestName = 'b2ganafw74xV2_' + ptbin + '_' + cond
         config.Data.inputDataset = job
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
