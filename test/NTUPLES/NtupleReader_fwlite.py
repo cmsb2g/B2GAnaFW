@@ -716,6 +716,7 @@ for ifile in files :
                                 )
                         jetP4Raw -= theLepton
                         cleaned = True
+                        break
 
 
 
