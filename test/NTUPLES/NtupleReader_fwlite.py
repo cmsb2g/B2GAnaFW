@@ -129,8 +129,8 @@ l_muMass = ("muons" , "muMass")
 h_muDz = Handle("std::vector<float>")
 l_muDz = ("muons", "muDz")
 
-h_muKey = Handle("std::vector<float>")
-l_muKey = ("muons", "muKey")
+h_muKey = Handle("std::vector<std::vector<int> >")
+l_muKey = ("muonKeys")
 
 #electron label and handles
 h_elPt = Handle("std::vector<float>")
@@ -170,8 +170,8 @@ l_elMass = ( "electrons" , "elMass" )
 h_elscEta = Handle("std::vector<float>")
 l_elscEta = ( "electrons" , "elscEta" )
 
-h_elKey = Handle("std::vector<float>")
-l_elKey = ( "electrons" , "elKey" )
+h_elKey = Handle("std::vector<std::vector<int> >")
+l_elKey = ( "electronKeys" )
 
 #AK4 Jet Label and Handles
 h_jetsAK4Pt = Handle("std::vector<float>")
@@ -198,6 +198,7 @@ l_NPV = ( "eventUserData" , "npv" )
 
 h_jetsAK4Keys = Handle("std::vector<std::vector<int> >")
 l_jetsAK4Keys = ( "jetKeysAK4" , "" )
+
 
 h_jetsAK4nHadEnergy = Handle("std::vector<float>")
 l_jetsAK4nHadEnergy = ("jetsAK4" , "jetAK4neutralHadronEnergy")
@@ -285,15 +286,15 @@ l_jetsAK8TopSubjetIndex3 = ("jetsAK8", "jetAK8topSubjetIndex3")
 
 
 h_subjetsAK8BDisc = Handle( "std::vector<float>")
-l_subjetsAK8BDisc = ("subjetsCmsTopTag", "subjetsCmsTopTagsubjetCSVV1")
+l_subjetsAK8BDisc = ("subjetsCmsTopTag", "subjetCmsTopTagCSV")
 h_subjetsAK8Pt = Handle( "std::vector<float>")
-l_subjetsAK8Pt = ("subjetsCmsTopTag", "subjetsCmsTopTagPt")
+l_subjetsAK8Pt = ("subjetsCmsTopTag", "subjetCmsTopTagPt")
 h_subjetsAK8Eta = Handle( "std::vector<float>")
-l_subjetsAK8Eta = ("subjetsCmsTopTag", "subjetsCmsTopTagEta")
+l_subjetsAK8Eta = ("subjetsCmsTopTag", "subjetCmsTopTagEta")
 h_subjetsAK8Phi = Handle( "std::vector<float>")
-l_subjetsAK8Phi = ("subjetsCmsTopTag", "subjetsCmsTopTagPhi")
+l_subjetsAK8Phi = ("subjetsCmsTopTag", "subjetCmsTopTagPhi")
 h_subjetsAK8Mass = Handle( "std::vector<float>")
-l_subjetsAK8Mass = ("subjetsCmsTopTag", "subjetsCmsTopTagMass")
+l_subjetsAK8Mass = ("subjetsCmsTopTag", "subjetCmsTopTagMass")
 
 
 
@@ -453,7 +454,7 @@ for ifile in files :
         goodmuonEta = []
         goodmuonPhi = []
         goodmuonMass = []
-        goodmuonKey = []
+        goodmuonKeys = []
 
         #Use MuPt as iterater due to no definite value in ntuples
         if len(h_muPt.product()) > 0:
@@ -464,16 +465,16 @@ for ifile in files :
             muonLoose = h_muLoose.product()
             muonMass = h_muMass.product()
             muonDz = h_muDz.product()
-            muKey = h_muKey.product()
+            muKeys = h_muKey.product()
             for i in range(0,len(muonPt)):
                 if muonPt[i] > options.minMuonPt and abs(muonEta[i]) < options.maxMuonEta and muonDz[i] < 5.0 and muonTight[i] :
                     goodmuonPt.append(muonPt[i])
                     goodmuonEta.append(muonEta[i])
                     goodmuonPhi.append(muonPhi[i])
                     goodmuonMass.append(muonMass[i])
-                    goodmuonKey.append(muKey[i])
+                    goodmuonKeys.append(muKeys[i])
                     if options.verbose :
-                        print "muon %2d: key %4d, pt %4.1f, eta %+5.3f phi %+5.3f dz(PV) %+5.3f, POG loose id %d, tight id %d." % ( i, muKey[i], muonPt[i], muonEta[i],
+                        print "muon %2d: key %4d, pt %4.1f, eta %+5.3f phi %+5.3f dz(PV) %+5.3f, POG loose id %d, tight id %d." % ( i, muKeys[i][0], muonPt[i], muonEta[i],
                                                                                                                 muonPhi[i], muonDz[i], muonLoose[i], muonTight[i])
 
         #Electron Selection
@@ -501,7 +502,7 @@ for ifile in files :
         goodelectronsEta = []
         goodelectronsPhi = []
         goodelectronsMass = []
-        goodelectronKey = []
+        goodelectronKeys = []
 
 
 
@@ -522,7 +523,7 @@ for ifile in files :
             electronabsiso = h_elIso03.product()
             electronMass = h_elMass.product()
             electronscEta = h_elscEta.product()
-            elKey = h_elKey.product()
+            elKeys = h_elKey.product()
             passConversionVeto = h_elhasMatchedConVeto.product()
             #for i in xrange( len(electronPt.size() ) ) :
             if len(electronPt) > 0 :
@@ -556,41 +557,13 @@ for ifile in files :
                     #ieabsiso = electronabsiso[i]
                 
                     ieabsiso = abs(pfIso)
-                
-                    if abs(ieEcal) < 0.0 :
-                        ieooEmooP = 1.0e30
                         
                     #absIso = electronabsiso[i]
                     #absIso = electronpfIso[i]
                     relIso = ieabsiso / iePt
                     iepass = passConversionVeto[i]
                                 
-                    goodElectron = False
-                    # Barrel ECAL cuts
-                    if abs(ielscEta) < 1.479 :
-                        goodElectron = \
-                          abs( ieEtaIn ) < 0.0091 and \
-                          abs( iePhiIn ) < 0.031 and \
-                          iefull < 0.0106 and \
-                          ieHoE < 0.0532 and \
-                          abs(ieD0) < 0.0126 and \
-                          abs(ieDz) < 0.0116 and \
-                          abs( ieooEmooP ) < 0.0609 and \
-                          iepass
-                                                                        
-                                                                        
-                    # Endcap ECAL cuts
-                    elif abs(ielscEta) < 2.5 and abs(ielscEta) > 1.479 :
-                                                                            
-                        goodElectron = \
-                          abs(  ieEtaIn  ) < 0.0106 and \
-                          abs(iePhiIn) < 0.0359 and \
-                          iefull < 0.0305 and \
-                          ieHoE < 0.0835 and \
-                          abs(ieD0) < 0.0163 and \
-                          abs(ieDz) < .5999 and \
-                          abs(ieooEmooP) < 0.1126 and \
-                          iepass
+                    goodElectron = electronTight[i] > 0
                     
                     if goodElectron == True :
                         
@@ -598,9 +571,13 @@ for ifile in files :
                         goodelectronsEta.append( ieEta )
                         goodelectronsPhi.append( iePhi )
                         goodelectronsMass.append( ieMass )
-                        goodelectronKey.append( elKey[i] )
+                        goodelectronKeys.append( elKeys[i] )
                         if options.verbose :
-                            print "elec %2d: key %4d, pt %4.1f, supercluster eta %+5.3f, phi %+5.3f sigmaIetaIeta %.3f (%.3f with full5x5 shower shapes), pass conv veto %d" % ( i, elKey[i], electronPt, electronSCeta, electronPhi, electron.sigmaIetaIeta(), full5x5_sigmaIetaIeta, passConversionVeto)
+                            print "elec %2d: keys " % (i ),
+                            for ikey in elKeys[i] :
+                                print " %4d" % ikey ,
+                            print ""
+                            print "    ---> pt %4.1f, eta %+5.3f, phi %+5.3f" % ( electronPt[i], electronEta[i], electronPhi[i])
             
                 
                     
@@ -613,7 +590,7 @@ for ifile in files :
                                     goodmuonEta[0],
                                     goodmuonPhi[0],
                                     goodmuonMass[0] )
-            theLeptonObjKey = int(goodmuonKey[0])
+            theLeptonObjKeys = goodmuonKeys[0]
             
         else :
             theLepton = ROOT.TLorentzVector()
@@ -621,7 +598,7 @@ for ifile in files :
                                     goodelectronsEta[0],
                                     goodelectronsPhi[0],
                                     goodelectronsMass[0] )
-            theLeptonObjKey = int(goodelectronKey[0])
+            theLeptonObjKeys = goodelectronKeys[0]
 
         event.getByLabel ( l_jetsAK4Pt, h_jetsAK4Pt )
         event.getByLabel ( l_jetsAK4Eta, h_jetsAK4Eta )
@@ -732,14 +709,14 @@ for ifile in files :
                 pfcands = int(AK4NumDaughters[i])
                 for j in range(0,pfcands) :                   
                     # If any of the jet daughters matches the good lepton, remove the lepton p4 from the jet p4
-                    if AK4Keys[i][j] == theLeptonObjKey : 
+                    if AK4Keys[i][j] in theLeptonObjKeys : 
                         if options.verbose :
                             print '     -----> removing lepton, pt/eta/phi = {0:6.2f},{1:6.2f},{2:6.2f}'.format(
                                 theLepton.Perp(), theLepton.Eta(), theLepton.Phi()
                                 )
                         jetP4Raw -= theLepton
                         cleaned = True
-                        break
+
 
 
 

@@ -420,15 +420,6 @@ jetVars = (
      tag = cms.untracked.string("neutralMultiplicity"),
      quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
     ),
-#### FOR LEPTON MATCHING 
-#    cms.PSet(
-#     tag = cms.untracked.string("pfKeys"),
-#     quantity = cms.untracked.string("? hasUserData('pfKeys') ? userData('pfKeys') : 0")
-#    ),
-#    cms.PSet(
-#     tag = cms.untracked.string("dummy"),
-#     quantity = cms.untracked.string("? hasUserData('dummy') ? 1 : 0")
-#    ),    
 #### FOR JEC
     cms.PSet(
         tag = cms.untracked.string("jecFactor0"),
@@ -468,6 +459,14 @@ jetVars = (
 jetKeys = cms.EDProducer(
     "JetKeyProducer",
     jetLabel = cms.InputTag("ak4PFJetsCHS")
+    )
+electronKeys = cms.EDProducer(
+    "SourceKeyProducer",
+    srcLabel = cms.InputTag("electronUserData")
+    )
+muonKeys = cms.EDProducer(
+    "SourceKeyProducer",
+    srcLabel = cms.InputTag("muonUserData")
     )
 
 genPartVars = (
@@ -754,6 +753,8 @@ edmNtuplesOut = cms.OutputModule(
     "keep *_jetKeysAK8_*_*",
     "keep *_subjetKeysAK8_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
+    "keep *_electronKeys_*_*",
+    "keep *_muonKeys_*_*",
     "keep *_genJetsAK8_*_*",
     "keep *_genJetsAK8SoftDrop_*_*",
     "keep *_TriggerUserData*_trigger*_*",
