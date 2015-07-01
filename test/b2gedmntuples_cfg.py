@@ -62,6 +62,8 @@ if(options.isData):options.LHE = False
 
     
 ###inputTag labels
+rhoLabel = "fixedGridRhoFastjetAll"
+phoLabel = 'slimmedPhotons'
 muLabel  = 'slimmedMuons'
 elLabel  = 'slimmedElectrons'
 jLabel = 'slimmedJets'
@@ -100,6 +102,7 @@ process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 process.GlobalTag.globaltag = options.globalTag 
     
 
@@ -135,11 +138,22 @@ process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
 )
 
 ### Selected leptons and jets
+
+
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
     cut = cms.string("pt > 10 && abs(eta) < 2.4")
     )
+
+
+process.skimmedPatPhotons = cms.EDFilter(
+    "PATPhotonSelector",
+    src = cms.InputTag(phoLabel),
+    cut = cms.string("pt > 30 && abs(eta) < 2.4"),
+
+)
+
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
@@ -224,6 +238,63 @@ process.electronUserData = cms.EDProducer(
     #electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-PHYS14-PU20bx25-V0-miniAOD-standalone-tight"),
     )
 
+process.photonUserData = cms.EDProducer(
+    'PhotonUserData',
+    phoLabel = cms.InputTag("skimmedPatPhotons"),
+    pv        = cms.InputTag(pvLabel),
+    rho               = cms.InputTag(rhoLabel),
+    phoLabel2 = cms.InputTag("slimmedPhotons"),
+    packedPFCands = cms.InputTag("packedPFCandidates"),
+    ebReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEBRecHits"),
+    eeReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEERecHits"),
+    phoLooseIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-loose"),
+    phoMediumIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-medium"),
+    phoTightIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight"),
+    phoChgIsoMap = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
+    phoPhoIsoMap = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
+    phoNeuIsoMap = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation")
+    )
+
+process.photonJets = cms.EDProducer(
+    'PhotonJets',
+    phoLabel = cms.InputTag("skimmedPatPhotons"),
+    pv        = cms.InputTag(pvLabel),
+    rho               = cms.InputTag(rhoLabel),
+    packedPFCands = cms.InputTag("packedPFCandidates"),
+    jetLabel  = cms.InputTag("slimmedJetsAK8"),
+    ebReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEBRecHits"),
+    eeReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEERecHits")
+
+    )
+
+
+#
+# Set up photon ID (VID framework)
+#
+
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+# turn on VID producer, indicate data format  to be
+# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
+
+#useAOD = False
+#if useAOD == True :
+dataFormat = DataFormat.MiniAOD
+#else :
+#    dataFormat = DataFormat.MiniAOD
+
+switchOnVIDPhotonIdProducer(process, dataFormat)
+
+# define which IDs we want to produce
+my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_PHYS14_PU20bx25_V2_cff']
+
+#add them to the VID producer
+for idmod in my_id_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
+
+#
+print "St the PHoton"
+
+
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 ## Adapt primary vertex collection
@@ -261,9 +332,14 @@ process.TriggerUserData = cms.EDProducer(
 #    objects = cms.InputTag("selectedPatTrigger")
 #    )                                 
 
+print 'here'
+
+
 ### Including ntuplizer 
+print'here'
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 
+print 'here'
 
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
@@ -285,9 +361,10 @@ process.edmNtuplesOut.fileName=options.outputLabel
 #    SelectEvents = cms.vstring('filterPath')
 #    )
 
+#process.analysisPath += process.photonIDValueMapProducer
 
 #process.fullPath = cms.Schedule(
-#    process.analysisPath
+#     process.analysisPath
 #    )
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
