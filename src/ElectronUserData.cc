@@ -26,6 +26,7 @@
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include<vector>
+#include <TMath.h>
 
 using namespace reco;
 using namespace edm;
@@ -38,11 +39,12 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
+  float getEA(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
-  bool passIDWP(string, bool, float, float, float, float, float, float, float, float, bool, int);
+  bool passIDWP(string, bool, float, float, float, float, float,  float, float, bool, int);
 
 
-  InputTag eleLabel_, pvLabel_, convLabel_;
+  InputTag eleLabel_, pvLabel_, convLabel_, rho_;
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
@@ -69,6 +71,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    eleLabel_(iConfig.getParameter<edm::InputTag>("eleLabel")),
    pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
    convLabel_(iConfig.getParameter<edm::InputTag>("conversion")),   // "offlinePrimaryVertex"
+   rho_( iConfig.getParameter<edm::InputTag>("rho")),
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
    triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
@@ -88,7 +91,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<std::vector<reco::Vertex> > vertices;
   iEvent.getByLabel(pvLabel_, vertices);
 
-
+  //RHO
+  edm::Handle<double> rhoHandle;
+  iEvent.getByLabel(rho_,rhoHandle);
+  double rho = *rhoHandle; 
 
   if(debug_>=1) cout<<"vtx size " << vertices->size()<<endl; 
 
@@ -188,6 +194,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float hoe = el.hadronicOverEm();
     float absiso = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
     float relIsoWithDBeta_ = absiso/el.pt();
+    double EA = getEA(el.eta());
+    //double rho = 1.0;
+    float absiso_EA = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
+    float relIsoWithEA_ = absiso_EA/el.pt();
     float ooEmooP_; 
     if( el.ecalEnergy() == 0 ){
       printf("Electron energy is zero!\n");
@@ -209,10 +219,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     // conversion rejection match
     bool hasMatchConv = ConversionTools::hasMatchedConversion(el, conversions, beamspot.position());
 
-    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
-    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
-    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
-    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
+    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_,  hasMatchConv, missHits);
+    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_,  hasMatchConv, missHits);
+    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
+    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
     //const Ptr<pat::Electron> elPtr(eleHandle, i);
@@ -228,17 +238,24 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("hoe",         hoe);
     el.addUserFloat("d0",          d0);
     el.addUserFloat("dz",          dz);
-    el.addUserFloat("iso03",       relIsoWithDBeta_);
     el.addUserFloat("ooEmooP",     ooEmooP_);
-    el.addUserInt("missHits",     missHits);
-    el.addUserInt("hasMatchConv",     hasMatchConv);
-    el.addUserFloat("relIsoWithDBeta", relIsoWithDBeta_ );
-    el.addUserInt("isVeto",     isVeto);
-    el.addUserInt("isLoose",    isLoose);
-    el.addUserInt("isMedium",   isMedium);
-    el.addUserInt("isTight",    isTight);
-    //el.addUserFloat("isPassVeto",     isPassVeto);
-    //el.addUserFloat("isPassTight",     isPassTight);
+    el.addUserFloat("missHits",     missHits);
+    el.addUserFloat("hasMatchConv",     hasMatchConv);   
+    el.addUserFloat("iso03db",    relIsoWithDBeta_);
+    el.addUserFloat("iso03",       relIsoWithEA_);
+    el.addUserFloat("sumChargedHadronPt",   pfIso.sumChargedHadronPt);
+    el.addUserFloat("sumNeutralHadronEt", pfIso.sumNeutralHadronEt  );
+    el.addUserFloat("sumPhotonEt",  pfIso.sumPhotonEt );
+    el.addUserFloat("sumPUPt", pfIso.sumPUPt  );
+
+
+    el.addUserFloat("rho", rho );
+    el.addUserFloat("EA", EA );
+    el.addUserFloat("isVeto",     isVeto);
+    el.addUserFloat("isLoose",    isLoose);
+    el.addUserFloat("isMedium",   isMedium);
+    el.addUserFloat("isTight",    isTight);
+  
 
         
 
@@ -264,41 +281,55 @@ ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerOb
   return false;
 }
 
-bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, float reliso, bool conv, int missHits){
+
+float ElectronUserData::getEA(float eta)
+{
+  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
+  // They are valid for electrons only, different EA are available for muons.
+  float effArea = 0.;
+  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.1013;
+  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0988;
+  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0572;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0842;
+  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1530;
+  return effArea;
+}
+
+bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, bool conv, int missHits){
   bool pass = false;
 
   if(WP == "VETO"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.016315) && (fabs(dPhiIn) < 0.252044) && (full5x5 < 0.011100) && (hoe < 0.345843) && (fabs(d0) < 0.060279) && (fabs(dz) < 0.800538) && (fabs(ooemoop) < 0.248070) && reliso < 0.164369 && !conv && (missHits < 3);
+      pass = (fabs(dEtaIn) < 0.016315) && (fabs(dPhiIn) < 0.252044) && (full5x5 < 0.011100) && (hoe < 0.345843) && (fabs(d0) < 0.060279) && (fabs(dz) < 0.800538) && (fabs(ooemoop) < 0.248070)  && !conv && (missHits < 3);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010671) && (fabs(dPhiIn) < 0.245263) && (full5x5 < 0.033987) && (hoe < 0.134691) && (fabs(d0) < 0.273097) && (fabs(dz) < 0.885860) && (fabs(ooemoop) < 0.157160) && reliso < 0.212604 && !conv && (missHits < 4);
+      pass = (fabs(dEtaIn) < 0.010671) && (fabs(dPhiIn) < 0.245263) && (full5x5 < 0.033987) && (hoe < 0.134691) && (fabs(d0) < 0.273097) && (fabs(dz) < 0.885860) && (fabs(ooemoop) < 0.157160)  && !conv && (missHits < 4);
     }
   }
   if(WP == "LOOSE"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.012442) && (fabs(dPhiIn) < 0.072624) && (full5x5 < 0.010557) && (hoe < 0.121476) && (fabs(d0) < 0.022664) && (fabs(dz) < 0.173670) && (fabs(ooemoop) < 0.221803) && reliso < 0.120026 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.012442) && (fabs(dPhiIn) < 0.072624) && (full5x5 < 0.010557) && (hoe < 0.121476) && (fabs(d0) < 0.022664) && (fabs(dz) < 0.173670) && (fabs(ooemoop) < 0.221803) && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010654) && (fabs(dPhiIn) < 0.145129) && (full5x5 < 0.032602) && (hoe < 0.131862) && (fabs(d0) < 0.097358) && (fabs(dz) < 0.198444) && (fabs(ooemoop) < 0.142283) && reliso < 0.162914 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.010654) && (fabs(dPhiIn) < 0.145129) && (full5x5 < 0.032602) && (hoe < 0.131862) && (fabs(d0) < 0.097358) && (fabs(dz) < 0.198444) && (fabs(ooemoop) < 0.142283)  && !conv && (missHits < 2);
     }
       }
 
   if(WP == "MEDIUM"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.0076741) && (fabs(dPhiIn) < 0.032643) && (full5x5 < 0.010399) && (hoe < 0.060662) && (fabs(d0) < 0.011811) && (fabs(dz) < 0.070775) && (fabs(ooemoop) < 0.153897) && reliso < 0.097213 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.0076741) && (fabs(dPhiIn) < 0.032643) && (full5x5 < 0.010399) && (hoe < 0.060662) && (fabs(d0) < 0.011811) && (fabs(dz) < 0.070775) && (fabs(ooemoop) < 0.153897)  && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.009285) && (fabs(dPhiIn) < 0.042447) && (full5x5 < 0.029524) && (hoe < 0.104263) && (fabs(d0) < 0.051682) && (fabs(dz) < 0.180720) && (fabs(ooemoop) < 0.137468) && reliso < 0.116708 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.009285) && (fabs(dPhiIn) < 0.042447) && (full5x5 < 0.029524) && (hoe < 0.104263) && (fabs(d0) < 0.051682) && (fabs(dz) < 0.180720) && (fabs(ooemoop) < 0.137468)  && !conv && (missHits < 2);
     }
       }
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.006574) && (fabs(dPhiIn) < 0.022868) && (full5x5 < 0.010181) && (hoe < 0.037553) && (fabs(d0) < 0.009924) && (fabs(dz) < 0.015310) && (fabs(ooemoop) < 0.131191) && reliso < 0.074355 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.006574) && (fabs(dPhiIn) < 0.022868) && (full5x5 < 0.010181) && (hoe < 0.037553) && (fabs(d0) < 0.009924) && (fabs(dz) < 0.015310) && (fabs(ooemoop) < 0.131191) && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.005681) && (fabs(dPhiIn) < 0.032046) && (full5x5 < 0.028766) && (hoe < 0.081902) && (fabs(d0) < 0.027261) && (fabs(dz) < 0.147154) && (fabs(ooemoop) < 0.106055) && reliso < 0.090185 && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.005681) && (fabs(dPhiIn) < 0.032046) && (full5x5 < 0.028766) && (hoe < 0.081902) && (fabs(d0) < 0.027261) && (fabs(dz) < 0.147154) && (fabs(ooemoop) < 0.106055)  && !conv && (missHits < 2);
     }
       }
   return pass;

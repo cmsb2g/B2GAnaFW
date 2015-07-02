@@ -579,6 +579,34 @@ electronVars = (
         tag = cms.untracked.string("Iso03"),
         quantity = cms.untracked.string("userFloat('iso03')")
    ),
+    cms.PSet(
+        tag = cms.untracked.string("Iso03db"),
+        quantity = cms.untracked.string("userFloat('iso03db')")
+   ),
+    cms.PSet(
+        tag = cms.untracked.string("rho"),
+        quantity = cms.untracked.string("userFloat('rho')")
+   ),
+       cms.PSet(
+        tag = cms.untracked.string("EA"),
+        quantity = cms.untracked.string("userFloat('EA')")
+   ),
+          cms.PSet(
+        tag = cms.untracked.string("sumChargedHadronPt"),
+        quantity = cms.untracked.string("userFloat('sumChargedHadronPt')")
+   ),
+             cms.PSet(
+        tag = cms.untracked.string("sumNeutralHadronEt"),
+        quantity = cms.untracked.string("userFloat('sumNeutralHadronEt')")
+   ),
+             cms.PSet(
+        tag = cms.untracked.string("sumPhotonEt"),
+        quantity = cms.untracked.string("userFloat('sumPhotonEt')")
+   ),
+             cms.PSet(
+        tag = cms.untracked.string("sumPUPt"),
+        quantity = cms.untracked.string("userFloat('sumPUPt')")
+   ),
    cms.PSet(
         tag = cms.untracked.string("D0"),
         quantity = cms.untracked.string("userFloat('d0')")
@@ -609,11 +637,11 @@ electronVars = (
         ),
    cms.PSet(
         tag = cms.untracked.string("missHits"),
-        quantity = cms.untracked.string("userInt('missHits')")
+        quantity = cms.untracked.string("userFloat('missHits')")
         ),
    cms.PSet(
         tag = cms.untracked.string("hasMatchedConVeto"),
-        quantity = cms.untracked.string("userInt('hasMatchConv')")
+        quantity = cms.untracked.string("userFloat('hasMatchConv')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isEB"),
@@ -621,19 +649,19 @@ electronVars = (
         ),
   cms.PSet(
         tag = cms.untracked.string("isVeto"),
-        quantity = cms.untracked.string("userInt('isVeto')")
+        quantity = cms.untracked.string("userFloat('isVeto')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isLoose"),
-        quantity = cms.untracked.string("userInt('isLoose')")
+        quantity = cms.untracked.string("userFloat('isLoose')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isTight"),
-        quantity = cms.untracked.string("userInt('isTight')")
+        quantity = cms.untracked.string("userFloat('isTight')")
         ),
   cms.PSet(
         tag = cms.untracked.string("isMedium"),
-        quantity = cms.untracked.string("userInt('isMedium')")
+        quantity = cms.untracked.string("userFloat('isMedium')")
         ),
   cms.PSet(
         tag = cms.untracked.string("scEta"),
