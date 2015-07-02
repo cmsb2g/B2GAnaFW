@@ -26,6 +26,7 @@
 #include "DataFormats/Common/interface/Ptr.h"
 
 #include<vector>
+#include <TMath.h>
 
 using namespace reco;
 using namespace edm;
@@ -38,11 +39,12 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
+  float getEA(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
   bool passIDWP(string, bool, float, float, float, float, float, float, float, float, bool, int);
 
 
-  InputTag eleLabel_, pvLabel_, convLabel_;
+  InputTag eleLabel_, pvLabel_, convLabel_, rho_;
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
@@ -69,6 +71,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    eleLabel_(iConfig.getParameter<edm::InputTag>("eleLabel")),
    pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
    convLabel_(iConfig.getParameter<edm::InputTag>("conversion")),   // "offlinePrimaryVertex"
+   rho_( iConfig.getParameter<edm::InputTag>("rho")),
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
    triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
@@ -88,7 +91,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<std::vector<reco::Vertex> > vertices;
   iEvent.getByLabel(pvLabel_, vertices);
 
-
+  //RHO
+  edm::Handle<double> rhoHandle;
+  iEvent.getByLabel(rho_,rhoHandle);
+  double rho = *rhoHandle; 
 
   if(debug_>=1) cout<<"vtx size " << vertices->size()<<endl; 
 
@@ -188,6 +194,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float hoe = el.hadronicOverEm();
     float absiso = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
     float relIsoWithDBeta_ = absiso/el.pt();
+    double EA = getEA(el.eta());
+    //double rho = 1.0;
+    float absiso_EA = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
+    float relIsoWithEA_ = absiso_EA/el.pt();
     float ooEmooP_; 
     if( el.ecalEnergy() == 0 ){
       printf("Electron energy is zero!\n");
@@ -228,29 +238,36 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("hoe",         hoe);
     el.addUserFloat("d0",          d0);
     el.addUserFloat("dz",          dz);
-    el.addUserFloat("iso03",       relIsoWithDBeta_);
     el.addUserFloat("ooEmooP",     ooEmooP_);
-    el.addUserInt("missHits",     missHits);
-    el.addUserInt("hasMatchConv",     hasMatchConv);
-    el.addUserFloat("relIsoWithDBeta", relIsoWithDBeta_ );
-    el.addUserInt("isVeto",     isVeto);
-    el.addUserInt("isLoose",    isLoose);
-    el.addUserInt("isMedium",   isMedium);
-    el.addUserInt("isTight",    isTight);
-    //el.addUserFloat("isPassVeto",     isPassVeto);
-    //el.addUserFloat("isPassTight",     isPassTight);
+    el.addUserFloat("missHits",     missHits);
+    el.addUserFloat("hasMatchConv",     hasMatchConv);   
+    el.addUserFloat("iso03db",    relIsoWithDBeta_);
+    el.addUserFloat("iso03",       relIsoWithEA_);
+    el.addUserFloat("sumChargedHadronPt",   pfIso.sumChargedHadronPt);
+    el.addUserFloat("sumNeutralHadronEt", pfIso.sumNeutralHadronEt  );
+    el.addUserFloat("sumPhotonEt",  pfIso.sumPhotonEt );
+    el.addUserFloat("sumPUPt", pfIso.sumPUPt  );
 
-        
+
+    el.addUserFloat("rho", rho );
+    el.addUserFloat("EA", EA );
+    el.addUserFloat("isVeto",     isVeto);
+    el.addUserFloat("isLoose",    isLoose);
+    el.addUserFloat("isMedium",   isMedium);
+    el.addUserFloat("isTight",    isTight);
+
+
+
 
   }
 
- iEvent.put( eleColl );
+  iEvent.put( eleColl );
 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 
-bool
+  bool
 ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerObjectCollection triggerObjects, int& index)
 {
   for (size_t i = 0 ; i < triggerObjects.size() ; i++){
@@ -262,6 +279,20 @@ ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerOb
     }
   }
   return false;
+}
+
+
+float ElectronUserData::getEA(float eta)
+{
+  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
+  // They are valid for electrons only, different EA are available for muons.
+  float effArea = 0.;
+  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.1013;
+  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0988;
+  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0572;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0842;
+  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1530;
+  return effArea;
 }
 
 bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, float reliso, bool conv, int missHits){
@@ -282,7 +313,7 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
     else{
       pass = (fabs(dEtaIn) < 0.009833 ) && (fabs(dPhiIn) < 0.149934 ) && (full5x5 < 0.031838 ) && (hoe < 0.115754 ) && (fabs(d0) < 0.099266 ) && (fabs(dz) < 0.197897 ) && (fabs(ooemoop) < 0.140662 ) && (reliso < 0.163368 ) && !conv && (missHits < 1);
     }
-      }
+  }
 
   if(WP == "MEDIUM"){
     if(isEB){
@@ -291,7 +322,7 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
     else{
       pass = (fabs(dEtaIn) <  0.007429 ) && (fabs(dPhiIn) <  0.067879 ) && (full5x5 <  0.030135 ) && (hoe <  0.086782 ) && (fabs(d0) <  0.036719 ) && (fabs(dz) <  0.138142 ) && (fabs(ooemoop) <  0.100683 ) && (reliso <  0.113254 ) && !conv && (missHits < 1);
     }
-      }
+  }
 
   if(WP == "TIGHT"){
     if(isEB){
@@ -300,7 +331,7 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
     else{
       pass = (fabs(dEtaIn) <  0.007057 ) && (fabs(dPhiIn) <  0.030159 ) && (full5x5 <  0.028237 ) && (hoe <  0.067778 ) && (fabs(d0) <  0.027984 ) && (fabs(dz) <  0.133431 ) && (fabs(ooemoop) <  0.098919 ) && (reliso <  0.078265 ) && !conv && (missHits < 1);
     }
-      }
+  }
   return pass;
 }
 
