@@ -18,7 +18,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
+                 'file:/uscms_data/d3/skyria/Stealth_13/SPRING15/CMSSW_7_4_5_patch1/src/SIMULATION/test/Stealth13_MINIAOD.root',
+                 #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
                  #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
                  #'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
                  #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
@@ -63,7 +64,6 @@ if(options.isData):options.LHE = False
     
 ###inputTag labels
 rhoLabel = "fixedGridRhoFastjetAll"
-phoLabel = 'slimmedPhotons'
 muLabel  = 'slimmedMuons'
 elLabel  = 'slimmedElectrons'
 jLabel = 'slimmedJets'
@@ -149,7 +149,7 @@ process.skimmedPatMuons = cms.EDFilter(
 
 process.skimmedPatPhotons = cms.EDFilter(
     "PATPhotonSelector",
-    src = cms.InputTag(phoLabel),
+    src = cms.InputTag("slimmedPhotons"),
     cut = cms.string("pt > 30 && abs(eta) < 2.4"),
 
 )
@@ -240,20 +240,19 @@ process.electronUserData = cms.EDProducer(
 
 process.photonUserData = cms.EDProducer(
     'PhotonUserData',
-    phoLabel = cms.InputTag("skimmedPatPhotons"),
-    pv        = cms.InputTag(pvLabel),
-    rho               = cms.InputTag(rhoLabel),
-    phoLabel2 = cms.InputTag("slimmedPhotons"),
-    packedPFCands = cms.InputTag("packedPFCandidates"),
-    ebReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEBRecHits"),
-    eeReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEERecHits"),
-    phoLooseIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-loose"),
-    phoMediumIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-medium"),
-    phoTightIdMap = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight"),
-    phoChgIsoMap = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
-    phoPhoIsoMap = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
-    phoNeuIsoMap = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation")
-    )
+    rho                     = cms.InputTag(rhoLabel),
+    pholabel                = cms.InputTag("slimmedPhotons"),
+    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-loose"),
+    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-medium"),
+    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight"),
+    phoChgIsoMap            = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
+    phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
+    phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
+    effAreaChHadFile        = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_V2.txt"),
+    effAreaNeuHadFile       = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_V2.txt"),
+    effAreaPhoFile          = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_V2.txt"),
+    full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta")
+  )
 
 process.photonJets = cms.EDProducer(
     'PhotonJets',
@@ -292,8 +291,6 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 #
-print "St the PHoton"
-
 
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
@@ -332,15 +329,9 @@ process.TriggerUserData = cms.EDProducer(
 #    objects = cms.InputTag("selectedPatTrigger")
 #    )                                 
 
-print 'here'
-
-
 ### Including ntuplizer 
-print'here'
+
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
-
-print 'here'
-
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
 
