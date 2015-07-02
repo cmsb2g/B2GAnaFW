@@ -41,7 +41,7 @@ private:
   void produce( edm::Event &, const edm::EventSetup & );
   float getEA(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
-  bool passIDWP(string, bool, float, float, float, float, float,  float, float, bool, int);
+  bool passIDWP(string, bool, float, float, float, float, float, float, float, float, bool, int);
 
 
   InputTag eleLabel_, pvLabel_, convLabel_, rho_;
@@ -219,10 +219,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     // conversion rejection match
     bool hasMatchConv = ConversionTools::hasMatchedConversion(el, conversions, beamspot.position());
 
-    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_,  hasMatchConv, missHits);
-    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_,  hasMatchConv, missHits);
-    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
+    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
+    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
+    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
+    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, relIsoWithDBeta_, hasMatchConv, missHits);
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
     //const Ptr<pat::Electron> elPtr(eleHandle, i);
@@ -255,19 +255,19 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("isLoose",    isLoose);
     el.addUserFloat("isMedium",   isMedium);
     el.addUserFloat("isTight",    isTight);
-  
 
-        
+
+
 
   }
 
- iEvent.put( eleColl );
+  iEvent.put( eleColl );
 
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 
-bool
+  bool
 ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerObjectCollection triggerObjects, int& index)
 {
   for (size_t i = 0 ; i < triggerObjects.size() ; i++){
@@ -295,43 +295,43 @@ float ElectronUserData::getEA(float eta)
   return effArea;
 }
 
-bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, bool conv, int missHits){
+bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, float reliso, bool conv, int missHits){
   bool pass = false;
 
   if(WP == "VETO"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.016315) && (fabs(dPhiIn) < 0.252044) && (full5x5 < 0.011100) && (hoe < 0.345843) && (fabs(d0) < 0.060279) && (fabs(dz) < 0.800538) && (fabs(ooemoop) < 0.248070)  && !conv && (missHits < 3);
+      pass = (fabs(dEtaIn) <  0.013625 ) && (fabs(dPhiIn) <  0.230374 ) && (full5x5 < 0.011586 ) && (hoe <  0.181130 ) && (fabs(d0) < 0.094095 ) && (fabs(dz) <  0.713070 ) && (fabs(ooemoop) <  0.295751 ) && (reliso < 0.158721 ) && !conv && (missHits < 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010671) && (fabs(dPhiIn) < 0.245263) && (full5x5 < 0.033987) && (hoe < 0.134691) && (fabs(d0) < 0.273097) && (fabs(dz) < 0.885860) && (fabs(ooemoop) < 0.157160)  && !conv && (missHits < 4);
+      pass = (fabs(dEtaIn) <  0.011932 ) && (fabs(dPhiIn) <  0.255450 ) && (full5x5 < 0.031849 ) && (hoe <  0.223870 ) && (fabs(d0) < 0.342293 ) && (fabs(dz) < 0.953461 ) && (fabs(ooemoop) < 0.155501 ) && (reliso < 0.177032 ) && !conv && (missHits < 3);
     }
   }
   if(WP == "LOOSE"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.012442) && (fabs(dPhiIn) < 0.072624) && (full5x5 < 0.010557) && (hoe < 0.121476) && (fabs(d0) < 0.022664) && (fabs(dz) < 0.173670) && (fabs(ooemoop) < 0.221803) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.009277 ) && (fabs(dPhiIn) < 0.094739 ) && (full5x5 <  0.010331 ) && (hoe < 0.093068 ) && (fabs(d0) < 0.035904 ) && (fabs(dz) < 0.075496 ) && (fabs(ooemoop) <  0.189968 ) && (reliso < 0.130136 ) && !conv && (missHits < 1);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.010654) && (fabs(dPhiIn) < 0.145129) && (full5x5 < 0.032602) && (hoe < 0.131862) && (fabs(d0) < 0.097358) && (fabs(dz) < 0.198444) && (fabs(ooemoop) < 0.142283)  && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) < 0.009833 ) && (fabs(dPhiIn) < 0.149934 ) && (full5x5 < 0.031838 ) && (hoe < 0.115754 ) && (fabs(d0) < 0.099266 ) && (fabs(dz) < 0.197897 ) && (fabs(ooemoop) < 0.140662 ) && (reliso < 0.163368 ) && !conv && (missHits < 1);
     }
-      }
+  }
 
   if(WP == "MEDIUM"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.0076741) && (fabs(dPhiIn) < 0.032643) && (full5x5 < 0.010399) && (hoe < 0.060662) && (fabs(d0) < 0.011811) && (fabs(dz) < 0.070775) && (fabs(ooemoop) < 0.153897)  && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) <  0.008925 ) && (fabs(dPhiIn) <  0.035973 ) && (full5x5 <  0.009996 ) && (hoe <  0.050537 ) && (fabs(d0) <  0.012235 ) && (fabs(dz) <  0.042020 ) && (fabs(ooemoop) <  0.091942 ) && (reliso <  0.107587 ) && !conv && (missHits < 1);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.009285) && (fabs(dPhiIn) < 0.042447) && (full5x5 < 0.029524) && (hoe < 0.104263) && (fabs(d0) < 0.051682) && (fabs(dz) < 0.180720) && (fabs(ooemoop) < 0.137468)  && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) <  0.007429 ) && (fabs(dPhiIn) <  0.067879 ) && (full5x5 <  0.030135 ) && (hoe <  0.086782 ) && (fabs(d0) <  0.036719 ) && (fabs(dz) <  0.138142 ) && (fabs(ooemoop) <  0.100683 ) && (reliso <  0.113254 ) && !conv && (missHits < 1);
     }
-      }
+  }
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.006574) && (fabs(dPhiIn) < 0.022868) && (full5x5 < 0.010181) && (hoe < 0.037553) && (fabs(d0) < 0.009924) && (fabs(dz) < 0.015310) && (fabs(ooemoop) < 0.131191) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) <  0.006046 ) && (fabs(dPhiIn) <  0.028092 ) && (full5x5 <  0.009947 ) && (hoe <  0.045772 ) && (fabs(d0) <  0.008790 ) && (fabs(dz) <  0.021226 ) && (fabs(ooemoop) <  0.020118 ) && (reliso <  0.069537 ) && !conv && (missHits < 1);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.005681) && (fabs(dPhiIn) < 0.032046) && (full5x5 < 0.028766) && (hoe < 0.081902) && (fabs(d0) < 0.027261) && (fabs(dz) < 0.147154) && (fabs(ooemoop) < 0.106055)  && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) <  0.007057 ) && (fabs(dPhiIn) <  0.030159 ) && (full5x5 <  0.028237 ) && (hoe <  0.067778 ) && (fabs(d0) <  0.027984 ) && (fabs(dz) <  0.133431 ) && (fabs(ooemoop) <  0.098919 ) && (reliso <  0.078265 ) && !conv && (missHits < 1);
     }
-      }
+  }
   return pass;
 }
 
