@@ -117,115 +117,123 @@ muonVars = (
         quantity = cms.untracked.string("userFloat('dz')")
         ),
    cms.PSet(
-        tag = cms.untracked.string("Dzerr"),
-        quantity = cms.untracked.string("userFloat('dzErr')")
+     tag = cms.untracked.string("Dzerr"),
+     quantity = cms.untracked.string("userFloat('dzErr')")
+     ),
+   ### the following variables need have track embedded in the pat::muon
+    cms.PSet(
+        tag = cms.untracked.string("IsSoftMuon"),
+        quantity = cms.untracked.string("userFloat('isSoftMuon')")
         ),
-### the following variables need have track embedded in the pat::muon
     cms.PSet(
-    tag = cms.untracked.string("IsLooseMuon"),
-    quantity = cms.untracked.string("isLooseMuon")
-    ),
+        tag = cms.untracked.string("IsLooseMuon"),
+        quantity = cms.untracked.string("userFloat('isLooseMuon')")
+        ),
     cms.PSet(
-    tag = cms.untracked.string("IsSoftMuon"),
-    quantity = cms.untracked.string("userFloat('isSoftMuon')")
-    ),
+        tag = cms.untracked.string("IsMediumMuon"),
+        quantity = cms.untracked.string("userFloat('isMediumMuon')")
+        ),
     cms.PSet(
-    tag = cms.untracked.string("IsTightMuon"),
-    quantity = cms.untracked.string("userFloat('isTightMuon')")
-    ),
-## variables used in ID
+        tag = cms.untracked.string("IsTightMuon"),
+        quantity = cms.untracked.string("userFloat('isTightMuon')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("IsHighPtMuon"),
+        quantity = cms.untracked.string("userFloat('isHighPtMuon')")
+        ),
+    ## variables used in ID
 ## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
    ### LOOSE
    cms.PSet(
-    tag = cms.untracked.string("IsPFMuon"),
-    quantity = cms.untracked.string("isPFMuon")
-   ),
+       tag = cms.untracked.string("IsPFMuon"),
+       quantity = cms.untracked.string("isPFMuon")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("IsGlobalMuon"),
-    quantity = cms.untracked.string("isGlobalMuon")
-   ),
+       tag = cms.untracked.string("IsGlobalMuon"),
+       quantity = cms.untracked.string("isGlobalMuon")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("IsTrackerMuon"),
-    quantity = cms.untracked.string("isTrackerMuon")
-   ),
+       tag = cms.untracked.string("IsTrackerMuon"),
+       quantity = cms.untracked.string("isTrackerMuon")
+       ),
    ### TIGHT
    cms.PSet(
-    tag = cms.untracked.string("GlbTrkNormChi2"),
-    quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.normalizedChi2 : -900")
-   ),
+       tag = cms.untracked.string("GlbTrkNormChi2"),
+       quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.normalizedChi2 : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("NumberValidMuonHits"),
-    quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.hitPattern.numberOfValidMuonHits : -900")
-   ),
+       tag = cms.untracked.string("NumberValidMuonHits"),
+       quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.hitPattern.numberOfValidMuonHits : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("NumberMatchedStations"),
-    quantity = cms.untracked.string("numberOfMatchedStations")
-   ),
+       tag = cms.untracked.string("NumberMatchedStations"),
+       quantity = cms.untracked.string("numberOfMatchedStations")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("NumberValidPixelHits"),
-    quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidPixelHits : -900")
-   ),
+       tag = cms.untracked.string("NumberValidPixelHits"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidPixelHits : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("NumberTrackerLayers"),
-    quantity = cms.untracked.string("? track.isNonnull ? track.hitPattern.trackerLayersWithMeasurement : -900")
-   ),
+       tag = cms.untracked.string("NumberTrackerLayers"),
+       quantity = cms.untracked.string("? track.isNonnull ? track.hitPattern.trackerLayersWithMeasurement : -900")
+       ),
    ### SOFT
    cms.PSet(
-    tag = cms.untracked.string("NumberOfValidTrackerHits"),
-    quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidTrackerHits : -900")
-   ),
+       tag = cms.untracked.string("NumberOfValidTrackerHits"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidTrackerHits : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("NumberOfPixelLayers"),
-    quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.pixelLayersWithMeasurement : -900")
-   ),
+       tag = cms.untracked.string("NumberOfPixelLayers"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.pixelLayersWithMeasurement : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("InTrkNormChi2"),
-    quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
-   ),
-## variables used in isolation
+       tag = cms.untracked.string("InTrkNormChi2"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
+       ),
+   ## variables used in isolation
 ## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
    cms.PSet(
-    tag = cms.untracked.string("SumChargedHadronPt"),
-    quantity = cms.untracked.string("pfIsolationR04().sumChargedHadronPt")
-   ),
+       tag = cms.untracked.string("SumChargedHadronPt"),
+       quantity = cms.untracked.string("pfIsolationR04().sumChargedHadronPt")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("SumNeutralHadronPt"),
-    quantity = cms.untracked.string("pfIsolationR04().sumNeutralHadronEt")
-   ),
+       tag = cms.untracked.string("SumNeutralHadronPt"),
+       quantity = cms.untracked.string("pfIsolationR04().sumNeutralHadronEt")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("SumPhotonPt"),
-    quantity = cms.untracked.string("pfIsolationR04().sumPhotonEt")
-   ),
+       tag = cms.untracked.string("SumPhotonPt"),
+       quantity = cms.untracked.string("pfIsolationR04().sumPhotonEt")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("SumPUPt"),
-    quantity = cms.untracked.string("pfIsolationR04().sumPUPt")
-   ),
-### genLepton
+       tag = cms.untracked.string("SumPUPt"),
+       quantity = cms.untracked.string("pfIsolationR04().sumPUPt")
+       ),
+   ### genLepton
    cms.PSet(
-    tag = cms.untracked.string("GenMuonY"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.rapidity : -900")
-   ),
+       tag = cms.untracked.string("GenMuonY"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.rapidity : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("GenMuonEta"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.eta : -900")
-   ),
+       tag = cms.untracked.string("GenMuonEta"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.eta : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("GenMuonPhi"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.phi : -900")
-   ),
+       tag = cms.untracked.string("GenMuonPhi"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.phi : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("GenMuonPt"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.pt : -900")
-   ),
+       tag = cms.untracked.string("GenMuonPt"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.pt : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("GenMuonE"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.energy : -900")
-   ),
+       tag = cms.untracked.string("GenMuonE"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.energy : -900")
+       ),
    cms.PSet(
-    tag = cms.untracked.string("GenMuonCharge"),
-    quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.charge : -900")
-   ),
-### trigger matching
+       tag = cms.untracked.string("GenMuonCharge"),
+       quantity = cms.untracked.string("? genParticleRef.isNonnull ? genLepton.charge : -900")
+       ),
+   ### trigger matching
  #  cms.PSet(
  #   tag = cms.untracked.string("HLTmuonDeltaR"),
  #   quantity = cms.untracked.string("userFloat('HLTmuonDeltaR')")
@@ -250,75 +258,75 @@ muonVars = (
 
 ### jet variables
 jetVars = (
-### B-TAGGING
+    ### B-TAGGING
     cms.PSet(
-     tag = cms.untracked.string("CSV"),
-     quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
-    ),
+      tag = cms.untracked.string("CSV"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("CSVV1"),
-     quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
-    ),
-### GEN PARTON
+      tag = cms.untracked.string("CSVV1"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
+      ),
+    ### GEN PARTON
     cms.PSet(
-     tag = cms.untracked.string("GenPartonY"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.rapidity : -900")
-    ),
+      tag = cms.untracked.string("GenPartonY"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.rapidity : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenPartonEta"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.eta : -900")
-    ),
+      tag = cms.untracked.string("GenPartonEta"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.eta : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenPartonPhi"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.phi : -900")
-    ),
+      tag = cms.untracked.string("GenPartonPhi"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.phi : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenPartonPt"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.pt : -900")
-    ),
+      tag = cms.untracked.string("GenPartonPt"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.pt : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenPartonE"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.energy : -900")
-    ),
+      tag = cms.untracked.string("GenPartonE"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.energy : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenPartonCharge"),
-     quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.charge : -900")
-    ),
-###
+      tag = cms.untracked.string("GenPartonCharge"),
+      quantity = cms.untracked.string("? genParticleRef.isNonnull ? genParton.charge : -900")
+      ),
+    ###
     cms.PSet(
-     tag = cms.untracked.string("PartonFlavour"),
-     quantity = cms.untracked.string("partonFlavour")
-    ),
+      tag = cms.untracked.string("PartonFlavour"),
+      quantity = cms.untracked.string("partonFlavour")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("HadronFlavour"),
-     quantity = cms.untracked.string("hadronFlavour")
-    ),
-### GEN JET
+      tag = cms.untracked.string("HadronFlavour"),
+      quantity = cms.untracked.string("hadronFlavour")
+      ),
+    ### GEN JET
     cms.PSet(
-     tag = cms.untracked.string("GenJetY"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.rapidity : -900")
-    ),
+      tag = cms.untracked.string("GenJetY"),
+      quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.rapidity : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenJetEta"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.eta : -900")
-    ),
+      tag = cms.untracked.string("GenJetEta"),
+      quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.eta : -900")
+      ),
     cms.PSet(
-     tag = cms.untracked.string("GenJetPhi"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.phi : -900")
-    ),
+        tag = cms.untracked.string("GenJetPhi"),
+        quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.phi : -900")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("GenJetPt"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.pt : -900")
-    ),
+        tag = cms.untracked.string("GenJetPt"),
+        quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.pt : -900")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("GenJetE"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.energy : -900")
-    ),
+        tag = cms.untracked.string("GenJetE"),
+        quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.energy : -900")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("GenJetCharge"),
-     quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.charge : -900")
-    ),
-### TRIGGER MATHING
+        tag = cms.untracked.string("GenJetCharge"),
+        quantity = cms.untracked.string("? genJetFwdRef.isNonnull ? genJet.charge : -900")
+        ),
+    ### TRIGGER MATHING
    # cms.PSet(
    #  tag = cms.untracked.string("HLTjetEta"),
    #  quantity = cms.untracked.string("userFloat('HLTjetEta')")
@@ -341,86 +349,86 @@ jetVars = (
    # ),
 ### CONSTITUENTS
     cms.PSet(
-     tag = cms.untracked.string("muonMultiplicity"),
-     quantity = cms.untracked.string("?isPFJet || isJPTJet ? muonMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("muonMultiplicity"),
+        quantity = cms.untracked.string("?isPFJet || isJPTJet ? muonMultiplicity : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("PhotonEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? photonEnergy : -1")
-    ),
+        tag = cms.untracked.string("PhotonEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? photonEnergy : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("ElectronEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? electronEnergy : -1")
-    ),
+        tag = cms.untracked.string("ElectronEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? electronEnergy : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("MuonEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? muonEnergy : -1")
-    ),
+        tag = cms.untracked.string("MuonEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? muonEnergy : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("HFHadronEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? HFHadronEnergy : -1")
-    ),
+        tag = cms.untracked.string("HFHadronEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? HFHadronEnergy : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("HFEMEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? HFEMEnergy : -1")
-    ),
+        tag = cms.untracked.string("HFEMEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? HFEMEnergy : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("ChargedHadronMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? chargedHadronMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("ChargedHadronMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? chargedHadronMultiplicity : -1")
+        ),
     cms.PSet(
-      tag = cms.untracked.string("numberOfDaughters"),
-      quantity = cms.untracked.string("? isPFJet ? numberOfDaughters : -1")
-       ),
-   cms.PSet(
-      tag = cms.untracked.string("chargedMultiplicity"),
-      quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("numberOfDaughters"),
+        quantity = cms.untracked.string("? isPFJet ? numberOfDaughters : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("neutralHadronMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("chargedMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("neutralHadronEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergy : -1")
-    ),
+        tag = cms.untracked.string("neutralHadronMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
+        ),
     cms.PSet(
-    tag = cms.untracked.string("neutralEmEnergy"),
-    quantity = cms.untracked.string("? isPFJet ? neutralEmEnergy : -1"),
-    ),
+        tag = cms.untracked.string("neutralHadronEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? neutralHadronEnergy : -1")
+        ),
     cms.PSet(
-    tag = cms.untracked.string("chargedEmEnergy"),
-    quantity = cms.untracked.string("? isPFJet ? chargedEmEnergy : -1"),
-    ),
+        tag = cms.untracked.string("neutralEmEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? neutralEmEnergy : -1"),
+        ),
     cms.PSet(
-    tag = cms.untracked.string("chargedHadronEnergy"),
-    quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergy : -1"),
-    ),
-     cms.PSet(
-     tag = cms.untracked.string("photonMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? photonMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("chargedEmEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? chargedEmEnergy : -1"),
+        ),
     cms.PSet(
-     tag = cms.untracked.string("electronMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? electronMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("chargedHadronEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? chargedHadronEnergy : -1"),
+        ),
     cms.PSet(
-     tag = cms.untracked.string("HFHadronMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? HFHadronMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("photonMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? photonMultiplicity : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("HFEMMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? HFEMMultiplicity : -1")
-    ),
+        tag = cms.untracked.string("electronMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? electronMultiplicity : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("ChargeMuEnergy"),
-     quantity = cms.untracked.string("? isPFJet ? chargedMuEnergy : -1")
-    ),
+        tag = cms.untracked.string("HFHadronMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? HFHadronMultiplicity : -1")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("neutralMultiplicity"),
-     quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
-    ),
-#### FOR JEC
+        tag = cms.untracked.string("HFEMMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? HFEMMultiplicity : -1")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("ChargeMuEnergy"),
+        quantity = cms.untracked.string("? isPFJet ? chargedMuEnergy : -1")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("neutralMultiplicity"),
+        quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
+        ),
+    #### FOR JEC
     cms.PSet(
         tag = cms.untracked.string("jecFactor0"),
         quantity = cms.untracked.string("jecFactor(0)")
@@ -429,32 +437,32 @@ jetVars = (
         tag = cms.untracked.string("jetArea"),
         quantity = cms.untracked.string("jetArea")
         ),
-#### FOR SYSTEMATICS
+    #### FOR SYSTEMATICS
     cms.PSet(
-     tag = cms.untracked.string("SmearedPt"),
-     quantity = cms.untracked.string("userFloat('SmearedPt')")
-    ),
+        tag = cms.untracked.string("SmearedPt"),
+        quantity = cms.untracked.string("userFloat('SmearedPt')")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("SmearedPEta"),
-     quantity = cms.untracked.string("userFloat('SmearedPEta')")
-    ),
+        tag = cms.untracked.string("SmearedPEta"),
+        quantity = cms.untracked.string("userFloat('SmearedPEta')")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("SmearedPhi"),
-     quantity = cms.untracked.string("userFloat('SmearedPhi')")
-    ),
+        tag = cms.untracked.string("SmearedPhi"),
+        quantity = cms.untracked.string("userFloat('SmearedPhi')")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("SmearedE"),
-     quantity = cms.untracked.string("userFloat('SmearedE')")
-    ),
+        tag = cms.untracked.string("SmearedE"),
+        quantity = cms.untracked.string("userFloat('SmearedE')")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("JERup"),
-     quantity = cms.untracked.string("userFloat('JERup')")
-    ),
+        tag = cms.untracked.string("JERup"),
+        quantity = cms.untracked.string("userFloat('JERup')")
+        ),
     cms.PSet(
-     tag = cms.untracked.string("JERdown"),
-     quantity = cms.untracked.string("userFloat('JERdown')")
-    ),
-)
+        tag = cms.untracked.string("JERdown"),
+        quantity = cms.untracked.string("userFloat('JERdown')")
+        ),
+    )
 
 jetKeys = cms.EDProducer(
     "JetKeyProducer",
@@ -471,93 +479,93 @@ muonKeys = cms.EDProducer(
 
 genPartVars = (
     cms.PSet(
-    tag = cms.untracked.string("ID"),
-    quantity = cms.untracked.string("pdgId")
-    ),
+      tag = cms.untracked.string("ID"),
+      quantity = cms.untracked.string("pdgId")
+      ),
     cms.PSet(
-    tag = cms.untracked.string("Status"),
-    quantity = cms.untracked.string("status")
-    ),
+      tag = cms.untracked.string("Status"),
+      quantity = cms.untracked.string("status")
+      ),
     cms.PSet(
-    tag = cms.untracked.string("MomID"),
-    quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
-    ),
+      tag = cms.untracked.string("MomID"),
+      quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
+      ),
     )
 
 
 
 ### jet variables
 jetAK8Vars = (
-#### SUBSTRUCTURE
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex0"),
-        quantity = cms.untracked.string("? subjets(0).size() > 0 ? subjets(0).at(0).key() : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex1"),
-        quantity = cms.untracked.string("? subjets(0).size() > 1 ? subjets(0).at(1).key() : -1  ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex0"),
-        quantity = cms.untracked.string("? subjets(1).size() > 0 ? subjets(1).at(0).key() : -1  ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex1"),
-        quantity = cms.untracked.string("? subjets(1).size() > 1 ? subjets(1).at(1).key() : -1  ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex2"),
-        quantity = cms.untracked.string("? subjets(1).size() > 2 ? subjets(1).at(2).key() : -1  ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("topSubjetIndex3"),
-        quantity = cms.untracked.string("? subjets(1).size() > 3 ? subjets(1).at(3).key() : -1  ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("softDropMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSSoftDropMass')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("trimmedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("prunedMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
-        ),
-     cms.PSet(
+    #### SUBSTRUCTURE
+    cms.PSet(
+      tag = cms.untracked.string("vSubjetIndex0"),
+      quantity = cms.untracked.string("? subjets(0).size() > 0 ? subjets(0).at(0).key() : -1 ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("vSubjetIndex1"),
+      quantity = cms.untracked.string("? subjets(0).size() > 1 ? subjets(0).at(1).key() : -1  ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("topSubjetIndex0"),
+      quantity = cms.untracked.string("? subjets(1).size() > 0 ? subjets(1).at(0).key() : -1  ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("topSubjetIndex1"),
+      quantity = cms.untracked.string("? subjets(1).size() > 1 ? subjets(1).at(1).key() : -1  ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("topSubjetIndex2"),
+      quantity = cms.untracked.string("? subjets(1).size() > 2 ? subjets(1).at(2).key() : -1  ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("topSubjetIndex3"),
+      quantity = cms.untracked.string("? subjets(1).size() > 3 ? subjets(1).at(3).key() : -1  ")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("tau1"),
+      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("tau2"),
+      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("tau3"),
+      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("softDropMass"),
+      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSSoftDropMass')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("trimmedMass"),
+      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("prunedMass"),
+      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
+      ),
+    cms.PSet(
         tag = cms.untracked.string("filteredMass"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
         ),
-     cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("topMass"),
         quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().topMass : 0")
         ),
-     cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("wMass"),
         quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().wMass : 0")
         ),
-     cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("nSubJets"),
         quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().nSubJets : 0")
         ),
-     cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("minmass"),
         quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().minMass : 0")
         ),
-)
+    )
 
 
 ### copying the muon set of variables from basic,
@@ -571,104 +579,104 @@ muons.src = cms.InputTag("muonUserData")
 ###electrons
 electronVars = (
     ###Cut-based ID variables
-   cms.PSet(
-        tag = cms.untracked.string("Key"),
-        quantity = cms.untracked.string("originalObjectRef().key()")
-   ),
-  cms.PSet(
-        tag = cms.untracked.string("Iso03"),
-        quantity = cms.untracked.string("userFloat('iso03')")
-   ),
     cms.PSet(
-        tag = cms.untracked.string("Iso03db"),
-        quantity = cms.untracked.string("userFloat('iso03db')")
-   ),
+      tag = cms.untracked.string("Key"),
+      quantity = cms.untracked.string("originalObjectRef().key()")
+      ),
     cms.PSet(
-        tag = cms.untracked.string("rho"),
-        quantity = cms.untracked.string("userFloat('rho')")
-   ),
-       cms.PSet(
-        tag = cms.untracked.string("EA"),
-        quantity = cms.untracked.string("userFloat('EA')")
-   ),
-          cms.PSet(
-        tag = cms.untracked.string("sumChargedHadronPt"),
-        quantity = cms.untracked.string("userFloat('sumChargedHadronPt')")
-   ),
-             cms.PSet(
-        tag = cms.untracked.string("sumNeutralHadronEt"),
-        quantity = cms.untracked.string("userFloat('sumNeutralHadronEt')")
-   ),
-             cms.PSet(
-        tag = cms.untracked.string("sumPhotonEt"),
-        quantity = cms.untracked.string("userFloat('sumPhotonEt')")
-   ),
-             cms.PSet(
-        tag = cms.untracked.string("sumPUPt"),
-        quantity = cms.untracked.string("userFloat('sumPUPt')")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("D0"),
-        quantity = cms.untracked.string("userFloat('d0')")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("Dz"),
-        quantity = cms.untracked.string("userFloat('dz')")
-        ),
-   cms.PSet(
-        tag = cms.untracked.string("dEtaIn"),
-        quantity = cms.untracked.string("deltaEtaSuperClusterTrackAtVtx")
-        ),
-   cms.PSet(
+      tag = cms.untracked.string("Iso03"),
+      quantity = cms.untracked.string("userFloat('iso03')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Iso03db"),
+      quantity = cms.untracked.string("userFloat('iso03db')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("rho"),
+      quantity = cms.untracked.string("userFloat('rho')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("EA"),
+      quantity = cms.untracked.string("userFloat('EA')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("sumChargedHadronPt"),
+      quantity = cms.untracked.string("userFloat('sumChargedHadronPt')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("sumNeutralHadronEt"),
+      quantity = cms.untracked.string("userFloat('sumNeutralHadronEt')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("sumPhotonEt"),
+      quantity = cms.untracked.string("userFloat('sumPhotonEt')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("sumPUPt"),
+      quantity = cms.untracked.string("userFloat('sumPUPt')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("D0"),
+      quantity = cms.untracked.string("userFloat('d0')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dz"),
+      quantity = cms.untracked.string("userFloat('dz')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("dEtaIn"),
+      quantity = cms.untracked.string("deltaEtaSuperClusterTrackAtVtx")
+      ),
+    cms.PSet(
         tag = cms.untracked.string("dPhiIn"),
         quantity = cms.untracked.string("deltaPhiSuperClusterTrackAtVtx")
         ),
-   cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("HoE"),
         quantity = cms.untracked.string("hcalOverEcal")
         ),
-   cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("full5x5siee"),
         quantity = cms.untracked.string("full5x5_sigmaIetaIeta")
         ),
-   cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("ooEmooP"),
         quantity = cms.untracked.string("userFloat('ooEmooP')")
         ),
-   cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("missHits"),
         quantity = cms.untracked.string("userFloat('missHits')")
         ),
-   cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("hasMatchedConVeto"),
         quantity = cms.untracked.string("userFloat('hasMatchConv')")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("isEB"),
         quantity = cms.untracked.string("isEB")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("isVeto"),
         quantity = cms.untracked.string("userFloat('isVeto')")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("isLoose"),
         quantity = cms.untracked.string("userFloat('isLoose')")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("isTight"),
         quantity = cms.untracked.string("userFloat('isTight')")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("isMedium"),
         quantity = cms.untracked.string("userFloat('isMedium')")
         ),
-  cms.PSet(
+    cms.PSet(
         tag = cms.untracked.string("scEta"),
         quantity = cms.untracked.string("superCluster().eta()")
         )
 
-)
+    )
 
 
 electrons = copy.deepcopy(basic)
@@ -728,27 +736,27 @@ genJetsAK8SoftDrop.src = cms.InputTag("ak8GenJetsNoNuSoftDrop")
 
 ###event variables
 eventShapeVar = (
-   cms.PSet(
-        tag = cms.untracked.string("isotropy"),
-        quantity = cms.untracked.string("isotropy")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("circularity"),
-        quantity = cms.untracked.string("circularity")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("sphericity"),
-        quantity = cms.untracked.string("sphericity")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("aplanarity"),
-        quantity = cms.untracked.string("aplanarity")
-   ),
-   cms.PSet(
-        tag = cms.untracked.string("thrust"),
-        quantity = cms.untracked.string("thrust")
-   ),
-)
+    cms.PSet(
+      tag = cms.untracked.string("isotropy"),
+      quantity = cms.untracked.string("isotropy")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("circularity"),
+      quantity = cms.untracked.string("circularity")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("sphericity"),
+      quantity = cms.untracked.string("sphericity")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("aplanarity"),
+      quantity = cms.untracked.string("aplanarity")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("thrust"),
+      quantity = cms.untracked.string("thrust")
+      ),
+    )
 
 
 ### event info: EvtNumber, RunNumber, LumiBlock
@@ -765,30 +773,30 @@ edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
     fileName = cms.untracked.string('B2GEDMNtuple.root'),
     outputCommands = cms.untracked.vstring(
-    "drop *",
-    "keep *_genPart_*_*",
-    "keep *_muons_*_*",
-    "keep *_electrons_*_*",
-    "keep *_jetsAK4_*_*",
-    "keep *_jetsAK8_*_*",
-    "keep *_eventShape*_*_*",
-    "keep *_*_*centrality*_*",
-    "keep *_met_*_*",
-    "keep *_eventInfo_*_*",
-    "keep *_subjetsAK8_*_*",
-    "keep *_subjetsCmsTopTag*_*_*",
-    "keep *_jetKeysAK4_*_*",
-    "keep *_jetKeysAK8_*_*",
-    "keep *_subjetKeysAK8_*_*",
-    "keep *_subjetsCmsTopTagKeys_*_*",
-    "keep *_electronKeys_*_*",
-    "keep *_muonKeys_*_*",
-    "keep *_genJetsAK8_*_*",
-    "keep *_genJetsAK8SoftDrop_*_*",
-    "keep *_TriggerUserData*_trigger*_*",
-    "keep *_fixedGridRhoFastjetAll_*_*",
-    "keep *_eventUserData_*_*"
-    ),
+      "drop *",
+      "keep *_genPart_*_*",
+      "keep *_muons_*_*",
+      "keep *_electrons_*_*",
+      "keep *_jetsAK4_*_*",
+      "keep *_jetsAK8_*_*",
+      "keep *_eventShape*_*_*",
+      "keep *_*_*centrality*_*",
+      "keep *_met_*_*",
+      "keep *_eventInfo_*_*",
+      "keep *_subjetsAK8_*_*",
+      "keep *_subjetsCmsTopTag*_*_*",
+      "keep *_jetKeysAK4_*_*",
+      "keep *_jetKeysAK8_*_*",
+      "keep *_subjetKeysAK8_*_*",
+      "keep *_subjetsCmsTopTagKeys_*_*",
+      "keep *_electronKeys_*_*",
+      "keep *_muonKeys_*_*",
+      "keep *_genJetsAK8_*_*",
+      "keep *_genJetsAK8SoftDrop_*_*",
+      "keep *_TriggerUserData*_trigger*_*",
+      "keep *_fixedGridRhoFastjetAll_*_*",
+      "keep *_eventUserData_*_*"
+      ),
     dropMetaData = cms.untracked.string('ALL'),
     )
 print "DONE STANDARD"

@@ -226,6 +226,8 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     // muon ID
     bool isSoftMuon  = m.isSoftMuon(PV);
+    bool isLooseMuon = m.isLooseMuon();
+    bool isMediumMuon = m.isMediumMuon();
     bool isTightMuon = m.isTightMuon(PV);
     bool isHighPtMuon = m.isHighPtMuon(PV);
     
@@ -245,7 +247,6 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double sumPUPt            = m.pfIsolationR04().sumPUPt;
     double pt                 = m.pt();
     double iso04 = (sumChargedHadronPt+TMath::Max(0.,sumNeutralHadronPt+sumPhotonPt-0.5*sumPUPt))/pt;
-
 
     // trigger matched 
 
@@ -267,6 +268,8 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
     m.addUserFloat("isSoftMuon",  isSoftMuon);
+    m.addUserFloat("isLooseMuon", isLooseMuon);
+    m.addUserFloat("isMediumMuon", isMediumMuon);
     m.addUserFloat("isTightMuon", isTightMuon);
     m.addUserFloat("isHighPtMuon", isHighPtMuon);
     //m.addUserFloat("d0",          d0);
