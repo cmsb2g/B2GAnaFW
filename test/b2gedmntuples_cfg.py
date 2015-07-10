@@ -18,8 +18,7 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 'file:/uscms_data/d3/skyria/Stealth_13/SPRING15/CMSSW_7_4_5_patch1/src/SIMULATION/test/Stealth13_MINIAOD.root',
-                 #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
+                 '/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
                  #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
                  #'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
                  #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
