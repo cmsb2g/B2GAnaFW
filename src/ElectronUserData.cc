@@ -300,36 +300,36 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
 
   if(WP == "VETO"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.013625 ) && (fabs(dPhiIn) <  0.230374 ) && (full5x5 < 0.011586 ) && (hoe <  0.181130 ) && (fabs(d0) < 0.094095 ) && (fabs(dz) <  0.713070 ) && (fabs(ooemoop) <  0.295751 ) && (reliso < 0.158721 ) && !conv && (missHits < 2);
+      pass = (fabs(dEtaIn) <  0.013625 ) && (fabs(dPhiIn) <  0.230374 ) && (full5x5 < 0.011586 ) && (hoe <  0.181130 ) && (fabs(d0) < 0.094095 ) && (fabs(dz) <  0.713070 ) && (fabs(ooemoop) <  0.295751 ) && (reliso < 0.158721 ) && !conv && (missHits <= 2);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.011932 ) && (fabs(dPhiIn) <  0.255450 ) && (full5x5 < 0.031849 ) && (hoe <  0.223870 ) && (fabs(d0) < 0.342293 ) && (fabs(dz) < 0.953461 ) && (fabs(ooemoop) < 0.155501 ) && (reliso < 0.177032 ) && !conv && (missHits < 3);
+      pass = (fabs(dEtaIn) <  0.011932 ) && (fabs(dPhiIn) <  0.255450 ) && (full5x5 < 0.031849 ) && (hoe <  0.223870 ) && (fabs(d0) < 0.342293 ) && (fabs(dz) < 0.953461 ) && (fabs(ooemoop) < 0.155501 ) && (reliso < 0.177032 ) && !conv && (missHits <= 3);
     }
   }
   if(WP == "LOOSE"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.009277 ) && (fabs(dPhiIn) < 0.094739 ) && (full5x5 <  0.010331 ) && (hoe < 0.093068 ) && (fabs(d0) < 0.035904 ) && (fabs(dz) < 0.075496 ) && (fabs(ooemoop) <  0.189968 ) && (reliso < 0.130136 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) < 0.009277 ) && (fabs(dPhiIn) < 0.094739 ) && (full5x5 <  0.010331 ) && (hoe < 0.093068 ) && (fabs(d0) < 0.035904 ) && (fabs(dz) < 0.075496 ) && (fabs(ooemoop) <  0.189968 ) && (reliso < 0.130136 ) && !conv && (missHits <= 1);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.009833 ) && (fabs(dPhiIn) < 0.149934 ) && (full5x5 < 0.031838 ) && (hoe < 0.115754 ) && (fabs(d0) < 0.099266 ) && (fabs(dz) < 0.197897 ) && (fabs(ooemoop) < 0.140662 ) && (reliso < 0.163368 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) < 0.009833 ) && (fabs(dPhiIn) < 0.149934 ) && (full5x5 < 0.031838 ) && (hoe < 0.115754 ) && (fabs(d0) < 0.099266 ) && (fabs(dz) < 0.197897 ) && (fabs(ooemoop) < 0.140662 ) && (reliso < 0.163368 ) && !conv && (missHits <= 1);
     }
   }
 
   if(WP == "MEDIUM"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.008925 ) && (fabs(dPhiIn) <  0.035973 ) && (full5x5 <  0.009996 ) && (hoe <  0.050537 ) && (fabs(d0) <  0.012235 ) && (fabs(dz) <  0.042020 ) && (fabs(ooemoop) <  0.091942 ) && (reliso <  0.107587 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) <  0.008925 ) && (fabs(dPhiIn) <  0.035973 ) && (full5x5 <  0.009996 ) && (hoe <  0.050537 ) && (fabs(d0) <  0.012235 ) && (fabs(dz) <  0.042020 ) && (fabs(ooemoop) <  0.091942 ) && (reliso <  0.107587 ) && !conv && (missHits <= 1);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.007429 ) && (fabs(dPhiIn) <  0.067879 ) && (full5x5 <  0.030135 ) && (hoe <  0.086782 ) && (fabs(d0) <  0.036719 ) && (fabs(dz) <  0.138142 ) && (fabs(ooemoop) <  0.100683 ) && (reliso <  0.113254 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) <  0.007429 ) && (fabs(dPhiIn) <  0.067879 ) && (full5x5 <  0.030135 ) && (hoe <  0.086782 ) && (fabs(d0) <  0.036719 ) && (fabs(dz) <  0.138142 ) && (fabs(ooemoop) <  0.100683 ) && (reliso <  0.113254 ) && !conv && (missHits <= 1);
     }
   }
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.006046 ) && (fabs(dPhiIn) <  0.028092 ) && (full5x5 <  0.009947 ) && (hoe <  0.045772 ) && (fabs(d0) <  0.008790 ) && (fabs(dz) <  0.021226 ) && (fabs(ooemoop) <  0.020118 ) && (reliso <  0.069537 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) <  0.006046 ) && (fabs(dPhiIn) <  0.028092 ) && (full5x5 <  0.009947 ) && (hoe <  0.045772 ) && (fabs(d0) <  0.008790 ) && (fabs(dz) <  0.021226 ) && (fabs(ooemoop) <  0.020118 ) && (reliso <  0.069537 ) && !conv && (missHits <= 1);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.007057 ) && (fabs(dPhiIn) <  0.030159 ) && (full5x5 <  0.028237 ) && (hoe <  0.067778 ) && (fabs(d0) <  0.027984 ) && (fabs(dz) <  0.133431 ) && (fabs(ooemoop) <  0.098919 ) && (reliso <  0.078265 ) && !conv && (missHits < 1);
+      pass = (fabs(dEtaIn) <  0.007057 ) && (fabs(dPhiIn) <  0.030159 ) && (full5x5 <  0.028237 ) && (hoe <  0.067778 ) && (fabs(d0) <  0.027984 ) && (fabs(dz) <  0.133431 ) && (fabs(ooemoop) <  0.098919 ) && (reliso <  0.078265 ) && !conv && (missHits <= 1);
     }
   }
   return pass;

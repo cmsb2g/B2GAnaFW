@@ -116,26 +116,27 @@ process.GlobalTag.globaltag = options.globalTag
 ## Filter out neutrinos from packed GenParticles
 process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
 ## Fat GenJets
-from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-process.ak8GenJetsNoNu = ak4GenJets.clone(
-    rParam = cms.double(0.8),
-    src = cms.InputTag("packedGenParticlesForJetsNoNu")
-)
+if not options.isData : 
+    from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
+    process.ak8GenJetsNoNu = ak4GenJets.clone(
+        rParam = cms.double(0.8),
+        src = cms.InputTag("packedGenParticlesForJetsNoNu")
+    )
 
-## SoftDrop fat GenJets (two jet collections are produced, fat jets and subjets)
-from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
-from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
-    rParam = cms.double(0.8),
-    src = cms.InputTag("packedGenParticlesForJetsNoNu"),
-    useSoftDrop = cms.bool(True),
-    zcut = cms.double(0.1),
-    beta = cms.double(0.0),
-    R0   = cms.double(0.8),
-    useExplicitGhosts = cms.bool(True),
-    writeCompound = cms.bool(True),
-    jetCollInstanceName=cms.string("SubJets")    
-)
+    ## SoftDrop fat GenJets (two jet collections are produced, fat jets and subjets)
+    from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
+    from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
+    process.ak8GenJetsNoNuSoftDrop = ak4GenJets.clone(
+        rParam = cms.double(0.8),
+        src = cms.InputTag("packedGenParticlesForJetsNoNu"),
+        useSoftDrop = cms.bool(True),
+        zcut = cms.double(0.1),
+        beta = cms.double(0.0),
+        R0   = cms.double(0.8),
+        useExplicitGhosts = cms.bool(True),
+        writeCompound = cms.bool(True),
+        jetCollInstanceName=cms.string("SubJets")    
+    )
 
 ### Selected leptons and jets
 
@@ -335,6 +336,36 @@ process.TriggerUserData = cms.EDProducer(
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
+process.edmNtuplesOut = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('B2GEDMNtuple.root'),
+    outputCommands = cms.untracked.vstring(
+    "drop *",
+    "keep *_muons_*_*",
+    "keep *_electrons_*_*",
+    "keep *_photons_*_*",
+    "keep *_photonjets_*_*",
+    "keep *_jetsAK4_*_*",
+    "keep *_jetsAK8_*_*",
+    "keep *_eventShape*_*_*",
+    "keep *_*_*centrality*_*",
+    "keep *_met_*_*",
+    "keep *_eventInfo_*_*",
+    "keep *_subjetsAK8_*_*",
+    "keep *_subjetsCmsTopTag*_*_*",
+    "keep *_jetKeysAK4_*_*",
+    "keep *_jetKeysAK8_*_*",
+    "keep *_subjetKeysAK8_*_*",
+    "keep *_subjetsCmsTopTagKeys_*_*",
+    "keep *_electronKeys_*_*",   
+    "keep *_muonKeys_*_*",
+    "keep *_TriggerUserData*_trigger*_*",
+    "keep *_fixedGridRhoFastjetAll_*_*",
+    "keep *_eventUserData_*_*"
+    ),
+    dropMetaData = cms.untracked.string('ALL'),
+    )
+
 
 ### keep info from LHEProducts if they are stored in PatTuples
 if(options.LHE):
@@ -346,7 +377,14 @@ if(options.LHE):
   process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
 ### end LHE products     
 
-process.edmNtuplesOut.outputCommands+=('keep *_generator_*_*',)
+if not options.isData : 
+    process.edmNtuplesOut.outputCommands+=(
+        'keep *_generator_*_*',
+        "keep *_genPart_*_*",
+        "keep *_genJetsAK8_*_*",
+        "keep *_genJetsAK8SoftDrop_*_*"
+        )
+
 process.edmNtuplesOut.fileName=options.outputLabel
 
 #process.edmNtuplesOut.SelectEvents = cms.untracked.PSet(
