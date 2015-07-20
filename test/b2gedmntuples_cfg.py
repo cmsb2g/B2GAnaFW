@@ -103,10 +103,13 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 
+process.GlobalTag.globaltag = options.globalTag 
 
 if options.isData and "MC" in options.globalTag:
   print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
   process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v0'  
+
+
 
 #################################################
 ## After 7.4.0, only need to make AK8 gen jets.
