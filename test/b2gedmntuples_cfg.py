@@ -3,8 +3,13 @@
 ###
 ### cmsRun b2gedmntuples_cfg.py maxEvts=N 
 ###
-### Default values for the options are set:
-### maxEvts     = -1
+###  Running on 50 ns MC:
+###  cmsRun b2gedmntuples_cfg.py isData=False DataProcessing='MC50ns'
+###  Running on 50 ns Data PromptReco (default settings):
+###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='PromptReco50ns' 
+###  Running on 50 ns Data re-MiniAOD:
+###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='ReReco17Jul'
+###
 ### *****************************************************************************************
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as opts
@@ -12,15 +17,18 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 100,# default value: process all events
+                 1000,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
-                 #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
-                 #'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
+                 #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
+#
+#                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
+#                 'file:/tmp/oiorio/data.root',
+                #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
+                 'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
                  #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -45,10 +53,16 @@ options.register('globalTag',
                  'Global Tag')
 
 options.register('isData',
-                 False,
+                 True,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Is data?')
+
+options.register('DataProcessing',
+                 "PromptReco50ns",
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.string,
+                 'Data processing type')
 
 options.register('LHE',
                  False,
@@ -79,6 +93,8 @@ hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFil
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 lheLabel = "source"
+lhelabel = "externalLHEProducer"
+
 
 process = cms.Process("b2gEDMNtuples")
 
@@ -108,6 +124,11 @@ process.GlobalTag.globaltag = options.globalTag
 if options.isData and "MC" in options.globalTag:
   print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
   process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v0'  
+  #process.GlobalTag.globaltag = 'GR_70_V2_AN1'  
+
+if not options.isData and "50ns" in options.DataProcessing and not "V9A" in options.globalTag:
+  print "!!!!! Warning: MC is 50 ns but GT is for 25 ns. Changing to 'MCRUN2_74_V9A' !!!!!"
+  process.GlobalTag.globaltag = 'MCRUN2_74_V9A'  
 
 
 
@@ -271,6 +292,10 @@ process.photonJets = cms.EDProducer(
 
     )
 
+process.vertexInfo = cms.EDProducer(
+    'VertexInfo',
+    src  = cms.InputTag(pvLabel),
+    )
 
 #
 # Set up photon ID (VID framework)
@@ -325,6 +350,34 @@ process.TriggerUserData = cms.EDProducer(
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
+hltProcForMETUserData = "RECO"
+
+if options.DataProcessing == "PromptReco50ns":
+  print "!!!!! Warning! MET User data will not work for runs BEFORE 251585. It's strongly encouraged to use 17 July re-MiniAOD for that, i.e. https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset+dataset%3D%2F*%2F*2015B*17Jul2015*%2FMINIAOD !!!!!"
+  hltProcForMETUserData = "RECO"
+if options.DataProcessing == "ReReco17Jul50ns":
+  hltProcForMETUserData = "PAT"
+if options.DataProcessing == "MC50ns":
+  hltProcForMETUserData = "PAT"
+
+process.METUserData = cms.EDProducer(
+  'TriggerUserData',
+  bits = cms.InputTag("TriggerResults","",hltProcForMETUserData),
+  prescales = cms.InputTag("patTrigger"),
+  storePrescales = cms.untracked.bool(False), 
+  hltProcName = cms.untracked.string(hltProcForMETUserData), 
+  objects = cms.InputTag("selectedPatTrigger")
+  )
+
+process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+
+#process.ApplyBaselineHBHENoiseFilter = cms.EDFilter('BooleanFlagFilter',
+#   inputLabel = cms.InputTag('HBHENoiseFilterResultProducer','HBHENoiseFilterResult'),
+#   reverseDecision = cms.bool(False)
+#)
+
+
 #process.TriggerUserDataMYHLT = cms.EDProducer(
 #    'TriggerUserData',
 #    bits = cms.InputTag("TriggerResults","","MYHLT"),
@@ -345,6 +398,7 @@ process.edmNtuplesOut = cms.OutputModule(
     outputCommands = cms.untracked.vstring(
     "drop *",
     "keep *_muons_*_*",
+    "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
     "keep *_photons_*_*",
     "keep *_photonjets_*_*",
@@ -363,8 +417,11 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_electronKeys_*_*",   
     "keep *_muonKeys_*_*",
     "keep *_TriggerUserData*_trigger*_*",
+    "keep *_METUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
-    "keep *_eventUserData_*_*"
+    "keep *_eventUserData_*_*",
+    "keep *_HBHENoiseFilterResultProducer_*_*",
+
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
