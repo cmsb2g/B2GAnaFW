@@ -3,9 +3,9 @@
 ###
 ### cmsRun b2gedmntuples_cfg.py maxEvts=N 
 ###
-###  Running on 50 ns MC:
+###  Running on 50 ns MC (default settings):
 ###  cmsRun b2gedmntuples_cfg.py isData=False DataProcessing='MC50ns'
-###  Running on 50 ns Data PromptReco (default settings):
+###  Running on 50 ns Data PromptReco: 
 ###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='PromptReco50ns' 
 ###  Running on 50 ns Data re-MiniAOD:
 ###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='ReReco17Jul'
@@ -53,13 +53,13 @@ options.register('globalTag',
                  'Global Tag')
 
 options.register('isData',
-                 True,
+                 False,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Is data?')
 
 options.register('DataProcessing',
-                 "PromptReco50ns",
+                 "MC50ns",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Data processing type')
@@ -350,9 +350,9 @@ process.TriggerUserData = cms.EDProducer(
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
-hltProcForMETUserData = "RECO"
+hltProcForMETUserData = "PAT"
 
-if options.DataProcessing == "PromptReco50ns":
+if options.DataProcessing == "PromptReco50ns" and options.isData == True:
   print "!!!!! Warning! MET User data will not work for runs BEFORE 251585. It's strongly encouraged to use 17 July re-MiniAOD for that, i.e. https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset+dataset%3D%2F*%2F*2015B*17Jul2015*%2FMINIAOD !!!!!"
   hltProcForMETUserData = "RECO"
 if options.DataProcessing == "ReReco17Jul50ns":
