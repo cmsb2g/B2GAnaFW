@@ -781,7 +781,7 @@ photons.src = cms.InputTag("photonUserData")
 ###photonjets                                                                                                                              
 photonjets =  cms.EDProducer(
     "CandViewNtpProducer",
-    src=cms.InputTag("skimmedPatMuons"),
+    src=cms.InputTag("photonJets"),
     lazyParser=cms.untracked.bool(True),
     prefix=cms.untracked.string("basic"),
     eventInfo=cms.untracked.bool(False),
@@ -793,6 +793,10 @@ photonjets =  cms.EDProducer(
     cms.PSet(
         tag = cms.untracked.string("PhotonIndex"),
         quantity = cms.untracked.string("userInt('phoIndex')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SubwGammatIndex"),
+        quantity = cms.untracked.string("userInt('subIndex')")
         ),
     cms.PSet(
         tag = cms.untracked.string("PhotonSubjetFrac"),
@@ -822,7 +826,6 @@ photonjets =  cms.EDProducer(
         tag = cms.untracked.string("SubjetEta2"),
         quantity = cms.untracked.string("userFloat('SubEta2')")
         ),
-
     cms.PSet(
         tag = cms.untracked.string("SubjetPhi0"),
         quantity = cms.untracked.string("userFloat('SubPhi0')")
@@ -847,13 +850,13 @@ photonjets =  cms.EDProducer(
         tag = cms.untracked.string("SubjetEne2"),
         quantity = cms.untracked.string("userFloat('SubEne2')")
         ),
+
     )
 )
 #photonjets = copy.deepcopy(PhotonVars)                                                                                                    
 #photonjets.variables += photonJetVars                                                                                                     
 #photonjets = photonJetVars                                                                                                                
 photonjets.prefix = cms.untracked.string("phoJets")
-photonjets.src = cms.InputTag("photonJets")
 
 
 
