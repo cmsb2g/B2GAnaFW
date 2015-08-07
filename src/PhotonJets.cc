@@ -111,52 +111,9 @@ bool isInFootprint(const T& thefootprint, const U& theCandidate) {
 
 
 
-//Necessary for the  Isolation Rho Correction
-namespace EffectiveAreas {
-  const int nEtaBins = 7;
-  const float etaBinLimits[nEtaBins+1] = {
-    0.0, 1.0, 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
 
-  const float areaPhotons[nEtaBins] = {
-    0.0894, 0.0750, 0.0423, 0.0561, 0.0882, 0.1144, 0.1684
-  };
-  const float areaNeutralHadrons[nEtaBins] = {
-    0.049, 0.0108, 0.0019, 0.0037, 0.0062, 0.0130, 0.1699
-  };
-  const float areaChargedHadrons[nEtaBins] = {
-    0.0089, 0.0062, 0.0086, 0.0041, 0.0113, 0.0085, 0.0039
-  };
-}
 
 // The Cut based Photon ID's - the current is PHYS 14 first Iteration
-
-namespace CPID_B{
-
-  // this ID is the PHYS14 Iteration 1 for Barrel
-  const float H_o_E[3]={0.032,0.020,0.012};
-  const float s_IEIE[3]={0.01000,0.0099,0.0098};
-  const float isoC[3]={2.94,2.62,1.91};
-  const float isoN[3]={3.16,2.69,2.55};
-  const float isoP[3]={4.43,1.35,1.29};
-  const float slope_n = 0.0023;
-  const float slope_p = 0.0004;
-  
-
-}
-
-
-namespace CPID_E{
-
-  // this ID is the PHYS14 Iteration 1 for EndCap
-  const float H_o_E[3]={0.023,0.011,0.011};
-  const float s_IEIE[3]={0.0270,0.0269,0.0264};
-  const float isoC[3]={3.07,1.40,1.26};
-  const float isoN[3]={17.16,4.92,2.71};
-  const float isoP[3]={2.11,2.11,1.91};
-  const float slope_n = 0.0116;
-  const float slope_p = 0.0037;
-  
-}
 
 
 
@@ -199,6 +156,10 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.getByLabel(pckPFCdsLabel_,pfCndHandle);
 
   //Jet collection
+  edm::Handle<pat::JetCollection> fatjets;
+  iEvent.getByLabel(jLabel_,fatjets);
+
+  //Jet collection
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
   iEvent.getByLabel(jLabel_, jetHandle);
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
@@ -218,131 +179,163 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   if(debug_>=1) cout<<"vtxPoint " <<vtxPoint.X()<<" "<< vtxPoint.Y()<<" "<< vtxPoint.Z()<<endl; 
   
   int ijet = -1; 
-  for (size_t i = 0; i< jetColl->size(); i++){
-    pat::Jet & jet = (*jetColl)[i];
-    ijet ++;
-    double jet_pt  = jet.pt(); 
+  for(const pat::Jet &jet : *fatjets) {
+    ijet++;
+    pat::Jet & jett = (*jetColl)[ijet];
+    
+    //Defining necessary variables: 
+    float spt0  = -99;     float spt1  = -99;    float spt2  = -99;
+    float sphi0 = -99;     float sphi1 = -99;    float sphi2 = -99;
+    float seta0 = -99;     float seta1 = -99;    float seta2 = -99;
+    float sen0  = -99;     float sen1  = -99;    float sen2  = -99;
+    
+    
+    float photon_subjet_frac = 0;
     double jet_eta = jet.eta(); 
-    double jet_phi = jet.phi(); 
-    
-
-    if(jet_pt < 200 ) continue;
-       
-
-    int pho_max_pt_indx = -99; 
-    double pho_max_pt = 0; 
-    int ipho = -1; 
-    for(size_t j = 0; j < phoColl->size();j++){
-      pat::Photon & pho = (*phoColl)[j];
-       double pho_pt  = pho.pt(); 
-       double pho_eta = pho.eta(); 
-       double pho_phi = pho.phi(); 
-       ipho++;
-          
-       if(pho_pt < 15 || fabs(pho_eta) > 2.5 ) continue;
-       
-       
-       double dr_pho_jet = deltaR(pho_eta,pho_phi,jet_eta,jet_phi);
-       
-       if(dr_pho_jet > 0.8 ) continue; 
-       
-       if(pho_pt > pho_max_pt){
-	 pho_max_pt_indx = j;
-	 pho_max_pt  = pho_pt; 
-       }
-    }//EOF Loop over gammas
-    
-    // select the highest pt photon in the jet for now
-    float spt0 = -99;    float spt1 = -99;    float spt2 = -99;
-    float sphi0 = -99;    float sphi1 = -99;    float sphi2 = -99;
-    float seta0 = -99;    float seta1 = -99;    float seta2 = -99;
-    float sen0 = -99;    float sen1 = -99;    float sen2 = -99;
-
-    float photon_subjet_frac = -99;
-   
-
-    if(pho_max_pt_indx != -99  && phoColl->size() > 0 ){    
-    pat::Photon & pho = (*phoColl)[pho_max_pt_indx];
-    std::vector<fastjet::PseudoJet> FJparticles;
-    TLorentzVector Pho_Sums; 
-   
-
-    Pho_Sums.SetPtEtaPhiE(0,0,0,0);
-    for (unsigned int k = 0; k < jet.numberOfDaughters(); k++){
-	const edm::Ptr<reco::Candidate> & this_constituent = jet.daughterPtr(k);
-
+    double jet_phi = jet.phi();
+    int subindx  = -99;
+    int phoindx  = -99;
+    float max_g_pt = -99; 
+    //Loop over photons: 
+    for(size_t ipho = 0; ipho < (*phoColl).size();ipho++){
 	
-
-	bool inFootprint = isInFootprint(pho.associatedPackedPFCandidates(), this_constituent);
-       	if(inFootprint)	  continue;
-	FJparticles.push_back( fastjet::PseudoJet(this_constituent->px(), this_constituent->py(), this_constituent->pz(), this_constituent->energy()) );
+	pat::Photon & pho = (*phoColl)[ipho];
+	double pho_pt  = pho.pt(); 
+	double pho_eta = pho.eta(); 
+	double pho_phi = pho.phi(); 
 	
-
-    }
-    
-    fastjet::PseudoJet PhoC(pho.px(),pho.py(),pho.pz(),pho.energy());
-    
-    PhoC.set_user_index(0456);
-    FJparticles.push_back( PhoC );
-
-    
-    fastjet::JetDefinition jet_def_3(fastjet::antikt_algorithm,1.5708); 
-    fastjet::ClusterSequence clust_seq_3(FJparticles, jet_def_3);
-   
-    int nSubJets = 3;
-    std::vector<fastjet::PseudoJet> subjets = sorted_by_pt(clust_seq_3.exclusive_jets_up_to(nSubJets));
+      if(pho_pt < 30 || fabs(pho_eta) > 2.5 ) continue;
+      double dr_pho_jet = deltaR(pho_eta,pho_phi,jet_eta,jet_phi);
+      if(dr_pho_jet < 0.8 ){ 
+	if(max_g_pt < pho_pt){
+	  max_g_pt = pho_pt; 	
+	  phoindx  = ipho; 
+	}
+	
+      }//in dr cone      
+    }//EOF loop over photons
 
 
-     if(subjets.size() == 3){ 
-      int sub_wgamma = -99; 
-      spt0 = subjets[0].perp();  spt1 = subjets[1].perp();  spt2 = subjets[2].perp();
-      sphi0 = subjets[0].phi();  sphi1 = subjets[1].phi();  sphi2 = subjets[2].phi();
-      seta0 = subjets[0].eta();  seta1 = subjets[1].eta();  seta2 = subjets[2].eta();
-      sen0 = subjets[0].e();     sen1 = subjets[1].e();     sen2 = subjets[2].e();
-      for(int k = 0 ; k < nSubJets; k++){
-       	
-	vector<fastjet::PseudoJet> Sconst = subjets[k].constituents();
-	for(unsigned int jconst = 0; jconst < Sconst.size(); jconst++){
-	  if(Sconst[jconst].user_index() == 0456){
-	    sub_wgamma = k;
-	    break;
+        
+    //in case indeed photon is inside lets play
+    if(phoindx != -99 ){
+      pat::Photon & pho = (*phoColl)[phoindx];
+      std::vector<reco::Candidate const *> Jetconsts; 
+      std::vector<fastjet::PseudoJet> FJparticles;
+
+      for (unsigned k = 0; k < jet.numberOfDaughters(); ++k){
+	reco::Candidate const * cand = jet.daughter(k);       
+	if(cand->numberOfDaughters() == 0){
+	  Jetconsts.push_back(cand);
+	}else{
+	  for(unsigned jda = 0; jda < cand->numberOfDaughters(); ++jda){
+	    reco::Candidate const *cand2 = cand->daughter(jda);
+	    Jetconsts.push_back(cand2);
+	    if( cand2->numberOfDaughters() > 0 ) cout<<"!!!!!!!!!!"<<endl;
+ 
 	  }
-	}//eof subjet const loop 
-      }//eof subjets loop  
+	}//check if they have subdaughters 
+      }//Loop over Jet Costituents
       
-      photon_subjet_frac = pho_max_pt/subjets[sub_wgamma].pt();
+          
+      for(uint ijc = 0; ijc < Jetconsts.size() ; ijc ++){ // Jet Constituens Loop 
+	reco::Candidate const * cand = Jetconsts.at(ijc);
+	if((pho.associatedPackedPFCandidates()).size() == 0){
+	  FJparticles.push_back( fastjet::PseudoJet(cand->px(), cand->py(), cand->pz(), cand->energy()) );
+	}else{
+	  for(uint ika = 0; ika < CandColl->size() ;ika++){ //PFCand Loop
+	    pat::PackedCandidate & this_constituent = (*CandColl)[ika];
+	    const auto& iCand = pfCndHandle->ptrAt(ika);
+	    if( this_constituent.px() == cand->px() && this_constituent.py() == cand->py() && this_constituent.eta() == cand->eta() && this_constituent.phi() == cand->phi() &&  this_constituent.energy() == cand->energy()){ 
+	      bool isF = isInFootprint(pho.associatedPackedPFCandidates(),iCand); 
+	      if(isF == 0){
+		FJparticles.push_back( fastjet::PseudoJet(this_constituent.px(), this_constituent.py(), this_constituent.pz(), this_constituent.energy()) );
+	      }
+	      break;
+	    }//eof check of same pfcand
+	  }
+	}
+      }//Loop of jet constituents
       
-     }
-     
-     
-    }
     
+            
+      if((pho.associatedPackedPFCandidates()).size() > 0){
+	fastjet::PseudoJet PhoC(pho.px(),pho.py(),pho.pz(),pho.energy());
+	PhoC.set_user_index(0456);
+	FJparticles.push_back( PhoC );
+      }
+      //Take the resulting cands and built again the jet , recluster in exlusive 3 subjets
+      // fastjet::JetDefinition jet_def_3(fastjet::antikt_algorithm,1.549); 
+      fastjet::JetDefinition jet_def_ca8(fastjet::cambridge_algorithm,0.8); 
+      //  fastjet::ClusterSequence clust_seq_3(FJparticles, jet_def_3);
+      fastjet::ClusterSequence clust_seq_08(FJparticles, jet_def_ca8);
+      
+      int nSubJets = 3;
+      //std::vector<fastjet::PseudoJet> subjets = sorted_by_pt(clust_seq_3.exclusive_jets_up_to(nSubJets));
+      std::vector<fastjet::PseudoJet> subjets = sorted_by_pt(clust_seq_08.exclusive_jets_up_to(nSubJets));
     
-
-   
-    jet.addUserInt("jetIndex",ijet);
-    jet.addUserInt("phoIndex",pho_max_pt_indx);
-    jet.addUserFloat("phoSubjetPtFrac",photon_subjet_frac);
-
-    
-    jet.addUserFloat("SubPt0", spt0);
-    jet.addUserFloat("SubPt1", spt1);
-    jet.addUserFloat("SubPt2", spt2);
-    jet.addUserFloat("SubEta0",seta0);
-    jet.addUserFloat("SubEta1",seta1);
-    jet.addUserFloat("SubEta2",seta2); 
-    jet.addUserFloat("SubPhi0",sphi0);
-    jet.addUserFloat("SubPhi1",sphi1);
-    jet.addUserFloat("SubPhi2",sphi2);
-    jet.addUserFloat("SubEne0",sen0);
-    jet.addUserFloat("SubEne1",sen1);
-    jet.addUserFloat("SubEne2",sen2);
-   
-    
-    
-  }//EOF Loop over Jets
   
+      if(subjets.size() == 3){ 
+	// int sub_wgamma = -99; 
+	spt0 = subjets[0].perp();  spt1 = subjets[1].perp();  spt2 = subjets[2].perp();
+	sphi0 = subjets[0].phi();  sphi1 = subjets[1].phi();  sphi2 = subjets[2].phi();
+	seta0 = subjets[0].eta();  seta1 = subjets[1].eta();  seta2 = subjets[2].eta();
+	sen0 = subjets[0].e();     sen1 = subjets[1].e();     sen2 = subjets[2].e();
+	
+	
+	//Looping over reconstructed subjets
+	int sindx = -99;
+	float psmindr = 99;
+	for(int isc = 0 ; isc < nSubJets; isc++){
+	  vector<fastjet::PseudoJet> Sconst = subjets[isc].constituents();
+	  float subeta = subjets[isc].eta(); 
+	  float subphi = subjets[isc].phi();
+	  
+	  if((pho.associatedPackedPFCandidates()).size() > 0 ){
+	    //If indeed photon has convered you Find it as the subjet componen
+	    for(unsigned int jconst = 0; jconst < Sconst.size(); jconst++){
+	      if(Sconst[jconst].user_index() == 0456){
+		sindx = isc;
+		break;
+	      }
+	    }//eof subjet const loop
+	  }else{
+	    // If it did not disintegrated Make dr matching to subjets
+	    float drsp = deltaR(pho.eta(),pho.phi(),subeta,subphi);
+	    if(psmindr > drsp ){
+	      psmindr = drsp;
+	      sindx = isc;
+	    }	    
+	  }
+	}//eof subjets loop  	
+	
+	if(sindx != -99) {
+	  photon_subjet_frac = max_g_pt/subjets[sindx].pt();
+	}
+      }// If subjet size is 3      
+    }//EOF FOUND photon in the jet
+    
+  
+    //store the reconstructed quantities
+    jett.addUserInt("jetIndex",ijet);
+    jett.addUserInt("phoIndex",phoindx);
+    jett.addUserInt("subIndex",subindx);
+    jett.addUserFloat("phoSubjetPtFrac",photon_subjet_frac);
+        
+    jett.addUserFloat("SubPt0", spt0);
+    jett.addUserFloat("SubPt1", spt1);
+    jett.addUserFloat("SubPt2", spt2);
+    jett.addUserFloat("SubEta0",seta0);
+    jett.addUserFloat("SubEta1",seta1);
+    jett.addUserFloat("SubEta2",seta2); 
+    jett.addUserFloat("SubPhi0",sphi0);
+    jett.addUserFloat("SubPhi1",sphi1);
+    jett.addUserFloat("SubPhi2",sphi2);
+    jett.addUserFloat("SubEne0",sen0);
+    jett.addUserFloat("SubEne1",sen1);
+    jett.addUserFloat("SubEne2",sen2);
 
+  }//EOF loop over jets
   iEvent.put( jetColl );
 
 }
