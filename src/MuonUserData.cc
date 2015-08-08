@@ -15,6 +15,9 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonPFIsolation.h"
 
+// MiniIsolation
+#include "Isolations.h"
+
 // Vertex
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -139,6 +142,10 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<std::vector<pat::Muon> > muonHandle;
   iEvent.getByLabel(muLabel_, muonHandle);
   auto_ptr<vector<pat::Muon> > muonColl( new vector<pat::Muon> (*muonHandle) );
+  
+  //PackedPFCands for Mini-isolation
+  edm::Handle<pat::PackedCandidateCollection> packedPFCands;
+  iEvent.getByLabel("packedPFCandidates", packedPFCands);
 
   /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
   // TRIGGER (this is not really needed ...)
@@ -247,6 +254,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double sumPUPt            = m.pfIsolationR04().sumPUPt;
     double pt                 = m.pt();
     double iso04 = (sumChargedHadronPt+TMath::Max(0.,sumNeutralHadronPt+sumPhotonPt-0.5*sumPUPt))/pt;
+    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&m), 0.05, 0.2, 10., false);
 
     // trigger matched 
 
@@ -279,6 +287,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     m.addUserFloat("dxyErr",          dxyErr);
     m.addUserFloat("dzErr",          dzErr);
     m.addUserFloat("iso04",       iso04);
+    m.addUserFloat("miniIso",     miniIso);
     
     m.addUserFloat("HLTmuonEta",   hltEta);
     m.addUserFloat("HLTmuonPhi",   hltPhi);
