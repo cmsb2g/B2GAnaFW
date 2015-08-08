@@ -41,11 +41,11 @@ basic =  cms.EDProducer(
     )
     )
 
-met =  cms.EDProducer(
+metFull =  cms.EDProducer(
     "CandViewNtpProducer",
     src=cms.InputTag("skimmedPatMET"),
     lazyParser=cms.untracked.bool(True),
-    prefix=cms.untracked.string("met"),
+    prefix=cms.untracked.string("metFull"),
     eventInfo=cms.untracked.bool(False),
     variables = cms.VPSet(
     cms.PSet(
@@ -382,10 +382,6 @@ jetVars = (
         quantity = cms.untracked.string("? isPFJet ? numberOfDaughters : -1")
         ),
     cms.PSet(
-        tag = cms.untracked.string("chargedMultiplicity"),
-        quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity : -1")
-        ),
-    cms.PSet(
         tag = cms.untracked.string("neutralHadronMultiplicity"),
         quantity = cms.untracked.string("? isPFJet ? neutralHadronMultiplicity : -1")
         ),
@@ -429,6 +425,35 @@ jetVars = (
         tag = cms.untracked.string("neutralMultiplicity"),
         quantity = cms.untracked.string("? isPFJet ? neutralMultiplicity : -1")
         ),
+   cms.PSet(
+       tag = cms.untracked.string("neutralHadronEnergyFrac"),
+       quantity = cms.untracked.string("? isPFJet ?neutralHadronEnergyFraction : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("neutralEmEnergyFrac"),
+       quantity = cms.untracked.string("? isPFJet ?neutralEmEnergyFraction : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("chargedHadronEnergyFrac"),
+       quantity = cms.untracked.string("? isPFJet ?chargedHadronEnergyFraction : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("muonEnergyFrac"),
+       quantity = cms.untracked.string("? isPFJet ?muonEnergyFraction : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("chargedEmEnergyFrac"),
+       quantity = cms.untracked.string("? isPFJet ?chargedEmEnergyFraction : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("chargedMultiplicity"),
+       quantity = cms.untracked.string("? isPFJet ?chargedMultiplicity : -1")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumConstituents"),
+       quantity = cms.untracked.string("? isPFJet ? chargedMultiplicity + neutralMultiplicity : -1")
+        ),
+
     #### FOR JEC
     cms.PSet(
         tag = cms.untracked.string("jecFactor0"),
@@ -946,4 +971,14 @@ eventInfo =  cms.EDProducer(
     eventInfo=cms.untracked.bool(True),
     variables = cms.VPSet()
     )
+
+
+### No HF MET used as default for the time being
+met = copy.deepcopy(metFull)
+met.prefix = cms.untracked.string("met")
+met.src = cms.InputTag("slimmedMETsNoHF")
+
+
+
+
 print "DONE STANDARD"

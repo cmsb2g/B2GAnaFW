@@ -17,7 +17,7 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 1000,# default value: process all events
+                 100,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
@@ -73,7 +73,16 @@ options.register('LHE',
 options.parseArguments()
 
 if(options.isData):options.LHE = False
+
+
     
+#configurable options =======================================================================
+runOnData        = options.isData #data/MC switch
+useHFCandidates  = False #create an additionnal NoHF slimmed MET collection if the option is set to false
+applyResiduals   = False #application of residual corrections. Have to be set to True once the 13 TeV residual corrections are available. False to be kept meanwhile. Can be kept to False later for private tests or for analysis checks and developments (not the official recommendation!).
+#===================================================================
+
+
 ###inputTag labels
 rhoLabel = "fixedGridRhoFastjetAll"
 muLabel  = 'slimmedMuons'
@@ -85,6 +94,7 @@ pvLabel  = 'offlineSlimmedPrimaryVertices'
 convLabel = 'reducedEgamma:reducedConversions'
 particleFlowLabel = 'packedPFCandidates'    
 metLabel = 'slimmedMETs'
+metLabelNoHF = 'slimmedMETsNoHF'
 rhoLabel = 'fixedGridRhoFastjetAll'
 
 triggerResultsLabel = "TriggerResults"
@@ -99,6 +109,7 @@ lhelabel = "externalLHEProducer"
 process = cms.Process("b2gEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.categories.append('HLTrigReport')
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -111,7 +122,7 @@ process.source = cms.Source("PoolSource",
         )
 )
 
-process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
+#process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
@@ -162,6 +173,57 @@ if not options.isData :
         jetCollInstanceName=cms.string("SubJets")    
     )
 
+### ---------------------------------------------------------------------------
+### Removing the HF from the MET computation as from 7 Aug 2015 recommendations
+### ---------------------------------------------------------------------------
+if not useHFCandidates:
+   process.noHFCands = cms.EDFilter("CandPtrSelector",
+                                     src=cms.InputTag("packedPFCandidates"),
+                                     cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+                                     )
+
+#jets are rebuilt from those candidates by the tools, no need to do anything else
+### =================================================================================
+
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
+#default configuration for miniAOD reprocessing, change the isData flag to run on data
+#for a full met computation, remove the pfCandColl input
+runMetCorAndUncFromMiniAOD(process,
+                           isData=runOnData,
+                           )
+
+if not useHFCandidates:
+    runMetCorAndUncFromMiniAOD(process,
+                               isData=runOnData,
+                               pfCandColl=cms.InputTag("noHFCands"),
+                               postfix="NoHF"
+                               )
+
+### -------------------------------------------------------------------
+### the lines below remove the L2L3 residual corrections when processing data
+### -------------------------------------------------------------------
+if not applyResiduals:
+    process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+    process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+    process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+
+    if not useHFCandidates:
+          process.patPFMetT1T2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+          process.patPFMetT1T2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+          process.patPFMetT2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+          process.patPFMetT2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+          process.shiftedPatJetEnDownNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+          process.shiftedPatJetEnUpNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+### ------------------------------------------------------------------
+
+### ------------------------------------------------------------------
+### Configure UserData
+### ------------------------------------------------------------------
+    
 ### Selected leptons and jets
 
 
@@ -407,6 +469,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_met_*_*",
+    "keep *_metFull_*_*",
     "keep *_eventInfo_*_*",
     "keep *_subjetsAK8_*_*",
     "keep *_subjetsCmsTopTag*_*_*",
