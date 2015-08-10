@@ -24,11 +24,12 @@ options.register('maxEvts',
 
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
+                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
 #
 #                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
 #                 'file:/tmp/oiorio/data.root',
                 #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
-                 'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
+                 #'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
                  #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -102,8 +103,8 @@ triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
-lheLabel = "source"
-lhelabel = "externalLHEProducer"
+#lheLabel = "source"
+lheLabel = "externalLHEProducer"
 
 
 process = cms.Process("b2gEDMNtuples")
@@ -434,20 +435,6 @@ process.METUserData = cms.EDProducer(
 process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
 process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 
-#process.ApplyBaselineHBHENoiseFilter = cms.EDFilter('BooleanFlagFilter',
-#   inputLabel = cms.InputTag('HBHENoiseFilterResultProducer','HBHENoiseFilterResult'),
-#   reverseDecision = cms.bool(False)
-#)
-
-
-#process.TriggerUserDataMYHLT = cms.EDProducer(
-#    'TriggerUserData',
-#    bits = cms.InputTag("TriggerResults","","MYHLT"),
-#    prescales = cms.InputTag("patTrigger"),
-#    storePrescales = cms.untracked.bool(False), 
-#    hltProcName = cms.untracked.string("MYHLT"), 
-#    objects = cms.InputTag("selectedPatTrigger")
-#    )                                 
 
 ### Including ntuplizer 
 
@@ -484,7 +471,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*",
     "keep *_HBHENoiseFilterResultProducer_*_*",
-
+    "keep *_eeBadScFilter_*_*",
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
