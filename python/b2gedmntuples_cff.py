@@ -98,6 +98,10 @@ muonVars = (
         quantity = cms.untracked.string("userFloat('iso04')")
    ),
    cms.PSet(
+        tag = cms.untracked.string("MiniIso"),
+        quantity = cms.untracked.string("userFloat('miniIso')")
+   ),
+   cms.PSet(
         tag = cms.untracked.string("D0"),
         quantity = cms.untracked.string("dB")
    ),
@@ -616,6 +620,10 @@ electronVars = (
     cms.PSet(
       tag = cms.untracked.string("Iso03db"),
       quantity = cms.untracked.string("userFloat('iso03db')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("MiniIso"),
+      quantity = cms.untracked.string("userFloat('miniIso')")
       ),
     cms.PSet(
       tag = cms.untracked.string("rho"),
