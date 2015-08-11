@@ -14,6 +14,9 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 
+// MiniIsolation
+#include "Isolations.h"
+
 // trigger
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -44,7 +47,7 @@ private:
   bool passIDWP(string, bool, float, float, float, float, float, float, float, float, bool, int);
 
 
-  InputTag eleLabel_, pvLabel_, convLabel_, rho_;
+  InputTag eleLabel_, pvLabel_, packedPFCandsLabel_, convLabel_, rho_;
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
@@ -70,6 +73,7 @@ private:
 ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    eleLabel_(iConfig.getParameter<edm::InputTag>("eleLabel")),
    pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
+   packedPFCandsLabel_(iConfig.getParameter<edm::InputTag>("packedPFCands")),
    convLabel_(iConfig.getParameter<edm::InputTag>("conversion")),   // "offlinePrimaryVertex"
    rho_( iConfig.getParameter<edm::InputTag>("rho")),
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
@@ -111,7 +115,9 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   
   auto_ptr<vector<pat::Electron> > eleColl( new vector<pat::Electron> (*eleHandle) );
 
-
+  //PackedPFCands for Mini-iso
+  edm::Handle<pat::PackedCandidateCollection> packedPFCands;
+  iEvent.getByLabel(packedPFCandsLabel_, packedPFCands);
 
   Handle<reco::BeamSpot> bsHandle;
   iEvent.getByLabel("offlineBeamSpot", bsHandle);
@@ -194,6 +200,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float hoe = el.hadronicOverEm();
     float absiso = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
     float relIsoWithDBeta_ = absiso/el.pt();
+    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&el), 0.05, 0.2, 10., false);
     double EA = getEA(el.eta());
     //double rho = 1.0;
     float absiso_EA = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
@@ -243,6 +250,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("hasMatchConv",     hasMatchConv);   
     el.addUserFloat("iso03db",    relIsoWithDBeta_);
     el.addUserFloat("iso03",       relIsoWithEA_);
+    el.addUserFloat("miniIso",     miniIso);
     el.addUserFloat("sumChargedHadronPt",   pfIso.sumChargedHadronPt);
     el.addUserFloat("sumNeutralHadronEt", pfIso.sumNeutralHadronEt  );
     el.addUserFloat("sumPhotonEt",  pfIso.sumPhotonEt );

@@ -279,6 +279,7 @@ process.muonUserData = cms.EDProducer(
     'MuonUserData',
     muonLabel = cms.InputTag("skimmedPatMuons"),
     pv        = cms.InputTag(pvLabel),
+    packedPFCands = cms.InputTag("packedPFCandidates"),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -317,6 +318,7 @@ process.electronUserData = cms.EDProducer(
     'ElectronUserData',
     eleLabel   = cms.InputTag("skimmedPatElectrons"),
     pv         = cms.InputTag(pvLabel),
+    packedPFCands = cms.InputTag("packedPFCandidates"),
     conversion = cms.InputTag(convLabel),
     rho        = cms.InputTag(rhoLabel),
     triggerResults = cms.InputTag(triggerResultsLabel),
