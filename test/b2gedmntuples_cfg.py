@@ -17,19 +17,20 @@ import FWCore.ParameterSet.VarParsing as opts
 options = opts.VarParsing ('analysis')
 
 options.register('maxEvts',
-                 100,# default value: process all events
+                 10,# default value: process all events
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.int,
                  'Number of events to process')
 
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
-                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
+                 #'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
+                 
 #
 #                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
 #                 'file:/tmp/oiorio/data.root',
                 #'file:/afs/cern.ch/user/d/devdatta/afswork/CMSREL/CMSSW_7_4_2/src/HLTrigger/Configuration/test/TprimeJetToTH_M800GeV_Tune4C_13TeV-madgraph-tauola_MiniAOD.root', 
-                 #'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
+                 'root://cmsxrootd.fnal.gov//store/mc/RunIISpring15DR74/QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/20BB04BA-53F9-E411-9CEF-0025904C68D8.root',
                  #'/store/relval/CMSSW_7_4_1/RelValQCD_FlatPt_15_3000HS_13/MINIAODSIM/MCRUN2_74_V9_gensim_740pre7-v1/00000/2E7A3E3E-F3EC-E411-9FDD-002618943833.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -80,6 +81,7 @@ if(options.isData):options.LHE = False
 #configurable options =======================================================================
 runOnData        = options.isData #data/MC switch
 useHFCandidates  = False #create an additionnal NoHF slimmed MET collection if the option is set to false
+usePrivateSQlite = True #use external JECs (sqlite file)
 applyResiduals   = False #application of residual corrections. Have to be set to True once the 13 TeV residual corrections are available. False to be kept meanwhile. Can be kept to False later for private tests or for analysis checks and developments (not the official recommendation!).
 #===================================================================
 
@@ -142,7 +144,33 @@ if not options.isData and "50ns" in options.DataProcessing and not "V9A" in opti
   print "!!!!! Warning: MC is 50 ns but GT is for 25 ns. Changing to 'MCRUN2_74_V9A' !!!!!"
   process.GlobalTag.globaltag = 'MCRUN2_74_V9A'  
 
+### External JECs =====================================================================================================
 
+
+if usePrivateSQlite:
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    import os
+    era="Summer15_50nsV2_MC"
+#    dBFile = os.path.expandvars("$CMSSW_BASE/src/PhysicsTools/PatAlgos/test/"+era+".db")
+    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+                               #connect = cms.string( "sqlite_file://"+dBFile ),
+                               connect = cms.string( "sqlite_file:Summer15_50nsV2_MC.db" ),
+                               toGet =  cms.VPSet(
+            cms.PSet(
+                record = cms.string("JetCorrectionsRecord"),
+                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+                label= cms.untracked.string("AK4PF")
+                ),
+            cms.PSet(
+                record = cms.string("JetCorrectionsRecord"),
+                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+                label= cms.untracked.string("AK4PFchs")
+                ),
+            )
+                               )
+    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
+
+### =====================================================================================================
 
 #################################################
 ## After 7.4.0, only need to make AK8 gen jets.
