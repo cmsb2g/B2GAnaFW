@@ -24,8 +24,8 @@ options.register('maxEvts',
 
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
-#                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
-                 'file:/tmp/oiorio/TChannelMINI.root',                 
+                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
+#                 'file:/tmp/oiorio/TChannelMINI.root',                 
 #
 #                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
 #                 'file:/tmp/oiorio/data.root',
