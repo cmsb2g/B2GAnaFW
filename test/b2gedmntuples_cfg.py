@@ -24,8 +24,8 @@ options.register('maxEvts',
 
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
-                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
-                 
+#                 'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
+                 'file:/tmp/oiorio/TChannelMINI.root',                 
 #
 #                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
 #                 'file:/tmp/oiorio/data.root',
@@ -66,6 +66,26 @@ options.register('DataProcessing',
                  opts.VarParsing.varType.string,
                  'Data processing type')
 
+options.register('useNoHFMET',
+                 True,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'Adding met without HF and relative jets')
+
+options.register('usePrivateSQLite',
+                 True,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'Take Corrections from private SQL file')
+
+
+options.register('forceResiduals',
+                 None,
+                 opts.VarParsing.multiplicity.singleton,
+                 opts.VarParsing.varType.bool,
+                 'Whether to force residuals to be applied')
+
+
 options.register('LHE',
                  False,
                  opts.VarParsing.multiplicity.singleton,
@@ -80,17 +100,22 @@ if(options.isData):options.LHE = False
     
 #configurable options =======================================================================
 runOnData        = options.isData #data/MC switch
-useHFCandidates  = False #create an additionnal NoHF slimmed MET collection if the option is set to false
-usePrivateSQlite = True #use external JECs (sqlite file)
-applyResiduals   = True #application of residual corrections. Have to be set to True once the 13 TeV residual corrections are available. False to be kept meanwhile. Can be kept to False later for private tests or for analysis checks and developments (not the official recommendation!).
+useHFCandidates  = not options.useNoHFMET #create an additionnal NoHF slimmed MET collection if the option is set to false
+usePrivateSQlite = options.usePrivateSQLite #use external JECs (sqlite file)
+applyResiduals   = options.isData #application of residual corrections. Have to be set to True once the 13 TeV residual corrections are available. False to be kept meanwhile. Can be kept to False later for private tests or for analysis checks and developments (not the official recommendation!).
 #===================================================================
 
+if not (options.forceResiduals == None):
+  applyResiduals = (options.forceResiduals == True)
+#print applyResiduals
+#print usePrivateSQlite
 
 ###inputTag labels
 rhoLabel = "fixedGridRhoFastjetAll"
 muLabel  = 'slimmedMuons'
 elLabel  = 'slimmedElectrons'
 jLabel = 'slimmedJets'
+jLabelNoHF = 'slimmedJets'
 jLabelAK8 = 'slimmedJetsAK8'
 
 pvLabel  = 'offlineSlimmedPrimaryVertices'
@@ -105,7 +130,7 @@ triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
-#lheLabel = "source"
+lheLabel = "externalLHEProducer"
 
 
 
@@ -137,7 +162,7 @@ process.GlobalTag.globaltag = options.globalTag
 
 if options.isData and "MC" in options.globalTag:
   print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
-  process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v0'  
+  process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'  
   #process.GlobalTag.globaltag = 'GR_70_V2_AN1'  
 
 if not options.isData and "50ns" in options.DataProcessing and not "V9A" in options.globalTag:
@@ -153,10 +178,9 @@ from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 
 if runOnData:
   process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'
-else:
-  process.GlobalTag.globaltag = 'MCRUN2_74_v9'
 
 if usePrivateSQlite:
+    jLabel = 'patJets'
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
     if runOnData:
@@ -164,6 +188,8 @@ if usePrivateSQlite:
     else:
       era="Summer15_50nsV4_MC"
     dBFile = era+".db"
+    print "dBFile"
+    print dBFile
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
                                connect = cms.string( "sqlite_file:"+dBFile ),
                                toGet =  cms.VPSet(
@@ -180,7 +206,7 @@ if usePrivateSQlite:
             )
                                )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
-
+    
 #uncertainty file
 jecUncertaintyFile="PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt"
 
@@ -242,11 +268,22 @@ if not useHFCandidates:
                                pfCandColl=cms.InputTag("noHFCands"),
                                postfix="NoHF"
                                )
+    jLabelNoHF = 'patJetsNoHF'
 
 ### -------------------------------------------------------------------
 ### the lines below remove the L2L3 residual corrections when processing data
 ### -------------------------------------------------------------------
-if not applyResiduals:
+
+if (applyResiduals == True):
+  #Take new pat jets as input of the entuples
+  corrections = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']
+  process.patJetCorrFactors.levels = corrections 
+  print " corrections: " 
+  print corrections
+  if not useHFCandidates:
+    process.patJetCorrFactorsNoHF.levels = corrections 
+
+if not ( applyResiduals ==True):
     process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
     process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
     process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
@@ -273,7 +310,7 @@ if not applyResiduals:
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
-    cut = cms.string("pt > 10 && abs(eta) < 2.4")
+    cut = cms.string("pt > 0.0 && abs(eta) < 2.4")
     )
 
 
@@ -334,6 +371,18 @@ process.muonUserData = cms.EDProducer(
 process.jetUserData = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag(jLabel),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
+    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hlt2reco_deltaRmax = cms.double(0.2),
+    )
+
+
+process.jetUserDataNoHF = cms.EDProducer(
+    'JetUserData',
+    jetLabel  = cms.InputTag(jLabelNoHF),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -482,7 +531,8 @@ process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 
 ### Including ntuplizer 
 
-process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+#process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+process.load("B2GAnaFW.B2GAnaFW.b2gedmntuples_cff")
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
 process.edmNtuplesOut = cms.OutputModule(
@@ -520,6 +570,11 @@ process.edmNtuplesOut = cms.OutputModule(
     dropMetaData = cms.untracked.string('ALL'),
     )
 
+### keep NoHF jets if needed:
+if(not useHFCandidates):
+  process.edmNtuplesOut.outputCommands+=('keep *_jetsAK4NoHF_*_*',)
+
+
 
 ### keep info from LHEProducts if they are stored in PatTuples
 if(options.LHE):
@@ -554,4 +609,4 @@ process.edmNtuplesOut.fileName=options.outputLabel
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
 
-#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+open('B2GEntupleFileDump.py','w').write(process.dumpPython())

@@ -64,6 +64,18 @@ metFull =  cms.EDProducer(
     tag = cms.untracked.string("Phi"),
     quantity = cms.untracked.string("phi")
     ),
+    cms.PSet(
+    tag = cms.untracked.string("UncorrPt"),
+    quantity = cms.untracked.string("uncorrectedPt")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("UncorrPhi"),
+    quantity = cms.untracked.string("uncorrectedPhi")
+    ),
+    cms.PSet(
+    tag = cms.untracked.string("UncorrSumEt"),
+    quantity = cms.untracked.string("uncorrectedSumEt")
+    ),
     )
     )
 
@@ -464,6 +476,14 @@ jetVars = (
         quantity = cms.untracked.string("jecFactor(0)")
         ),
     cms.PSet(
+        tag = cms.untracked.string("jecFactorL1FastJet"),
+        quantity = cms.untracked.string("jecFactor('L1FastJet')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("jecFactorL3Absolute"),
+        quantity = cms.untracked.string("jecFactor('L3Absolute')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("jetArea"),
         quantity = cms.untracked.string("jetArea")
         ),
@@ -493,6 +513,26 @@ jetVars = (
         quantity = cms.untracked.string("userFloat('JERdown')")
         ),
     )
+
+jetVarsJEC = (
+    ### FOR JEC
+    cms.PSet(
+        tag = cms.untracked.string("jecFactor0"),
+        quantity = cms.untracked.string("jecFactor(0)")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("jecFactorL1FastJet"),
+        quantity = cms.untracked.string("jecFactor('L1FastJet')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("jecFactorL3Absolute"),
+        quantity = cms.untracked.string("jecFactor('L3Absolute')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("jetArea"),
+        quantity = cms.untracked.string("jetArea")
+        ),
+)
 
 jetKeys = cms.EDProducer(
     "JetKeyProducer",
@@ -903,6 +943,12 @@ jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
 jetKeysAK4 = copy.deepcopy( jetKeys )
 jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
+
+###jets no HF if needed
+jetsAK4NoHF = copy.deepcopy(basic)
+jetsAK4NoHF.variables += jetVarsJEC
+jetsAK4NoHF.prefix = cms.untracked.string("jetAK4NoHF")
+jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
 
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
