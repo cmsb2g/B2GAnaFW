@@ -531,8 +531,7 @@ process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 
 ### Including ntuplizer 
 
-#process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
-process.load("B2GAnaFW.B2GAnaFW.b2gedmntuples_cff")
+process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 process.options.allowUnscheduled = cms.untracked.bool(True)
 
 process.edmNtuplesOut = cms.OutputModule(
