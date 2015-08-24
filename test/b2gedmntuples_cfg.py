@@ -25,7 +25,7 @@ options.register('maxEvts',
 options.register('sample',
                  #'/store/mc/RunIISpring15DR74/ZprimeToTT_M-3000_W-300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v1/80000/4EFF6C38-A6FD-E411-8194-0025905A6110.root',
                  'root://cmsxrootd.fnal.gov//store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root',
-#                 'file:/tmp/oiorio/TChannelMINI.root',                 
+#                'file:/tmp/oiorio/TChannelMINI.root',                 
 #
 #                 'file:/tmp/oiorio/046CAA30-1103-E511-94E8-7845C4FC3B0C.root',
 #                 'file:/tmp/oiorio/data.root',
@@ -134,6 +134,7 @@ lheLabel = "externalLHEProducer"
 
 
 
+
 process = cms.Process("b2gEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -179,8 +180,15 @@ from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 if runOnData:
   process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'
 
+
+corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
+if (applyResiduals == True):
+  corrections = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']
+
 if usePrivateSQlite:
-    jLabel = 'patJets'
+    jLabel = 'updatedPatJetsAK4'
+    jLabelAK8 = 'updatedPatJetsAK8'
+    
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
     if runOnData:
@@ -188,8 +196,8 @@ if usePrivateSQlite:
     else:
       era="Summer15_50nsV4_MC"
     dBFile = era+".db"
-    print "dBFile"
-    print dBFile
+#    print "dBFile"
+#    print dBFile
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
                                connect = cms.string( "sqlite_file:"+dBFile ),
                                toGet =  cms.VPSet(
@@ -203,10 +211,44 @@ if usePrivateSQlite:
                 tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
                 label= cms.untracked.string("AK4PFchs")
                 ),
+            cms.PSet(
+                record = cms.string("JetCorrectionsRecord"),
+                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
+                label= cms.untracked.string("AK8PF")
+                ),
+            cms.PSet(
+                record = cms.string("JetCorrectionsRecord"),
+                tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
+                label= cms.untracked.string("AK8PFchs")
+                ),
             )
                                )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
     
+    process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
+#    print "applying corrections: "
+#    print corrections
+    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+      rho = cms.InputTag("fixedGridRhoFastjetAll"),
+      src = cms.InputTag("slimmedJets"),
+      
+      levels = corrections )
+    process.updatedPatJetsAK4 = patJetsUpdated.clone(
+      jetSource = cms.InputTag("slimmedJets"),
+      jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+      )
+    
+    process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+      src = cms.InputTag("slimmedJetsAK8"),
+      rho = cms.InputTag("fixedGridRhoFastjetAll"),
+      levels = corrections )
+    process.updatedPatJetsAK8 = patJetsUpdated.clone(
+      jetSource = cms.InputTag("slimmedJetsAK8"),
+      jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
+      )
+
+
 #uncertainty file
 jecUncertaintyFile="PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt"
 
@@ -276,10 +318,7 @@ if not useHFCandidates:
 
 if (applyResiduals == True):
   #Take new pat jets as input of the entuples
-  corrections = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']
   process.patJetCorrFactors.levels = corrections 
-  print " corrections: " 
-  print corrections
   if not useHFCandidates:
     process.patJetCorrFactorsNoHF.levels = corrections 
 

@@ -475,14 +475,26 @@ jetVars = (
         tag = cms.untracked.string("jecFactor0"),
         quantity = cms.untracked.string("jecFactor(0)")
         ),
-    cms.PSet(
-        tag = cms.untracked.string("jecFactorL1FastJet"),
-        quantity = cms.untracked.string("jecFactor('L1FastJet')")
-        ),
-    cms.PSet(
+#    cms.PSet(
+#        tag = cms.untracked.string("jecFactorL1FastJet"),
+#        quantity = cms.untracked.string("jecFactor('L1FastJet')")
+#        ),
+   cms.PSet(
         tag = cms.untracked.string("jecFactorL3Absolute"),
         quantity = cms.untracked.string("jecFactor('L3Absolute')")
         ),
+#   cms.PSet(
+#        tag = cms.untracked.string("jecFactorL3AbsoluteNum"),
+#        quantity = cms.untracked.string("jecFactor(3)")
+#        ),
+#    cms.PSet(
+#        tag = cms.untracked.string("jecFactorL2L3Residual"),
+#        quantity = cms.untracked.string("jecFactor('L2L3Residual')")
+#        ),
+#    cms.PSet(
+#        tag = cms.untracked.string("jecFactorL2L3ResidualNum"),
+#        quantity = cms.untracked.string("jecFactor(4)")
+#        ),
     cms.PSet(
         tag = cms.untracked.string("jetArea"),
         quantity = cms.untracked.string("jetArea")
