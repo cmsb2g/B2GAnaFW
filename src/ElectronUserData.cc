@@ -43,6 +43,8 @@ public:
 private:
   void produce( edm::Event &, const edm::EventSetup & );
   float getEA(float);
+  float getEAOld(float);
+  float getEAWithGenWeight(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
   bool passIDWP(string, bool, float, float, float, float, float, float, float, float, bool, int);
 
@@ -295,6 +297,34 @@ float ElectronUserData::getEA(float eta)
   // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
   // They are valid for electrons only, different EA are available for muons.
   float effArea = 0.;
+  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0973;
+  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0954;
+  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0632;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0727;
+  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1337;
+  return effArea;
+}
+
+
+float ElectronUserData::getEAWithGenWeight(float eta)
+{
+  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
+  // They are valid for electrons only, different EA are available for muons.
+  float effArea = 0.;
+  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0958;
+  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0940;
+  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0616;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0708;
+  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1321;
+  return effArea;
+}
+
+
+float ElectronUserData::getEAOld(float eta)
+{
+  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
+  // They are valid for electrons only, different EA are available for muons.
+  float effArea = 0.;
   if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.1013;
   if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0988;
   if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0572;
@@ -308,36 +338,36 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
 
   if(WP == "VETO"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.013625 ) && (fabs(dPhiIn) <  0.230374 ) && (full5x5 < 0.011586 ) && (hoe <  0.181130 ) && (fabs(d0) < 0.094095 ) && (fabs(dz) <  0.713070 ) && (fabs(ooemoop) <  0.295751 ) && (reliso < 0.158721 ) && !conv && (missHits <= 2);
+      pass = (fabs(dEtaIn) <  0.0126 ) && (fabs(dPhiIn) <  0.107 ) && (full5x5 < 0.012 ) && (hoe <  0.186 ) && (fabs(d0) < 0.0621 ) && (fabs(dz) <  0.613 ) && (fabs(ooemoop) <  0.239 ) && (reliso < 0.161 ) && !conv && (missHits <= 2);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.011932 ) && (fabs(dPhiIn) <  0.255450 ) && (full5x5 < 0.031849 ) && (hoe <  0.223870 ) && (fabs(d0) < 0.342293 ) && (fabs(dz) < 0.953461 ) && (fabs(ooemoop) < 0.155501 ) && (reliso < 0.177032 ) && !conv && (missHits <= 3);
+      pass = (fabs(dEtaIn) <  0.0109 ) && (fabs(dPhiIn) <  0.219 ) && (full5x5 < 0.0339 ) && (hoe <  0.0962 ) && (fabs(d0) < 0.279 ) && (fabs(dz) < 0.947 ) && (fabs(ooemoop) < 0.141 ) && (reliso < 0.193 ) && !conv && (missHits <= 3);
     }
   }
   if(WP == "LOOSE"){
     if(isEB){
-      pass = (fabs(dEtaIn) < 0.009277 ) && (fabs(dPhiIn) < 0.094739 ) && (full5x5 <  0.010331 ) && (hoe < 0.093068 ) && (fabs(d0) < 0.035904 ) && (fabs(dz) < 0.075496 ) && (fabs(ooemoop) <  0.189968 ) && (reliso < 0.130136 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) < 0.00976 ) && (fabs(dPhiIn) < 0.0929 ) && (full5x5 <  0.0105 ) && (hoe < 0.0765 ) && (fabs(d0) < 0.0227 ) && (fabs(dz) < 0.379 ) && (fabs(ooemoop) <  0.184 ) && (reliso < 0.118 ) && !conv && (missHits <= 2);
     }
     else{
-      pass = (fabs(dEtaIn) < 0.009833 ) && (fabs(dPhiIn) < 0.149934 ) && (full5x5 < 0.031838 ) && (hoe < 0.115754 ) && (fabs(d0) < 0.099266 ) && (fabs(dz) < 0.197897 ) && (fabs(ooemoop) < 0.140662 ) && (reliso < 0.163368 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) < 0.00952 ) && (fabs(dPhiIn) < 0.181 ) && (full5x5 < 0.0318 ) && (hoe < 0.0824 ) && (fabs(d0) < 0.242 ) && (fabs(dz) < 0.921 ) && (fabs(ooemoop) < 0.125 ) && (reliso < 0.118 ) && !conv && (missHits <= 1);
     }
   }
 
   if(WP == "MEDIUM"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.008925 ) && (fabs(dPhiIn) <  0.035973 ) && (full5x5 <  0.009996 ) && (hoe <  0.050537 ) && (fabs(d0) <  0.012235 ) && (fabs(dz) <  0.042020 ) && (fabs(ooemoop) <  0.091942 ) && (reliso <  0.107587 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) <  0.0094 ) && (fabs(dPhiIn) <  0.0296 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0151 ) && (fabs(dz) <  0.238 ) && (fabs(ooemoop) <  0.118 ) && (reliso <  0.0987 ) && !conv && (missHits <= 2);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.007429 ) && (fabs(dPhiIn) <  0.067879 ) && (full5x5 <  0.030135 ) && (hoe <  0.086782 ) && (fabs(d0) <  0.036719 ) && (fabs(dz) <  0.138142 ) && (fabs(ooemoop) <  0.100683 ) && (reliso <  0.113254 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) <  0.00773 ) && (fabs(dPhiIn) <  0.148 ) && (full5x5 <  0.0287 ) && (hoe <  0.0546 ) && (fabs(d0) <  0.0535 ) && (fabs(dz) <  0.572 ) && (fabs(ooemoop) <  0.104 ) && (reliso <  0.0902 ) && !conv && (missHits <= 1);
     }
   }
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.006046 ) && (fabs(dPhiIn) <  0.028092 ) && (full5x5 <  0.009947 ) && (hoe <  0.045772 ) && (fabs(d0) <  0.008790 ) && (fabs(dz) <  0.021226 ) && (fabs(ooemoop) <  0.020118 ) && (reliso <  0.069537 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) <  0.0095 ) && (fabs(dPhiIn) <  0.0291 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0144 ) && (fabs(dz) <  0.323 ) && (fabs(ooemoop) <  0.0174 ) && (reliso <  0.0468 ) && !conv && (missHits <= 2);
     }
     else{
-      pass = (fabs(dEtaIn) <  0.007057 ) && (fabs(dPhiIn) <  0.030159 ) && (full5x5 <  0.028237 ) && (hoe <  0.067778 ) && (fabs(d0) <  0.027984 ) && (fabs(dz) <  0.133431 ) && (fabs(ooemoop) <  0.098919 ) && (reliso <  0.078265 ) && !conv && (missHits <= 1);
+      pass = (fabs(dEtaIn) <  0.00762 ) && (fabs(dPhiIn) <  0.0439 ) && (full5x5 <  0.0287 ) && (hoe <  0.0544 ) && (fabs(d0) <  0.0377 ) && (fabs(dz) <  0.571 ) && (fabs(ooemoop) <  0.01 ) && (reliso <  0.0759 ) && !conv && (missHits <= 1);
     }
   }
   return pass;
