@@ -569,8 +569,36 @@ genPartVars = (
       quantity = cms.untracked.string("status")
       ),
     cms.PSet(
-      tag = cms.untracked.string("MomID"),
+      tag = cms.untracked.string("Mom0ID"),
       quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).pdgId : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Mom0Status"),
+      quantity = cms.untracked.string("?numberOfMothers>0 ? mother(0).status : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Mom1ID"),
+      quantity = cms.untracked.string("?numberOfMothers>1 ? mother(1).pdgId : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Mom1Status"),
+      quantity = cms.untracked.string("?numberOfMothers>1 ? mother(1).status : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dau0ID"),
+      quantity = cms.untracked.string("?numberOfDaughters>0 ? daughter(0).pdgId : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dau0Status"),
+      quantity = cms.untracked.string("?numberOfDaughters>0 ? daughter(0).status : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dau1ID"),
+      quantity = cms.untracked.string("?numberOfDaughters>1 ? daughter(1).pdgId : -900")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dau1Status"),
+      quantity = cms.untracked.string("?numberOfDaughters>1 ? daughter(1).status : -900")
       ),
     )
 
