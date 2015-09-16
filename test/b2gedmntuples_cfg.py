@@ -3,12 +3,17 @@
 ###
 ### cmsRun b2gedmntuples_cfg.py maxEvts=N 
 ###
-###  Running on 50 ns MC (default settings):
+### The globalTag is automatically chosen according to the input 'DataProcessing' value. 
+### However it can be explictily specified to override the default option.
+###
+###  Running on 25 ns MC (default settings):
+###  cmsRun b2gedmntuples_cfg.py isData=False DataProcessing='MC25ns'
+###  Running on 25 ns data:
+###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='Data25ns'
+###  Running on 50 ns MC:
 ###  cmsRun b2gedmntuples_cfg.py isData=False DataProcessing='MC50ns'
-###  Running on 50 ns Data PromptReco: 
-###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='PromptReco50ns' 
-###  Running on 50 ns Data re-MiniAOD:
-###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='ReReco17Jul'
+###  Running on 50 ns data:
+###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='Data50ns'
 ###
 ### *****************************************************************************************
 import FWCore.ParameterSet.Config as cms
@@ -23,7 +28,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15DR74/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/22CED9F1-C311-E511-8C00-B083FECFD4F0.root', 
+                 '/store/cmst3/user/gpetrucc/miniAOD/Spring15MiniAODv2/CMSSW_7_4_12/miniAOD-TTJets_madgraphMLM_25ns-40k_PAT.root',
+                 #'/store/cmst3/user/gpetrucc/miniAOD/Spring15MiniAODv2/CMSSW_7_4_12/miniAOD-data-SingleMuon-251252_PAT_job5.root', 
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -41,7 +47,7 @@ options.register('outputLabel',
                  'Output label')
 
 options.register('globalTag',
-                 'MCRUN2_74_V9',
+                 '',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Global Tag')
@@ -54,6 +60,7 @@ options.register('isData',
 
 options.register('DataProcessing',
                  "MC25ns",
+                 #"Data50ns",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Data processing type')
@@ -114,7 +121,7 @@ pvLabel  = 'offlineSlimmedPrimaryVertices'
 convLabel = 'reducedEgamma:reducedConversions'
 particleFlowLabel = 'packedPFCandidates'    
 metLabel = 'slimmedMETs'
-metLabelNoHF = 'slimmedMETsNoHF'
+metNoHFLabel = 'slimmedMETsNoHF'
 rhoLabel = 'fixedGridRhoFastjetAll'
 
 triggerResultsLabel = "TriggerResults"
@@ -151,17 +158,20 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 
-process.GlobalTag.globaltag = options.globalTag 
-
-if options.isData and "MC" in options.globalTag:
-  print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
-  process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'  
-  #process.GlobalTag.globaltag = 'GR_70_V2_AN1'  
-
-if not options.isData and "50ns" in options.DataProcessing and not "V9A" in options.globalTag:
-  print "!!!!! Warning: MC is 50 ns but GT is for 25 ns. Changing to 'MCRUN2_74_V9A' !!!!!"
-  process.GlobalTag.globaltag = 'MCRUN2_74_V9A'  
-
+if options.globalTag = "": 
+  if options.DataProcessing="MC50ns":
+    process.GlobalTag.globaltag="MCRUN2_74_V9A"
+  elif options.DataProcessing="MC25ns":
+    process.GlobalTag.globaltag="MCRUN2_74_V9"
+  elif options.DataProcessing="Data50ns":
+    process.GlobalTag.globaltag="74X_dataRun2_Prompt_v0"
+  elif options.DataProcessing="Data25ns":
+   process.GlobalTag.globaltag="74X_dataRun2_Prompt_v1"
+ else:
+   print "Choose any of the following options for 'DataProcessing'", "MC50ns,  MC25ns, Data50ns, Data25ns" 
+else: 
+  print "You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
+  process.GlobalTag.globaltag = options.globalTag 
 
 ### External JECs =====================================================================================================
 
@@ -365,6 +375,11 @@ process.skimmedPatMET = cms.EDFilter(
     cut = cms.string("")
     )
 
+process.skimmedPatMETNoHF = cms.EDFilter(
+    "PATMETSelector",
+    src = cms.InputTag(metNoHFLabel),
+    cut = cms.string("")
+    )
 
 process.skimmedPatJets = cms.EDFilter(
     "PATJetSelector",
@@ -381,7 +396,7 @@ process.skimmedPatJetsAK8 = cms.EDFilter(
 
 process.eventUserData = cms.EDProducer(
     'EventUserData',
-    pileup = cms.InputTag("addPileupInfo"),
+    pileup = cms.InputTag("slimmedAddPileupInfo"),
     pvSrc = cms.InputTag("offlineSlimmedPrimaryVertices")
 )
 
@@ -538,14 +553,6 @@ process.TriggerUserData = cms.EDProducer(
     )                                 
 
 hltProcForMETUserData = "PAT"
-
-if options.DataProcessing == "PromptReco50ns" and options.isData == True:
-  print "!!!!! Warning! MET User data will not work for runs BEFORE 251585. It's strongly encouraged to use 17 July re-MiniAOD for that, i.e. https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset+dataset%3D%2F*%2F*2015B*17Jul2015*%2FMINIAOD !!!!!"
-  hltProcForMETUserData = "RECO"
-if options.DataProcessing == "ReReco17Jul50ns":
-  hltProcForMETUserData = "PAT"
-if options.DataProcessing == "MC50ns":
-  hltProcForMETUserData = "PAT"
 
 process.METUserData = cms.EDProducer(
   'TriggerUserData',

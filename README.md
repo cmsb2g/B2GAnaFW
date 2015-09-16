@@ -6,21 +6,19 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 Checkout Instructions
 =====================
 
-Make a new CMSSW area in 7_4_7
+Make a new CMSSW area in 7_4_12_patch1
 
-$ cmsrel CMSSW_7_4_7_patch2
+$ cmsrel CMSSW_7_4_12_patch1_patch2
 
-$ cd CMSSW_7_4_7_patch2/src
+$ cd CMSSW_7_4_12_patch1_patch2/src
 
 $ cmsenv
 
-(check out any CMSSW packages needed: e.g met recipe to compute MET NoHF)
-
-$ git cms-merge-topic -u cms-met:METCorUnc74X
-
 Clone the github repository
 
-$ git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_4_X_V5
+This branch is used to run on MiniAODv2 reprocessed data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring15MiniAODv2_re_miniAO
+
+$ git clone https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_4_12
 
 Compile
 
