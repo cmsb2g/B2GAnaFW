@@ -9,6 +9,9 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 
+#include "DataFormats/Common/interface/ValueMap.h"
+
+
 // Fastjet (for creating subjets)
 #include <fastjet/JetDefinition.hh>
 #include <fastjet/PseudoJet.hh>
@@ -54,10 +57,12 @@ class JetUserData : public edm::EDProducer {
     double getJERup(double eta);
     double getJERdown(double eta);
 
-    edm::EDGetTokenT<std::vector<pat::Jet> >     jetToken_;
+  edm::EDGetTokenT<std::vector<pat::Jet> >     jetToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> >     qgToken_;
 
     //InputTag jetLabel_;
-    InputTag jLabel_; 
+  InputTag jLabel_; 
+
     InputTag triggerResultsLabel_, triggerSummaryLabel_;
     InputTag hltJetFilterLabel_;
     std::string hltPath_;
@@ -75,6 +80,7 @@ JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
   hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax"))
 {
+  qgToken_ = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger:qgLikelihood"));
   produces<vector<pat::Jet> >();
 }
 
@@ -84,8 +90,14 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   bool isMC = (!iEvent.isRealData());
 
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
+  edm::Handle<edm::View<pat::Jet> > jets;
+  //  const edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
   iEvent.getByLabel(jLabel_, jetHandle);
-  auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+  iEvent.getByLabel(jLabel_, jets);
+  auto_ptr<std::vector<pat::Jet> > jetColl( new std::vector<pat::Jet> (*jetHandle) );
+
+  edm::Handle<edm::ValueMap<float>> qgHandle; 
+  iEvent.getByToken(qgToken_, qgHandle);
 
 
   //// TRIGGER (this is not really needed ...)
@@ -153,6 +165,12 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     }
   }
 
+  for(auto jet = jets->begin();  jet != jets->end(); ++jet){
+    edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jets, jet - jets->begin()));
+    float qgLikelihood = 0.;
+    if(qgHandle.isValid()) qgLikelihood = (*qgHandle)[jetRef];
+     std::cout<<"QGL: "<<qgLikelihood<<std::endl;  
+  }
 
   for (size_t i = 0; i< jetColl->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
@@ -166,7 +184,10 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double hltPhi = ( isMatched2trigger ? JetLegObjects[0].phi()    : -999.);
     double hltPt  = ( isMatched2trigger ? JetLegObjects[0].pt()     : -999.);
     double hltE   = ( isMatched2trigger ? JetLegObjects[0].energy() : -999.);
-
+    
+    //edm::RefToBase<pat::Jet> jetRef(edm::Ref<std::vector<pat::Jet> >(jetHandle,i));
+    //float qgLikelihood = (*qgHandle)[jetRef];
+    //    std::cout<<"QGL: "<<qgLikelihood<<std::endl;
     // SMEARING
     // http://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     reco::Candidate::LorentzVector smearedP4;
