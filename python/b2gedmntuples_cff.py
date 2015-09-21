@@ -972,23 +972,32 @@ photonjets =  cms.EDProducer(
 photonjets.prefix = cms.untracked.string("phoJets")
 
 
-
-
-
+qglVars = (
+    ### B-TAGGING
+    cms.PSet(
+      tag = cms.untracked.string("QGL"),
+      quantity = cms.untracked.string("userFloat('QGL')")
+      ),
+)
 
 ###jets
 jetsAK4 = copy.deepcopy(basic)
 jetsAK4.variables += jetVars
+jetsAK4.variables += qglVars
 jetsAK4.prefix = cms.untracked.string("jetAK4")
-jetsAK4.src = cms.InputTag("jetUserData")
+#jetsAK4.src = cms.InputTag("jetUserData")
+jetsAK4.src = cms.InputTag("jetUserDataQGL")
 jetKeysAK4 = copy.deepcopy( jetKeys )
-jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
+#jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
+jetKeysAK4.jetLabel = cms.InputTag("jetUserDataQGL")
 
 ###jets no HF if needed
 jetsAK4NoHF = copy.deepcopy(basic)
 jetsAK4NoHF.variables += jetVarsJEC
+jetsAK4NoHF.variables += qglVars
 jetsAK4NoHF.prefix = cms.untracked.string("jetAK4NoHF")
-jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
+#jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
+jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHFQGL")
 
 ###patjets
 jetsAK8 = copy.deepcopy(basic)

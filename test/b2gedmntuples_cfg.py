@@ -13,6 +13,7 @@
 ### *****************************************************************************************
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as opts
+import copy
 
 options = opts.VarParsing ('analysis')
 
@@ -23,7 +24,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15DR74/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/22CED9F1-C311-E511-8C00-B083FECFD4F0.root', 
+#                 '/store/mc/RunIISpring15DR74/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/22CED9F1-C311-E511-8C00-B083FECFD4F0.root', 
+                 '/store/mc/RunIISpring15DR74/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v4/10000/00D2A247-2910-E511-9F3D-0CC47A4DEDD2.root', 
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -124,6 +126,8 @@ hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 lheLabel = "externalLHEProducer"
 
+### Including QGL: ensuring the database onject can be accessed
+qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
 
 
 
@@ -142,6 +146,30 @@ process.source = cms.Source("PoolSource",
         options.sample
         )
 )
+
+
+
+### -------------------------------------------------------------------------------------------
+###  QGL
+
+
+from CondCore.DBCommon.CondDBSetup_cfi import *
+QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+      CondDBSetup,
+      toGet = cms.VPSet(),
+      connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+)
+
+for type in ['AK4PFchs','AK4PFchs_antib']:
+  QGPoolDBESSource.toGet.extend(cms.VPSet(cms.PSet(
+    record = cms.string('QGLikelihoodRcd'),
+    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+    label  = cms.untracked.string('QGL_'+type)
+  )))
+
+### -------------------------------------------------------------------------------------------
+
+
 
 #process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
@@ -483,6 +511,29 @@ process.vertexInfo = cms.EDProducer(
     'VertexInfo',
     src  = cms.InputTag(pvLabel),
     )
+
+
+### -------------------------------------------------------------------------------------------
+###  QGL
+
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets  = cms.InputTag("jetUserData")    # Could be reco::PFJetCollection or pat::JetCollection (both AOD and miniAOD)
+process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')        # Other options: see https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
+process.QGTaggerNoHF = copy.deepcopy(process.QGTagger)
+process.QGTaggerNoHF.srcJets  = cms.InputTag("jetUserDataNoHF")
+### -------------------------------------------------------------------------------------------
+
+process.jetUserDataQGL = cms.EDProducer(
+  'QGLUserData',
+  jetLabel = cms.InputTag("jetUserData"),
+  qgtagger =  cms.InputTag("QGTagger", "qgLikelihood"),
+)
+
+process.jetUserDataNoHFQGL = cms.EDProducer(
+  'QGLUserData',
+  jetLabel = cms.InputTag("jetUserDataNoHF"),
+  qgtagger =  cms.InputTag("QGTaggerNoHF", "qgLikelihood"),
+)
 
 #
 # Set up photon ID (VID framework)
