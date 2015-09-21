@@ -64,18 +64,6 @@ metFull =  cms.EDProducer(
     tag = cms.untracked.string("Phi"),
     quantity = cms.untracked.string("phi")
     ),
-    cms.PSet(
-    tag = cms.untracked.string("UncorrPt"),
-    quantity = cms.untracked.string("uncorrectedPt")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("UncorrPhi"),
-    quantity = cms.untracked.string("uncorrectedPhi")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("UncorrSumEt"),
-    quantity = cms.untracked.string("uncorrectedSumEt")
-    ),
     )
     )
 
@@ -1079,7 +1067,7 @@ eventInfo =  cms.EDProducer(
 ### No HF MET used as default for the time being
 met = copy.deepcopy(metFull)
 met.prefix = cms.untracked.string("met")
-met.src = cms.InputTag("slimmedMETsNoHF")
+met.src = cms.InputTag("skimmedPatMETNoHF")
 
 
 
