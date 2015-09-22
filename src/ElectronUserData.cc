@@ -364,7 +364,7 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
 
   if(WP == "TIGHT"){
     if(isEB){
-      pass = (fabs(dEtaIn) <  0.0095 ) && (fabs(dPhiIn) <  0.0291 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0144 ) && (fabs(dz) <  0.323 ) && (fabs(ooemoop) <  0.0174 )  && !conv && (missHits <= 2);
+      pass = (fabs(dEtaIn) <  0.00864 ) && (fabs(dPhiIn) <  0.0286 ) && (full5x5 <  0.0101 ) && (hoe <  0.0342 ) && (fabs(d0) <  0.0103 ) && (fabs(dz) <  0.170 ) && (fabs(ooemoop) <  0.0116 )  && !conv && (missHits <= 2);
     }
     else{
       pass = (fabs(dEtaIn) <  0.00762 ) && (fabs(dPhiIn) <  0.0439 ) && (full5x5 <  0.0287 ) && (hoe <  0.0544 ) && (fabs(d0) <  0.0377 ) && (fabs(dz) <  0.571 ) && (fabs(ooemoop) <  0.01 ) && !conv && (missHits <= 1);
