@@ -183,7 +183,7 @@ process.GlobalTag.globaltag = options.globalTag
 
 if options.isData and "MC" in options.globalTag:
   print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
-  process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'  
+  process.GlobalTag.globaltag = '74X_dataRun2_HLT_v0'  
   #process.GlobalTag.globaltag = 'GR_70_V2_AN1'  
 
 if not options.isData and "50ns" in options.DataProcessing and not "V9A" in options.globalTag:
