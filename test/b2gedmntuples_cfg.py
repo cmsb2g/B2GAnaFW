@@ -185,17 +185,17 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 
-if options.globalTag = "": 
-  if options.DataProcessing="MC50ns":
+if options.globalTag == "": 
+  if options.DataProcessing=="MC50ns":
     process.GlobalTag.globaltag="MCRUN2_74_V9A"
-  elif options.DataProcessing="MC25ns":
+  elif options.DataProcessing=="MC25ns":
     process.GlobalTag.globaltag="MCRUN2_74_V9"
-  elif options.DataProcessing="Data50ns":
+  elif options.DataProcessing=="Data50ns":
     process.GlobalTag.globaltag="74X_dataRun2_Prompt_v0"
-  elif options.DataProcessing="Data25ns":
-   process.GlobalTag.globaltag="74X_dataRun2_Prompt_v1"
- else:
-   print "Choose any of the following options for 'DataProcessing'", "MC50ns,  MC25ns, Data50ns, Data25ns" 
+  elif options.DataProcessing=="Data25ns":
+    process.GlobalTag.globaltag="74X_dataRun2_Prompt_v1"
+  else:
+    print "Choose any of the following options for 'DataProcessing'", "MC50ns,  MC25ns, Data50ns, Data25ns" 
 else: 
   print "You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
   process.GlobalTag.globaltag = options.globalTag 
