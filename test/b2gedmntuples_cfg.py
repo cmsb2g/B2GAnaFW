@@ -10,6 +10,10 @@
 ###  Running on 50 ns Data re-MiniAOD:
 ###  cmsRun b2gedmntuples_cfg.py isData=True DataProcessing='ReReco17Jul'
 ###
+#### cmsRun b2gedmntuples_cfg.py maxEvts=100 isData=True globalTag=74X_dataRun2_Prompt_v1 useNoHFMET=True sample=/store/data/Run2015CetHT/MINIAOD/PromptReco-v1/000/253/809/00000/FED49B77-7440-E511-ACA4-02163E015603.root DataProcessing=PromptReco25ns outputLabel=B2GEDMNtuple_JetHT25ns.root > & outJetHT25ns
+###
+### cmsRun b2gedmntuples_cfg.py maxEvts=100 isData=False globalTag=MCRUN2_74_V9 useNoHFMET=True outputLabel=B2GEDMNtuple_DY25ns.root > & outDY25ns
+###
 ### *****************************************************************************************
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as opts
@@ -24,8 +28,8 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-#                 '/store/mc/RunIISpring15DR74/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/22CED9F1-C311-E511-8C00-B083FECFD4F0.root', 
-                 '/store/mc/RunIISpring15DR74/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/Asympt50ns_MCRUN2_74_V9A-v4/10000/00D2A247-2910-E511-9F3D-0CC47A4DEDD2.root', 
+                 '/store/mc/RunIISpring15DR74/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v3/10000/009D49A5-7314-E511-84EF-0025905A605E.root',
+                 '/store/data/Run2015CetHT/MINIAOD/PromptReco-v1/000/253/809/00000/FED49B77-7440-E511-ACA4-02163E015603.root'
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -182,8 +186,8 @@ process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 process.GlobalTag.globaltag = options.globalTag 
 
 if options.isData and "MC" in options.globalTag:
-  print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v0' !!!!!" 
-  process.GlobalTag.globaltag = '74X_dataRun2_HLT_v0'  
+  print "!!!!! Warning: Data sample selected but GT is", options.globalTag, ". Changing to '74X_dataRun2_Prompt_v1' !!!!!" 
+  process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'  
   #process.GlobalTag.globaltag = 'GR_70_V2_AN1'  
 
 if not options.isData and "50ns" in options.DataProcessing and not "V9A" in options.globalTag:
@@ -592,6 +596,8 @@ hltProcForMETUserData = "PAT"
 
 if options.DataProcessing == "PromptReco50ns" and options.isData == True:
   print "!!!!! Warning! MET User data will not work for runs BEFORE 251585. It's strongly encouraged to use 17 July re-MiniAOD for that, i.e. https://cmsweb.cern.ch/das/request?view=list&limit=50&instance=prod%2Fglobal&input=dataset+dataset%3D%2F*%2F*2015B*17Jul2015*%2FMINIAOD !!!!!"
+  hltProcForMETUserData = "RECO"
+if options.DataProcessing == "PromptReco25ns" and options.isData == True:
   hltProcForMETUserData = "RECO"
 if options.DataProcessing == "ReReco17Jul50ns":
   hltProcForMETUserData = "PAT"
