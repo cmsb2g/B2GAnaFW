@@ -1060,7 +1060,4 @@ met = copy.deepcopy(metFull)
 met.prefix = cms.untracked.string("met")
 met.src = cms.InputTag("skimmedPatMETNoHF")
 
-
-
-
 print "DONE STANDARD"
