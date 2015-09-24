@@ -774,6 +774,26 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('isMedium')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("vidVeto"),
+        quantity = cms.untracked.string("userFloat('vidVeto')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidLoose"),
+        quantity = cms.untracked.string("userFloat('vidLoose')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidTight"),
+        quantity = cms.untracked.string("userFloat('vidTight')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMedium"),
+        quantity = cms.untracked.string("userFloat('vidMedium')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidHEEP"),
+        quantity = cms.untracked.string("userFloat('vidHEEP')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("scEta"),
         quantity = cms.untracked.string("superCluster().eta()")
         )

@@ -29,8 +29,7 @@ options.register('maxEvts',
                  'Number of events to process')
 
 options.register('sample',
-                 '/store/cmst3/user/gpetrucc/miniAOD/Spring15MiniAODv2/CMSSW_7_4_12/miniAOD-TTJets_madgraphMLM_25ns-40k_PAT.root',
-                 #'/store/cmst3/user/gpetrucc/miniAOD/Spring15MiniAODv2/CMSSW_7_4_12/miniAOD-data-SingleMuon-251252_PAT_job5.root', 
+                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -184,6 +183,8 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
+process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
+#process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV51_cff')
 
 if options.globalTag == "": 
   if options.DataProcessing=="MC50ns":
@@ -489,8 +490,11 @@ process.electronUserData = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
-    #electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-PHYS14-PU20bx25-V0-miniAOD-standalone-veto"),
-    #electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-PHYS14-PU20bx25-V0-miniAOD-standalone-tight"),
+    electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-veto"),
+    electronLooseIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-loose"),
+    electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-medium"),
+    electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-tight"),
+    electronHEEPIdMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60")
     )
 
 process.photonUserData = cms.EDProducer(
@@ -564,6 +568,7 @@ dataFormat = DataFormat.MiniAOD
 #    dataFormat = DataFormat.MiniAOD
 
 switchOnVIDPhotonIdProducer(process, dataFormat)
+switchOnVIDElectronIdProducer(process, dataFormat)
 
 # define which IDs we want to produce
 my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_PHYS14_PU20bx25_V2_cff']
@@ -574,7 +579,11 @@ for idmod in my_id_modules:
 
 #
 
-
+my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_50ns_V2_cff',
+                  'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
+for idmod in my_eid_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+    
 from PhysicsTools.PatAlgos.tools.pfTools import *
 ## Adapt primary vertex collection
 adaptPVs(process, pvCollection=cms.InputTag('offlineSlimmedPrimaryVertices'))
@@ -652,7 +661,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*",
     "keep *_HBHENoiseFilterResultProducer_*_*",
-    "keep *_eeBadScFilter_*_*",
+    "keep *_eeBadScFilter_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )

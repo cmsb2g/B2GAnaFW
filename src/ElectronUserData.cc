@@ -58,8 +58,12 @@ private:
   int debug_; 
   // ----------member data ---------------------------
 
-  // edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
-  // edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronLooseIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronMediumIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<bool> > electronHEEPIdMapToken_;
+
 
 
   //  std::vector<Float_t> pt_;
@@ -81,9 +85,12 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
    triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
-   hltPath_ (iConfig.getParameter<std::string>("hltPath"))
-   //electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
-   //electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap")))
+   hltPath_ (iConfig.getParameter<std::string>("hltPath")),
+   electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
+   electronLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"))),
+   electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap"))),
+   electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"))),
+   electronHEEPIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap")))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
   
@@ -132,10 +139,16 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
   // Electron ID
   // Get the electron ID data from the event stream.
-  //edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
-  //edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  //iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
-  //iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
+  edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
+  edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
+  edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
+  edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
+  edm::Handle<edm::ValueMap<bool> > HEEP_id_decisions;
+  iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
+  iEvent.getByToken(electronLooseIdMapToken_,loose_id_decisions);
+  iEvent.getByToken(electronMediumIdMapToken_,medium_id_decisions);
+  iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
+  iEvent.getByToken(electronHEEPIdMapToken_,HEEP_id_decisions);
   //passVetoId_.clear();     
   //passTightId_.clear();   
   
@@ -234,10 +247,13 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
-    //const Ptr<pat::Electron> elPtr(eleHandle, i);
+    const Ptr<pat::Electron> elPtr(eleHandle, i);
     //std::cout<<"ValueMap: "<<veto_id_decisions->contains(elPtr.id())<<std::endl;
-    //bool isPassVeto  = (*veto_id_decisions)[ elPtr ];
-    //bool isPassTight = (*tight_id_decisions)[ elPtr ];
+    bool vidVeto  = (*veto_id_decisions)[ elPtr ];
+    bool vidLoose  = (*loose_id_decisions)[ elPtr ];
+    bool vidMedium  = (*medium_id_decisions)[ elPtr ];
+    bool vidTight = (*tight_id_decisions)[ elPtr ];
+    bool vidHEEP  = (*HEEP_id_decisions)[ elPtr ];
     //passVetoId_.push_back( isPassVeto );
     //passTightId_.push_back( isPassTight );
 
@@ -265,7 +281,11 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("isLoose",    isLoose);
     el.addUserFloat("isMedium",   isMedium);
     el.addUserFloat("isTight",    isTight);
-
+    el.addUserFloat("vidVeto",    vidVeto );
+    el.addUserFloat("vidLoose",   vidLoose );
+    el.addUserFloat("vidMedium",  vidMedium );
+    el.addUserFloat("vidTight",   vidTight );
+    el.addUserFloat("vidHEEP",    vidHEEP );
 
 
 
