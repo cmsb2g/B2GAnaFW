@@ -1,7 +1,6 @@
 header = """
 ### *****************************************************************************************
 ### Usage:
-###
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
 ###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of MC50ns, MC25ns, Data50ns, Data25ns. 
@@ -93,7 +92,9 @@ options.parseArguments()
 if options.DataProcessing == "":
   sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC50ns', 'MC25ns', 'Data50ns', 'Data25ns', 'Data25nsv2'.\n")
 
-if options.globalTag == "": 
+if options.globalTag != "": 
+  print "!!!!Warning: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
+else: 
   if options.DataProcessing=="MC50ns":
     options.globalTag="MCRUN2_74_V9A"
   elif options.DataProcessing=="MC25ns":
@@ -106,8 +107,6 @@ if options.globalTag == "":
     options.globalTag="74X_dataRun2_Prompt_v2"
   else:
     sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options for 'DataProcessing': 'MC50ns', 'MC25ns', 'Data50ns', 'Data25ns', 'Data25nsv2'\n") 
-else: 
-  print "!!!!Warning: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
@@ -166,8 +165,6 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag.globaltag = options.globalTag 
 
-
-
 ### -------------------------------------------------------------------------------------------
 ###  QGL
 
@@ -197,21 +194,6 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
-
-if options.globalTag == "": 
-  if options.DataProcessing=="MC50ns":
-    process.GlobalTag.globaltag="MCRUN2_74_V9A"
-  elif options.DataProcessing=="MC25ns":
-    process.GlobalTag.globaltag="MCRUN2_74_V9"
-  elif options.DataProcessing=="Data50ns":
-    process.GlobalTag.globaltag="74X_dataRun2_Prompt_v0"
-  elif options.DataProcessing=="Data25ns":
-    process.GlobalTag.globaltag="74X_dataRun2_Prompt_v1"
-  else:
-    print "Choose any of the following options for 'DataProcessing'", "MC50ns,  MC25ns, Data50ns, Data25ns" 
-else: 
-  print "You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
-  process.GlobalTag.globaltag = options.globalTag 
 
 ### External JECs =====================================================================================================
 
