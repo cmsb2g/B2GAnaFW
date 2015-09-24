@@ -572,7 +572,10 @@ my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElec
                   'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
 for idmod in my_eid_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-    
+
+
+process.egmGsfElectronIDs.physicsObjectSrc = 'skimmedPatElectrons'
+        
 from PhysicsTools.PatAlgos.tools.pfTools import *
 ## Adapt primary vertex collection
 adaptPVs(process, pvCollection=cms.InputTag('offlineSlimmedPrimaryVertices'))
