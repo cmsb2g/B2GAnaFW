@@ -23,7 +23,7 @@ config.Data.publication = True
 # This string is used to construct the output dataset name
 config.Data.publishDBS = 'phys03'
 config.Data.publishDataName = 'B2GAnaFW_v74x_V7_25ns'
-config.Data.outLFNDirBase = '/store/user/devdatta/B2GAnaFW/DoubleeMuon/Run2015D-PromptReco-v3' 
+config.Data.outLFNDirBase = '/store/user/devdatta/B2GAnaFW/DoubleMuon/Run2015D-PromptReco-v3' 
 
 config.section_("Site")
 config.Site.storageSite = 'T3_US_FNALLPC'
