@@ -119,12 +119,18 @@ jLabel            = 'slimmedJets'
 jLabelNoHF        = 'slimmedJets'
 jLabelAK8         = 'slimmedJetsAK8'
 
+rhoLabel = 'fixedGridRhoFastjetAll'
 pvLabel           = 'offlineSlimmedPrimaryVertices'
 convLabel         = 'reducedEgamma:reducedConversions'
 particleFlowLabel = 'packedPFCandidates'    
 metLabel = 'slimmedMETs'
 metNoHFLabel = 'slimmedMETsNoHF'
-rhoLabel = 'fixedGridRhoFastjetAll'
+
+if options.DataProcessing=="Data25nsv2":
+  metLabel+=', "", "RECO"'
+  metNoHFLabel+=', "", "RECO"'
+
+print metLabel, " ", metNoHFLabel
 
 triggerResultsLabel = "TriggerResults"
 triggerSummaryLabel = "hltTriggerSummaryAOD"
@@ -388,13 +394,13 @@ process.skimmedPatElectrons = cms.EDFilter(
 
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metLabel),
+    src = cms.InputTag(metLabel, "", "RECO"),
     cut = cms.string("")
     )
 
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metNoHFLabel),
+    src = cms.InputTag(metNoHFLabel, "", "RECO"),
     cut = cms.string("")
     )
 
@@ -603,7 +609,8 @@ process.TriggerUserData = cms.EDProducer(
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
-hltProcForMETUserData = "PAT"
+if options.DataProcessing=="Data25nsv2":
+  hltProcForMETUserData = "RECO"
 
 process.METUserData = cms.EDProducer(
   'TriggerUserData',
