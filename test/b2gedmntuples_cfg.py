@@ -215,13 +215,13 @@ if options.usePrivateSQLite:
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
     if options.DataProcessing=="Data50ns":
-      era="Summer15_50nsV4_DATA" 
+      era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="Data25ns":
       era="Summer15_25nsV2_DATA" 
     elif options.DataProcessing=="Data25nsv2":
       era="Summer15_25nsV2_DATA" 
     elif options.DataProcessing=="MC50ns":
-      era="Summer15_50nsV4_DATA" 
+      era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="MC25ns":
       era="Summer15_25nsV2_MC" 
     dBFile = era+".db"
@@ -485,11 +485,13 @@ process.electronUserData = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
-    electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-veto"),
-    electronLooseIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-loose"),
-    electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-medium"),
-    electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-50ns-V2-standalone-tight"),
-    electronHEEPIdMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60")
+    electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
+    electronLooseIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-loose"),
+    electronMediumIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-medium"),
+    electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-tight"),
+    electronHEEPIdMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60"), 
+    eleMediumIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-medium"),
+    eleIdVerbose = cms.bool(True)
     )
 
 process.photonUserData = cms.EDProducer(
@@ -574,7 +576,7 @@ for idmod in my_id_modules:
 
 #
 
-my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_50ns_V2_cff',
+my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff',
                   'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
 for idmod in my_eid_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)

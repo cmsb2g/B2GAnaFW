@@ -28,6 +28,9 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Ptr.h"
 
+// VID Debugging 
+#include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
+
 #include<vector>
 #include <TMath.h>
 
@@ -48,6 +51,7 @@ private:
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
   bool passIDWP(string, bool, float, float, float, float, float, float, float, bool, int);
 
+  void printCutFlowResult(vid::CutFlowResult &cutflow);
 
   InputTag eleLabel_, pvLabel_, packedPFCandsLabel_, convLabel_, rho_;
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
@@ -63,8 +67,9 @@ private:
   edm::EDGetTokenT<edm::ValueMap<bool> > electronMediumIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > electronHEEPIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
 
-
+  bool verboseIdFlag_;
 
   //  std::vector<Float_t> pt_;
   //  std::vector<Float_t> etaSC_;
@@ -90,7 +95,9 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    electronLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"))),
    electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap"))),
    electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"))),
-   electronHEEPIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap")))
+   electronHEEPIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap"))), 
+   eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
+   verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
   
@@ -144,11 +151,13 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
   edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
   edm::Handle<edm::ValueMap<bool> > HEEP_id_decisions;
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > medium_id_cutflow_data;
   iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
   iEvent.getByToken(electronLooseIdMapToken_,loose_id_decisions);
   iEvent.getByToken(electronMediumIdMapToken_,medium_id_decisions);
   iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
   iEvent.getByToken(electronHEEPIdMapToken_,HEEP_id_decisions);
+  iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
   //passVetoId_.clear();     
   //passTightId_.clear();   
   
@@ -256,6 +265,11 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool vidHEEP  = (*HEEP_id_decisions)[ elPtr ];
     //passVetoId_.push_back( isPassVeto );
     //passTightId_.push_back( isPassTight );
+    if( verboseIdFlag_ ) {
+      vid::CutFlowResult fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
+      edm::LogInfo("DEBUG:VID") << "CutFlow, full info for cand with pt= " << elPtr->pt();
+      printCutFlowResult(fullCutFlowData);
+    }
 
     el.addUserFloat("dEtaIn",      dEtaIn);
     el.addUserFloat("dPhiIn",      dPhiIn);
@@ -392,6 +406,25 @@ bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn
   }
   return pass;
 }
+
+void ElectronUserData::printCutFlowResult(vid::CutFlowResult &cutflow){
+
+  printf("    CutFlow name= %s    decision is %d\n", 
+      cutflow.cutFlowName().c_str(),
+      (int) cutflow.cutFlowPassed());
+  int ncuts = cutflow.cutFlowSize();
+  printf(" Index                               cut name              isMasked    value-cut-upon     pass?\n");
+  for(int icut = 0; icut<ncuts; icut++){
+    printf("  %2d      %50s    %d        %f          %d\n", icut,
+        cutflow.getNameAtIndex(icut).c_str(),
+        (int)cutflow.isCutMasked(icut),
+        cutflow.getValueCutUpon(icut),
+        (int)cutflow.getCutResultByIndex(icut));
+  }
+  printf("    WARNING: the value-cut-upon is bugged in 7.4.7, it is always 0.0 or 1.0\n");
+
+}
+
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(ElectronUserData);
