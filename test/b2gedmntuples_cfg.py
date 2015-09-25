@@ -209,13 +209,13 @@ if options.usePrivateSQLite:
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
     if options.DataProcessing=="Data50ns":
-      era="Summer15_50nsV4_DATA" 
+      era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="Data25ns":
       era="Summer15_25nsV2_DATA" 
     elif options.DataProcessing=="Data25nsv2":
       era="Summer15_25nsV2_DATA" 
     elif options.DataProcessing=="MC50ns":
-      era="Summer15_50nsV4_DATA" 
+      era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="MC25ns":
       era="Summer15_25nsV2_MC" 
     dBFile = era+".db"
