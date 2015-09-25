@@ -126,10 +126,6 @@ particleFlowLabel = 'packedPFCandidates'
 metLabel = 'slimmedMETs'
 metNoHFLabel = 'slimmedMETsNoHF'
 
-if options.DataProcessing=="Data25nsv2":
-  metLabel+=', "", "RECO"'
-  metNoHFLabel+=', "", "RECO"'
-
 triggerResultsLabel = "TriggerResults"
 triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
@@ -609,6 +605,7 @@ process.TriggerUserData = cms.EDProducer(
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
+hltProcForMETUserData = "PAT"
 if options.DataProcessing=="Data25nsv2":
   hltProcForMETUserData = "RECO"
 
