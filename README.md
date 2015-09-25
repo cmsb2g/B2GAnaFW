@@ -31,8 +31,6 @@ Clone the github repository
 
 $ git clone -b v7.4.x_V7.0_25ns https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
 
-$ git clone -b 7_4_X_25ns.00 https://github.com/cms-btv-pog/RecoBTag-PerformanceMeasurements.git RecoBTag/PerformanceMeasurements
-
 Compile
 =======
 
