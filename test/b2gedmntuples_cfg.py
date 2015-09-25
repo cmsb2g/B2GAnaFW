@@ -130,8 +130,6 @@ if options.DataProcessing=="Data25nsv2":
   metLabel+=', "", "RECO"'
   metNoHFLabel+=', "", "RECO"'
 
-print metLabel, " ", metNoHFLabel
-
 triggerResultsLabel = "TriggerResults"
 triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
