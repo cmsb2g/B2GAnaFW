@@ -44,7 +44,7 @@ private:
   void produce( edm::Event &, const edm::EventSetup & );
   float getEA(float);
   float getEAOld(float);
-  float getEAWithGenWeight(float);
+  float getEAWithGenWeightOld(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
   bool passIDWP(string, bool, float, float, float, float, float, float, float, bool, int);
 
@@ -297,16 +297,18 @@ float ElectronUserData::getEA(float eta)
   // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
   // They are valid for electrons only, different EA are available for muons.
   float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0973;
-  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0954;
-  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0632;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0727;
-  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1337;
+  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.1752;
+  if(abs(eta)>1.0 && abs(eta)<=1.4979) effArea = 0.1862;
+  if(abs(eta)>1.4979 && abs(eta)<=2.0) effArea = 0.1411;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.1534;
+  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.1903;
+  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.2243;
+  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.2687;
   return effArea;
 }
 
 
-float ElectronUserData::getEAWithGenWeight(float eta)
+float ElectronUserData::getEAWithGenWeightOld(float eta)
 {
   // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
   // They are valid for electrons only, different EA are available for muons.
