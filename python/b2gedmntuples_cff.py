@@ -794,6 +794,10 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('vidHEEP')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("vidHEEPnoiso"),
+        quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("scEta"),
         quantity = cms.untracked.string("superCluster().eta()")
         )

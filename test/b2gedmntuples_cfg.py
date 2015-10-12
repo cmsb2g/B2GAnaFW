@@ -388,13 +388,15 @@ process.skimmedPatElectrons = cms.EDFilter(
 
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metLabel, "", "RECO"),
+    src = cms.InputTag(metLabel, "", "PAT"),
     cut = cms.string("")
     )
 
+
+
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metNoHFLabel, "", "RECO"),
+    src = cms.InputTag(metNoHFLabel, "", "PAT"),
     cut = cms.string("")
     )
 
