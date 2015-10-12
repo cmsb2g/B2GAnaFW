@@ -66,7 +66,7 @@ private:
   edm::EDGetTokenT<edm::ValueMap<bool> > electronLooseIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > electronMediumIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronHEEPIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
 
   bool verboseIdFlag_;
@@ -95,7 +95,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    electronLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"))),
    electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap"))),
    electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"))),
-   electronHEEPIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap"))), 
+   electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap"))), 
    eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
    verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
 {
@@ -150,16 +150,21 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
   edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
   edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  edm::Handle<edm::ValueMap<bool> > HEEP_id_decisions;
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > HEEP_id_cutflow_data;
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > medium_id_cutflow_data;
   iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
   iEvent.getByToken(electronLooseIdMapToken_,loose_id_decisions);
   iEvent.getByToken(electronMediumIdMapToken_,medium_id_decisions);
   iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
-  iEvent.getByToken(electronHEEPIdMapToken_,HEEP_id_decisions);
+  iEvent.getByToken(electronHEEPIdMapToken_,HEEP_id_cutflow_data);
   iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
   //passVetoId_.clear();     
-  //passTightId_.clear();   
+  //passTightId_.clear();
+
+  // Cuts to be masked for non-iso version. 
+  vector<string> maskCuts;
+  maskCuts.push_back("GsfEleTrkPtIsoCut_0"); 
+  maskCuts.push_back("GsfEleEmHadD1IsoRhoCut_0");   
   
   // TRIGGER
   bool changedConfig = false;
@@ -262,7 +267,8 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool vidLoose  = (*loose_id_decisions)[ elPtr ];
     bool vidMedium  = (*medium_id_decisions)[ elPtr ];
     bool vidTight = (*tight_id_decisions)[ elPtr ];
-    bool vidHEEP  = (*HEEP_id_decisions)[ elPtr ];
+    bool vidHEEP  = (*HEEP_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidHEEP_noiso     = (*HEEP_id_cutflow_data)[ elPtr ].getCutFlowResultMasking(maskCuts).cutFlowPassed();
     //passVetoId_.push_back( isPassVeto );
     //passTightId_.push_back( isPassTight );
     if( verboseIdFlag_ ) {
@@ -300,6 +306,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("vidMedium",  vidMedium );
     el.addUserFloat("vidTight",   vidTight );
     el.addUserFloat("vidHEEP",    vidHEEP );
+    el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
 
 
 
