@@ -3,19 +3,15 @@ header = """
 ### Usage:
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
-###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of MC50ns, MC25ns, Data50ns, Data25ns. 
+###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of MC25ns_MiniAODv2, Data25ns_MiniAODv2, Data25ns_PromptRecov4. 
 ###
 ### Examples: 
-###    Running on 25 ns MC:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns'
-###    Running on 25 ns data (Run2015 A, B, and C):
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns'
-###    Running on 25 ns data (Run2015 D and MiniAODv2):
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25nsv2'
-###    Running on 50 ns MC:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC50ns'
-###    Running on 50 ns data:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data50ns'
+###    Running on 25 ns re-MiniAOD-ed MC:
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAODv2'
+###    Running on 25 ns data (Run2015D re-MiniAOD-ed):
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_MiniAODv2'
+###    Running on 25 ns data (Run2015D_promptReco-v4):
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_PromptRecov4'
 ###
 ### *****************************************************************************************
 """
@@ -44,7 +40,7 @@ options.register('DataProcessing',
                  "",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 'Data processing types. Options are: MC50ns, MC25ns, Data50ns, Data25ns Data25nsv2')
+                 'Data processing types. Options are: MC25ns_MiniAODv2, Data25ns_MiniAODv2 Data25ns_PromptRecov4')
 
 options.register('lheLabel',
                  "",
@@ -60,7 +56,7 @@ options.register('useNoHFMET',
                  'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-                 True,
+                 False,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Take Corrections from private SQL file')
@@ -89,23 +85,19 @@ options.setDefault('maxEvents', 10)
 options.parseArguments()
   
 if options.DataProcessing == "":
-  sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC50ns', 'MC25ns', 'Data50ns', 'Data25ns', 'Data25nsv2'.\n")
+  sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'.\n")
 
 if options.globalTag != "": 
   print "!!!!Warning: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="MC50ns":
-    options.globalTag="MCRUN2_74_V9A"
-  elif options.DataProcessing=="MC25ns":
-    options.globalTag="MCRUN2_74_V9"
-  elif options.DataProcessing=="Data50ns":
-    options.globalTag="74X_dataRun2_Prompt_v0"
-  elif options.DataProcessing=="Data25ns":
-    options.globalTag="74X_dataRun2_Prompt_v1"
-  elif options.DataProcessing=="Data25nsv2":
-    options.globalTag="74X_dataRun2_Prompt_v2"
+  if options.DataProcessing=="MC25ns_MiniAODv2":
+    options.globalTag="74X_mcRun2_asymptotic_v2"
+  elif options.DataProcessing=="Data25ns_MiniAODv2":
+    options.globalTag="74X_dataRun2_reMiniAOD_v0"
+  elif options.DataProcessing=="Data25ns_PromptRecov4":
+    options.globalTag="74X_dataRun2_Prompt_v4"
   else:
-    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options for 'DataProcessing': 'MC50ns', 'MC25ns', 'Data50ns', 'Data25ns', 'Data25nsv2'\n") 
+    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options for 'DataProcessing': 'MC25ns', 'Data25ns', 'Data25nsv2'\n") 
 
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
@@ -268,8 +260,6 @@ if options.usePrivateSQLite:
       jetSource = cms.InputTag("slimmedJetsAK8"),
       jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
       )
-
-jecUncertaintyFile="PhysicsTools/PatUtils/data/Summer15_50nsV4_DATA_UncertaintySources_AK4PFchs.txt"
 
 ### =====================================================================================================
 
