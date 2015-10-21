@@ -25,7 +25,9 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
+#                 'file:MET_5Oct.root',
+                 'file:SingleElMiniAOD_V2.root',
+#                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -74,13 +76,13 @@ options.register('globalTag',
                  'Global Tag')
 
 options.register('wantSummary',
-                 False,
+                 True,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Want summary report')
 
 ### Events to process: 'maxEvents' is already registered by the framework
-options.setDefault('maxEvents', 10)
+options.setDefault('maxEvents', 100)
 
 options.parseArguments()
   
@@ -97,7 +99,7 @@ else:
   elif options.DataProcessing=="Data25ns_PromptRecov4":
     options.globalTag="74X_dataRun2_Prompt_v4"
   else:
-    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options for 'DataProcessing': 'MC25ns', 'Data25ns', 'Data25nsv2'\n") 
+    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'\n") 
 
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
@@ -203,13 +205,13 @@ if options.usePrivateSQLite:
     if options.DataProcessing=="Data50ns":
       era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="Data25ns":
-      era="Summer15_25nsV2_DATA" 
+      era="Summer15_25nsV5_DATA" 
     elif options.DataProcessing=="Data25nsv2":
-      era="Summer15_25nsV2_DATA" 
+      era="Summer15_25nsV5_DATA" 
     elif options.DataProcessing=="MC50ns":
       era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="MC25ns":
-      era="Summer15_25nsV2_MC" 
+      era="Summer15_25nsV5_MC" 
     dBFile = era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
@@ -612,6 +614,9 @@ process.METUserData = cms.EDProducer(
 
 process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
 process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
+process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
+
 
 ### Including ntuplizer 
 
