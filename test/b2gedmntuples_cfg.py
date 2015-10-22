@@ -25,8 +25,9 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-#                 'file:MET_5Oct.root',
-                 'file:SingleElMiniAOD_V2.root',
+                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/05Oct2015-v1/30000/04F50A91-B46F-E511-A2A3-002618943923.root",
+#                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root",
+#                 "root://ccxrootdcms.in2p3.fr:1094//pnfs/in2p3.fr/data/cms/disk/data/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/6E07CD15-D26B-E511-8668-02163E013999.root",
 #                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
@@ -42,7 +43,7 @@ options.register('DataProcessing',
                  "",
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
-                 'Data processing types. Options are: MC25ns_MiniAODv2, Data25ns_MiniAODv2 Data25ns_PromptRecov4')
+                 'Data processing types. Options are: MC25ns_MiniAODv2, Data25ns_MiniAODv2, Data25ns_PromptRecov4')
 
 options.register('lheLabel',
                  "",
@@ -136,6 +137,9 @@ hltMuonFilterLabel     = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFilte
 hltPathLabel           = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
+metProcess = "PAT"
+if(options.DataProcessing=="Data25ns_PromptRecov4"):metProcess = "RECO"
+
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
 process = cms.Process("b2gEDMNtuples")
@@ -208,6 +212,10 @@ if options.usePrivateSQLite:
       era="Summer15_25nsV5_DATA" 
     elif options.DataProcessing=="Data25nsv2":
       era="Summer15_25nsV5_DATA" 
+    elif options.DataProcessing=="Data25ns_PromptRecov4":
+      era = "Summer15_50nsV5_DATA"
+    elif options.DataProcessing=="Data25ns_MiniAODv2":
+      era = "Summer15_50nsV5_DATA"
     elif options.DataProcessing=="MC50ns":
       era="Summer15_50nsV5_DATA" 
     elif options.DataProcessing=="MC25ns":
@@ -380,7 +388,8 @@ process.skimmedPatElectrons = cms.EDFilter(
 
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metLabel, "", "PAT"),
+#    src = cms.InputTag(metLabel, "", "PAT"),
+    src = cms.InputTag(metLabel, "", metProcess),
     cut = cms.string("")
     )
 
@@ -388,7 +397,7 @@ process.skimmedPatMET = cms.EDFilter(
 
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
-    src = cms.InputTag(metNoHFLabel, "", "PAT"),
+    src = cms.InputTag(metNoHFLabel, "", metProcess),
     cut = cms.string("")
     )
 
@@ -600,7 +609,7 @@ process.TriggerUserData = cms.EDProducer(
     )                                 
 
 hltProcForMETUserData = "PAT"
-if options.DataProcessing=="Data25nsv2":
+if options.DataProcessing=="Data25ns_PromptRecov4":
   hltProcForMETUserData = "RECO"
 
 process.METUserData = cms.EDProducer(
