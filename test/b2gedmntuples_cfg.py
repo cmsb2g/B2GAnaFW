@@ -8,10 +8,18 @@ header = """
 ### Examples: 
 ###    Running on 25 ns re-MiniAOD-ed MC:
 ###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAODv2'
+###    Running on 25 ns FastSim MC:
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_FastSim'
+###    Running on 25 ns data (Run2015C ReReco-ed):
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_ReReco'
 ###    Running on 25 ns data (Run2015D re-MiniAOD-ed):
 ###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_MiniAODv2'
 ###    Running on 25 ns data (Run2015D_promptReco-v4):
 ###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_PromptRecov4'
+###    Running on 50 ns re-MiniAOD-ed MC:
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC50ns_MiniAODv2'
+###    Running on 50 ns data (Run2015D re-MiniAOD-ed):
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data50ns_MiniAODv2'
 ###
 ### *****************************************************************************************
 """
@@ -95,12 +103,22 @@ if options.globalTag != "":
 else: 
   if options.DataProcessing=="MC25ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic_v2"
+  elif options.DataProcessing=="MC25ns_FastSim":
+    options.globalTag="MCRUN2_74_V9"
+  elif options.DataProcessing=="Data25ns_ReReco":
+    options.globalTag="74X_dataRun2_v4"
   elif options.DataProcessing=="Data25ns_MiniAODv2":
     options.globalTag="74X_dataRun2_reMiniAOD_v0"
   elif options.DataProcessing=="Data25ns_PromptRecov4":
     options.globalTag="74X_dataRun2_Prompt_v4"
+  elif options.DataProcessing=="MC50ns_MiniAODv2":
+    options.globalTag="74X_mcRun2_asymptotic50ns_v0"
+  elif options.DataProcessing=="Data50ns_MiniAODv2":
+    options.globalTag="74X_dataRun2_reMiniAOD_v0"
   else:
-    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'\n") 
+    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
+             "'MC25ns_MiniAODv2', 'MC25ns_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
+             "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
 
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
@@ -139,6 +157,7 @@ hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
 metProcess = "PAT"
 if(options.DataProcessing=="Data25ns_PromptRecov4"):metProcess = "RECO"
+elif(options.DataProcessing=="Data25ns_ReReco"):metProcess = "RECO"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
@@ -206,20 +225,18 @@ if options.usePrivateSQLite:
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
-    if options.DataProcessing=="Data50ns":
-      era="Summer15_50nsV5_DATA" 
-    elif options.DataProcessing=="Data25ns":
-      era="Summer15_25nsV5_DATA" 
-    elif options.DataProcessing=="Data25nsv2":
-      era="Summer15_25nsV5_DATA" 
-    elif options.DataProcessing=="Data25ns_PromptRecov4":
+    if "Data50ns" in options.DataProcessing:
       era = "Summer15_50nsV5_DATA"
-    elif options.DataProcessing=="Data25ns_MiniAODv2":
-      era = "Summer15_50nsV5_DATA"
-    elif options.DataProcessing=="MC50ns":
-      era="Summer15_50nsV5_DATA" 
-    elif options.DataProcessing=="MC25ns":
-      era="Summer15_25nsV5_MC" 
+    elif "MC50ns" in options.DataProcessing:
+      era = "Summer15_50nsV5_MC"
+    elif "Data25ns" in options.DataProcessing:
+      era = "Summer15_25nsV5_DATA"
+    elif "MC25ns" in options.DataProcessing:
+      era = "Summer15_25nsV5_MC"
+    else:
+      sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
+               "'MC25ns_MiniAODv2', 'MC25ns_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
+               "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
     dBFile = era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
@@ -419,6 +436,8 @@ process.eventUserData = cms.EDProducer(
     pileup = cms.InputTag("slimmedAddPileupInfo"),
     pvSrc = cms.InputTag("offlineSlimmedPrimaryVertices")
 )
+if "FastSim" in options.DataProcessing:
+  process.eventUserData.pileup = "addPileupInfo"
 
 process.muonUserData = cms.EDProducer(
     'MuonUserData',
@@ -488,7 +507,7 @@ process.electronUserData = cms.EDProducer(
     electronTightIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-tight"),
     electronHEEPIdMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60"), 
     eleMediumIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-medium"),
-    eleIdVerbose = cms.bool(True)
+    eleIdVerbose = cms.bool(False)
     )
 
 process.photonUserData = cms.EDProducer(
@@ -611,6 +630,8 @@ process.TriggerUserData = cms.EDProducer(
 hltProcForMETUserData = "PAT"
 if options.DataProcessing=="Data25ns_PromptRecov4":
   hltProcForMETUserData = "RECO"
+elif options.DataProcessing=="Data25ns_ReReco":
+  hltProcForMETUserData = "RECO"
 
 process.METUserData = cms.EDProducer(
   'TriggerUserData',
@@ -646,7 +667,6 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
-    "keep *_met_*_*",
     "keep *_metFull_*_*",
     "keep *_eventInfo_*_*",
     "keep *_subjetsAK8_*_*",
@@ -658,13 +678,19 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_electronKeys_*_*",   
     "keep *_muonKeys_*_*",
     "keep *_TriggerUserData*_trigger*_*",
-    "keep *_METUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*",
-    "keep *_HBHENoiseFilterResultProducer_*_*",
     "keep *_eeBadScFilter_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),
+    )
+
+# Some collections are not available in the current FastSim
+if not "FastSim" in options.DataProcessing:
+  process.edmNtuplesOut.outputCommands+=(
+    "keep *_met_*_*",
+    "keep *_METUserData*_trigger*_*",
+    "keep *_HBHENoiseFilterResultProducer_*_*",
     )
 
 ### keep NoHF jets if needed:
@@ -703,4 +729,4 @@ process.edmNtuplesOut.fileName=options.outputLabel
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
 
-open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
