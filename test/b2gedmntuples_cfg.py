@@ -33,7 +33,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/05Oct2015-v1/30000/04F50A91-B46F-E511-A2A3-002618943923.root",
+                 '/store/mc/RunIISpring15MiniAODv2/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/2464BD5B-B96D-E511-B740-0CC47A00934A.root', 
+                 #"root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/05Oct2015-v1/30000/04F50A91-B46F-E511-A2A3-002618943923.root",
 #                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root",
 #                 "root://ccxrootdcms.in2p3.fr:1094//pnfs/in2p3.fr/data/cms/disk/data/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/6E07CD15-D26B-E511-8668-02163E013999.root",
 #                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
@@ -346,6 +347,8 @@ if options.useNoHFMET:
     runMetCorAndUncFromMiniAOD(process,
                                isData=("Data" in options.DataProcessing),
                                pfCandColl=cms.InputTag("noHFCands"),
+                               recoMetFromPFCs=True,
+                               reclusterJets=True, 
                                postfix="NoHF"
                                )
     jLabelNoHF = 'patJetsNoHF'
