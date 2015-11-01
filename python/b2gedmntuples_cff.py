@@ -48,23 +48,35 @@ metFull =  cms.EDProducer(
     prefix=cms.untracked.string("metFull"),
     eventInfo=cms.untracked.bool(False),
     variables = cms.VPSet(
-    cms.PSet(
-    tag = cms.untracked.string("Pt"),
-    quantity = cms.untracked.string("pt")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Px"),
-    quantity = cms.untracked.string("px")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Py"),
-    quantity = cms.untracked.string("py")
-    ),
-    cms.PSet(
-    tag = cms.untracked.string("Phi"),
-    quantity = cms.untracked.string("phi")
-    ),
-    )
+        cms.PSet(
+            tag = cms.untracked.string("Pt"),
+            quantity = cms.untracked.string("pt")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("Px"),
+            quantity = cms.untracked.string("px")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("Py"),
+            quantity = cms.untracked.string("py")
+            ),
+        cms.PSet(
+            tag = cms.untracked.string("Phi"),
+            quantity = cms.untracked.string("phi")
+            ),
+        cms.PSet(
+          tag = cms.untracked.string("uncorPt"),
+          quantity = cms.untracked.string("uncorPt")
+          ),
+        cms.PSet(
+          tag = cms.untracked.string("uncorPhi"),
+          quantity = cms.untracked.string("uncorPhi")
+          ),
+        cms.PSet(
+          tag = cms.untracked.string("uncorSumEt"),
+          quantity = cms.untracked.string("uncorSumEt")
+          ),
+        ),
     )
 
 ### muon variables
@@ -1089,8 +1101,8 @@ eventInfo =  cms.EDProducer(
 
 
 ### No HF MET used as default for the time being
-met = copy.deepcopy(metFull)
-met.prefix = cms.untracked.string("met")
-met.src = cms.InputTag("skimmedPatMETNoHF")
+metNoHF = copy.deepcopy(metFull)
+metNoHF.prefix = cms.untracked.string("metNoHF")
+metNoHF.src = cms.InputTag("skimmedPatMETNoHF")
 
 print "DONE STANDARD"

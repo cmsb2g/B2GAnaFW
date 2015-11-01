@@ -691,7 +691,7 @@ process.edmNtuplesOut = cms.OutputModule(
 # Some collections are not available in the current FastSim
 if not "FastSim" in options.DataProcessing:
   process.edmNtuplesOut.outputCommands+=(
-    "keep *_met_*_*",
+    "keep *_metNoHF_*_*",
     "keep *_METUserData*_trigger*_*",
     "keep *_HBHENoiseFilterResultProducer_*_*",
     )
