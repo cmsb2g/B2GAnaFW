@@ -9,7 +9,7 @@ header = """
 ###    Running on 25 ns re-MiniAOD-ed MC:
 ###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAODv2'
 ###    Running on 25 ns FastSim MC:
-###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_FastSim'
+###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAODv2_FastSim'
 ###    Running on 25 ns data (Run2015C ReReco-ed):
 ###    cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_ReReco'
 ###    Running on 25 ns data (Run2015D re-MiniAOD-ed):
@@ -68,13 +68,13 @@ options.register('useNoHFMET',
                  'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-                 False,
+                 True,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Take Corrections from private SQL file')
 
 options.register('forceResiduals',
-                 None,
+                 True,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Whether to force residuals to be applied')
@@ -104,8 +104,8 @@ if options.globalTag != "":
 else: 
   if options.DataProcessing=="MC25ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic_v2"
-  elif options.DataProcessing=="MC25ns_FastSim":
-    options.globalTag="MCRUN2_74_V9"
+  elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
+    options.globalTag="74X_mcRun2_asymptotic_v2"
   elif options.DataProcessing=="Data25ns_ReReco":
     options.globalTag="74X_dataRun2_v4"
   elif options.DataProcessing=="Data25ns_MiniAODv2":
@@ -118,12 +118,19 @@ else:
     options.globalTag="74X_dataRun2_reMiniAOD_v0"
   else:
     sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
-             "'MC25ns_MiniAODv2', 'MC25ns_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
+             "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
              "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
 
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
-  lheLabel = ""
+  options.lheLabel = ""
+elif options.lheLabel == "":
+  if "FastSim" in options.DataProcessing:
+    print 'You have chosen to run over FastSim MC. lheLabel will be set to "source".\n'
+    options.lheLabel = "source"
+  else:
+    print 'You have chosen to run over FullSim MC. lheLabel will be set to "externalLHEProducer".\n'
+    options.lheLabel = "externalLHEProducer"
 
 ###inputTag labels
 rhoLabel          = "fixedGridRhoFastjetAll"
@@ -145,7 +152,6 @@ triggerSummaryLabel = "hltTriggerSummaryAOD"
 hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
 hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
-lheLabel = "externalLHEProducer"
 
 ### Including QGL: ensuring the database onject can be accessed
 qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
@@ -218,7 +224,7 @@ process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if ("Data" in options.DataProcessing and options.forceResiduals):
-  corrections.append['L2L3Residual']
+  corrections.extend(['L2L3Residual'])
 
 if options.usePrivateSQLite:
     jLabel = 'updatedPatJetsAK4'
@@ -231,12 +237,12 @@ if options.usePrivateSQLite:
     elif "MC50ns" in options.DataProcessing:
       era = "Summer15_50nsV5_MC"
     elif "Data25ns" in options.DataProcessing:
-      era = "Summer15_25nsV5_DATA"
+      era = "Summer15_25nsV6_DATA"
     elif "MC25ns" in options.DataProcessing:
-      era = "Summer15_25nsV5_MC"
+      era = "Summer15_25nsV6_MC"
     else:
       sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
-               "'MC25ns_MiniAODv2', 'MC25ns_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
+               "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
                "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
     dBFile = era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
@@ -439,8 +445,6 @@ process.eventUserData = cms.EDProducer(
     pileup = cms.InputTag("slimmedAddPileupInfo"),
     pvSrc = cms.InputTag("offlineSlimmedPrimaryVertices")
 )
-if "FastSim" in options.DataProcessing:
-  process.eventUserData.pileup = "addPileupInfo"
 
 process.muonUserData = cms.EDProducer(
     'MuonUserData',
@@ -671,6 +675,8 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_metFull_*_*",
+    "keep *_metNoHF_*_*",
+    "keep *_METUserData*_trigger*_*",
     "keep *_eventInfo_*_*",
     "keep *_subjetsAK8_*_*",
     "keep *_subjetsCmsTopTag*_*_*",
@@ -691,8 +697,6 @@ process.edmNtuplesOut = cms.OutputModule(
 # Some collections are not available in the current FastSim
 if not "FastSim" in options.DataProcessing:
   process.edmNtuplesOut.outputCommands+=(
-    "keep *_metNoHF_*_*",
-    "keep *_METUserData*_trigger*_*",
     "keep *_HBHENoiseFilterResultProducer_*_*",
     )
 
@@ -708,6 +712,7 @@ if(options.lheLabel != ""):
   #process.analysisPath+=process.LHEUserData
   process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
   process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
+  process.edmNtuplesOut.outputCommands+=('keep LHERunInfoProduct_*_*_*',)
 
 if "MC" in options.DataProcessing: 
     process.edmNtuplesOut.outputCommands+=(
