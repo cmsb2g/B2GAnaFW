@@ -124,13 +124,6 @@ else:
 if "Data" in options.DataProcessing:
   print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
   options.lheLabel = ""
-elif options.lheLabel == "":
-  if "FastSim" in options.DataProcessing:
-    print 'You have chosen to run over FastSim MC. lheLabel will be set to "source".\n'
-    options.lheLabel = "source"
-  else:
-    print 'You have chosen to run over FullSim MC. lheLabel will be set to "externalLHEProducer".\n'
-    options.lheLabel = "externalLHEProducer"
 
 ###inputTag labels
 rhoLabel          = "fixedGridRhoFastjetAll"
@@ -711,15 +704,15 @@ if(options.lheLabel != ""):
   )
   #process.analysisPath+=process.LHEUserData
   process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
-  process.edmNtuplesOut.outputCommands+=('keep LHEEventProduct_*_*_*',)
-  process.edmNtuplesOut.outputCommands+=('keep LHERunInfoProduct_*_*_*',)
 
 if "MC" in options.DataProcessing: 
     process.edmNtuplesOut.outputCommands+=(
         'keep *_generator_*_*',
         "keep *_genPart_*_*",
         "keep *_genJetsAK8_*_*",
-        "keep *_genJetsAK8SoftDrop_*_*"
+        "keep *_genJetsAK8SoftDrop_*_*",
+        "keep LHEEventProduct_*_*_*",
+        "keep LHERunInfoProduct_*_*_*"
         )
 
 process.edmNtuplesOut.fileName=options.outputLabel
