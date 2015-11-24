@@ -99,19 +99,20 @@ options.parseArguments()
 if options.DataProcessing == "":
   sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'.\n")
 
+
 if options.globalTag != "": 
   print "!!!!Warning: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="MC25ns_MiniAODv2":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
+  if options.DataProcessing=="Data25ns_PromptRecov4":
+    options.globalTag="74X_dataRun2_v5"
+  elif options.DataProcessing=="Data25ns_MiniAODv2":
+    options.globalTag="74X_dataRun2_v5"
+  elif options.DataProcessing=="MC25ns_MiniAODv2":
+    options.globalTag="74X_mcRun2_asymptotic_v4"
   elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
     options.globalTag="74X_mcRun2_asymptotic_v2"
   elif options.DataProcessing=="Data25ns_ReReco":
     options.globalTag="74X_dataRun2_v4"
-  elif options.DataProcessing=="Data25ns_MiniAODv2":
-    options.globalTag="74X_dataRun2_reMiniAOD_v0"
-  elif options.DataProcessing=="Data25ns_PromptRecov4":
-    options.globalTag="74X_dataRun2_Prompt_v4"
   elif options.DataProcessing=="MC50ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic50ns_v0"
   elif options.DataProcessing=="Data50ns_MiniAODv2":
@@ -266,27 +267,27 @@ if options.usePrivateSQLite:
                                )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
     
-    process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
-    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-      rho = cms.InputTag("fixedGridRhoFastjetAll"),
-      src = cms.InputTag("slimmedJets"),
-      
-      levels = corrections )
-    process.updatedPatJetsAK4 = patJetsUpdated.clone(
-      jetSource = cms.InputTag("slimmedJets"),
-      jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-      )
-    
-    process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-      src = cms.InputTag("slimmedJetsAK8"),
-      rho = cms.InputTag("fixedGridRhoFastjetAll"),
-      levels = corrections )
+process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
+process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+  rho = cms.InputTag("fixedGridRhoFastjetAll"),
+  src = cms.InputTag("slimmedJets"),
+  
+  levels = corrections )
+process.updatedPatJetsAK4 = patJetsUpdated.clone(
+  jetSource = cms.InputTag("slimmedJets"),
+  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+  )
 
-    process.updatedPatJetsAK8 = patJetsUpdated.clone(
-      jetSource = cms.InputTag("slimmedJetsAK8"),
-      jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
-      )
+process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+  src = cms.InputTag("slimmedJetsAK8"),
+  rho = cms.InputTag("fixedGridRhoFastjetAll"),
+  levels = corrections )
+
+process.updatedPatJetsAK8 = patJetsUpdated.clone(
+  jetSource = cms.InputTag("slimmedJetsAK8"),
+  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
+  )
 
 ### =====================================================================================================
 
