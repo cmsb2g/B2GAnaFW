@@ -68,7 +68,7 @@ options.register('useNoHFMET',
                  'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-                 True,
+                 False,
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.bool,
                  'Take Corrections from private SQL file')
@@ -272,8 +272,8 @@ from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFacto
 process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
   rho = cms.InputTag("fixedGridRhoFastjetAll"),
   src = cms.InputTag("slimmedJets"),
-  
   levels = corrections )
+
 process.updatedPatJetsAK4 = patJetsUpdated.clone(
   jetSource = cms.InputTag("slimmedJets"),
   jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
