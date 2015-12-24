@@ -1,6 +1,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -28,6 +29,10 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h" // gives access to the (release cycle dependent) trigger object codes
 #include "DataFormats/JetReco/interface/Jet.h"
 
+// JEC
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 
 #include <TFile.h>
 #include <TH1F.h>
@@ -62,6 +67,7 @@ class JetUserData : public edm::EDProducer {
     InputTag hltJetFilterLabel_;
     std::string hltPath_;
     double hlt2reco_deltaRmax_;
+    std::string jecCorrection_;
     HLTConfigProvider hltConfig;
     int triggerBit;
 };
@@ -73,7 +79,8 @@ JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
   triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
   hltJetFilterLabel_  (iConfig.getParameter<edm::InputTag>("hltJetFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
-  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax"))
+  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
+  jecCorrection_       (iConfig.getParameter<std::string>("jecCorrection"))
 {
   produces<vector<pat::Jet> >();
 }
@@ -153,6 +160,11 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     }
   }
 
+  // JEC Uncertainty
+  edm::ESHandle<JetCorrectorParametersCollection> JetCorrParColl;
+  iSetup.get<JetCorrectionsRecord>().get(jecCorrection_, JetCorrParColl); 
+  JetCorrectorParameters const & JetCorrPar = (*JetCorrParColl)["Uncertainty"];
+  JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(JetCorrPar);
 
   for (size_t i = 0; i< jetColl->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
@@ -182,6 +194,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
       smearedP4=jet.p4();
     }
     // JER
+    double JER     = getResolutionRatio(jet.eta());
     double JERup   = getJERup  (jet.eta());
     double JERdown = getJERdown(jet.eta());
 
@@ -196,9 +209,15 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("SmearedPt",   smearedP4.pt());
     jet.addUserFloat("SmearedE",    smearedP4.energy());
 
-    jet.addUserFloat("JERup", JERup);
-    jet.addUserFloat("JERup", JERdown);
+    jet.addUserFloat("JER",     JER);
+    jet.addUserFloat("JERup",   JERup);
+    jet.addUserFloat("JERdown", JERdown);
 
+    // JEC uncertainty
+    jecUnc->setJetEta(jet.eta());
+    jecUnc->setJetPt (jet.pt());
+    double jecUncertainty = jecUnc->getUncertainty(true);
+    jet.addUserFloat("jecUncertainty",   jecUncertainty);
 
     TLorentzVector jetp4 ; 
     jetp4.SetPtEtaPhiE(jet.pt(), jet.eta(), jet.phi(), jet.energy()) ; 
