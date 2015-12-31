@@ -110,9 +110,10 @@ else:
   elif options.DataProcessing=="MC25ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic_v4"
   elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
+    options.globalTag="74X_mcRun2_asymptotic_v4"
+    options.usePrivateSQLite = True
   elif options.DataProcessing=="Data25ns_ReReco":
-    options.globalTag="74X_dataRun2_v4"
+    options.globalTag="74X_dataRun2_v5"
   elif options.DataProcessing=="MC50ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic50ns_v0"
   elif options.DataProcessing=="Data50ns_MiniAODv2":
@@ -232,6 +233,10 @@ if options.usePrivateSQLite:
       era = "Summer15_50nsV5_MC"
     elif "Data25ns" in options.DataProcessing:
       era = "Summer15_25nsV6_DATA"
+    elif "MC25ns_MiniAODv2_FastSim" in options.DataProcessing:
+      # SUSY Recommendation for FastSim:
+      # https://hypernews.cern.ch/HyperNews/CMS/get/susy/2109.html
+      era = "MCRUN2_74_V9"
     elif "MC25ns" in options.DataProcessing:
       era = "Summer15_25nsV6_MC"
     else:
@@ -463,6 +468,7 @@ process.jetUserData = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    jecCorrection      = cms.string("AK4PFchs"),
     )
 
 
@@ -475,6 +481,7 @@ process.jetUserDataNoHF = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    jecCorrection      = cms.string("AK4PFchs"),
     )
 
 
@@ -487,7 +494,8 @@ process.jetUserDataAK8 = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
-    hlt2reco_deltaRmax = cms.double(0.2)
+    hlt2reco_deltaRmax = cms.double(0.2),
+    jecCorrection      = cms.string("AK8PFchs"),
 )
 
 

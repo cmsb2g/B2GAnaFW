@@ -501,6 +501,10 @@ jetVars = (
         ),
     #### FOR SYSTEMATICS
     cms.PSet(
+        tag = cms.untracked.string("jecUncertainty"),
+        quantity = cms.untracked.string("userFloat('jecUncertainty')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("SmearedPt"),
         quantity = cms.untracked.string("userFloat('SmearedPt')")
         ),
@@ -515,6 +519,10 @@ jetVars = (
     cms.PSet(
         tag = cms.untracked.string("SmearedE"),
         quantity = cms.untracked.string("userFloat('SmearedE')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("JER"),
+        quantity = cms.untracked.string("userFloat('JER')")
         ),
     cms.PSet(
         tag = cms.untracked.string("JERup"),
