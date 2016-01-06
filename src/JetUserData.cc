@@ -236,6 +236,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   iEvent.put( jetColl );
 
+  delete jecUnc;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
