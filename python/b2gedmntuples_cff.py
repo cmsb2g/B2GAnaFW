@@ -284,6 +284,11 @@ jetVars = (
       tag = cms.untracked.string("CSVV1"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
       ),
+    cms.PSet(
+        tag = cms.untracked.string("vtxMass"),
+        quantity = cms.untracked.string("userFloat('vtxMass')")
+    ),
+
     ### GEN PARTON
     cms.PSet(
       tag = cms.untracked.string("GenPartonY"),
