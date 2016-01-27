@@ -6,18 +6,22 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 Version
 =======
 
-This version is used to produced B2G EDMNtuples for the Run2015D primary dataset.
+This version is used to produced B2G EDMNtuples for the re-MiniAOD of the MC and Run2012D, as weill as the Run2012D_PromptReco-v4
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptReco_Data_2015_ve
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring15MiniAODv2_re_miniAO
+
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015_B_C_50ns_D_05Oct2015_re
+
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptReco_v4_Data_2015
 
 Checkout Instructions
 =====================
 
 Make a new CMSSW area
 
-$ cmsrel CMSSW_7_4_12_patch4
+$ cmsrel CMSSW_7_4_15
 
-$ cd CMSSW_7_4_12_patch4/src
+$ cd CMSSW_7_4_15/src
 
 $ cmsenv
 
@@ -29,7 +33,7 @@ $ git cms-merge-topic ikrav:egm_id_7.4.12_v1
 Clone the github repository
 ===========================
 
-$ git clone -b v7.4.x_V7.0_25ns https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
+$ git clone -b v7.4.x_V8 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
 
 Compile
 =======
