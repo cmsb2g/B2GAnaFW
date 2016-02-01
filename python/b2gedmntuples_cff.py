@@ -833,14 +833,15 @@ photons = cms.EDProducer(
     prefix=cms.untracked.string("basic"),
     eventInfo=cms.untracked.bool(False),
     variables = cms.VPSet(
-        cms.PSet(
-            tag = cms.untracked.string("SClusterEta"),
-            quantity = cms.untracked.string("userFloat('phoSceta')")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("SClusterPhi"),
-            quantity = cms.untracked.string("userFloat('phoScphi')")
-            ),
+	    ##### THIS DOES NOT WORK
+#        cms.PSet(
+#            tag = cms.untracked.string("SClusterEta"),
+#            quantity = cms.untracked.string("userFloat('phoSceta')")
+#            ),
+#        cms.PSet(
+#            tag = cms.untracked.string("SClusterPhi"),
+#            quantity = cms.untracked.string("userFloat('phoScphi')")
+#            ),
         cms.PSet(
             tag = cms.untracked.string("Eta"),
             quantity = cms.untracked.string("userFloat('phoEta')")
@@ -857,10 +858,11 @@ photons = cms.EDProducer(
             tag = cms.untracked.string("Energy"),
             quantity = cms.untracked.string("userFloat('phoen')")
             ),
-        cms.PSet(
-            tag = cms.untracked.string("HasPixelSeed"),
-            quantity = cms.untracked.string("userFloat('hasPixelSeed')")
-            ),
+	######## THIS DOES NOT WORK
+#        cms.PSet(
+#            tag = cms.untracked.string("HasPixelSeed"),
+#            quantity = cms.untracked.string("userFloat('hasPixelSeed')")
+#            ),
         cms.PSet(
             tag = cms.untracked.string("SigmaIEtaIEta"),
             quantity = cms.untracked.string("userFloat('sigmaIetaIeta')")
@@ -1007,21 +1009,21 @@ qglVars = (
 ###jets
 jetsAK4 = copy.deepcopy(basic)
 jetsAK4.variables += jetVars
-jetsAK4.variables += qglVars
+#jetsAK4.variables += qglVars
 jetsAK4.prefix = cms.untracked.string("jetAK4")
-#jetsAK4.src = cms.InputTag("jetUserData")
-jetsAK4.src = cms.InputTag("jetUserDataQGL")
+jetsAK4.src = cms.InputTag("jetUserData")
+#jetsAK4.src = cms.InputTag("jetUserDataQGL")
 jetKeysAK4 = copy.deepcopy( jetKeys )
-#jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
-jetKeysAK4.jetLabel = cms.InputTag("jetUserDataQGL")
+jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
+#jetKeysAK4.jetLabel = cms.InputTag("jetUserDataQGL")
 
 ###jets no HF if needed
 jetsAK4NoHF = copy.deepcopy(basic)
 jetsAK4NoHF.variables += jetVarsJEC
-jetsAK4NoHF.variables += qglVars
+#jetsAK4NoHF.variables += qglVars
 jetsAK4NoHF.prefix = cms.untracked.string("jetAK4NoHF")
-#jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
-jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHFQGL")
+jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
+#jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHFQGL")
 
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
@@ -1101,8 +1103,10 @@ eventInfo =  cms.EDProducer(
 
 
 ### No HF MET used as default for the time being
+'''
 metNoHF = copy.deepcopy(metFull)
 metNoHF.prefix = cms.untracked.string("metNoHF")
 metNoHF.src = cms.InputTag("skimmedPatMETNoHF")
+'''
 
 print "DONE STANDARD"

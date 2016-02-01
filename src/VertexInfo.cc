@@ -50,19 +50,15 @@ public:
   virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
   //       static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 private:
-  edm::InputTag src_;
-  edm::Handle<edm::View<reco::Vertex> > vertices;
+  edm::EDGetTokenT< std::vector< reco::Vertex > > src_;
   
 };
 //}
 
-VertexInfo::VertexInfo(const edm::ParameterSet& iConfig) 
+VertexInfo::VertexInfo(const edm::ParameterSet& iConfig):
+   src_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("src")))
 {
   // initialize the configurables
-  
-  
-  src_                 = iConfig.getParameter<edm::InputTag>	      ( "src" );
-   
   produces< std::vector<float> >("chi");
   produces< std::vector<float> >("rho");
   produces< std::vector<float> >("z");
@@ -73,7 +69,8 @@ VertexInfo::VertexInfo(const edm::ParameterSet& iConfig)
 void VertexInfo::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetup){
   
   
- iEvent.getByLabel(src_,vertices);
+  edm::Handle<std::vector<reco::Vertex> > vertices;
+  iEvent.getByToken(src_, vertices);
 
   
  std::auto_ptr< std::vector< float > >chi_(new std::vector< float >) ;

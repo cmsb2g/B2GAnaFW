@@ -57,8 +57,9 @@ class JetUserData : public edm::EDProducer {
     edm::EDGetTokenT<std::vector<pat::Jet> >     jetToken_;
 
     //InputTag jetLabel_;
-    InputTag jLabel_; 
-    InputTag triggerResultsLabel_, triggerSummaryLabel_;
+    EDGetTokenT< std::vector< pat::Jet > > jLabel_;
+    EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
+    EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
     InputTag hltJetFilterLabel_;
     std::string hltPath_;
     double hlt2reco_deltaRmax_;
@@ -68,9 +69,9 @@ class JetUserData : public edm::EDProducer {
 
 
 JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
-  jLabel_             (iConfig.getParameter<edm::InputTag>("jetLabel")),
-  triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
-  triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
+   jLabel_(consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))), 
+   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
+   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
   hltJetFilterLabel_  (iConfig.getParameter<edm::InputTag>("hltJetFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
   hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax"))
@@ -84,7 +85,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   bool isMC = (!iEvent.isRealData());
 
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
-  iEvent.getByLabel(jLabel_, jetHandle);
+  iEvent.getByToken(jLabel_, jetHandle);
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
 
@@ -106,7 +107,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   }
 
      edm::Handle<edm::TriggerResults> triggerResults;
-     iEvent.getByLabel(triggerResultsLabel_, triggerResults);
+     iEvent.getByToken(triggerResultsLabel_, triggerResults);
   /* Why do we need this
      if (size_t(triggerBit) < triggerResults->size() && pathFound)
        if (triggerResults->accept(triggerBit))
@@ -119,7 +120,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<trigger::TriggerEvent> triggerSummary;
 
   if ( triggerSummary.isValid() ) {
-    iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
+    iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
 
     // Results from TriggerEvent product - Attention: must look only for
     // modules actually run in this path for this event!
@@ -197,7 +198,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("SmearedE",    smearedP4.energy());
 
     jet.addUserFloat("JERup", JERup);
-    jet.addUserFloat("JERup", JERdown);
+    jet.addUserFloat("JERdown", JERdown);
 
 
     TLorentzVector jetp4 ; 

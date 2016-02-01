@@ -53,8 +53,14 @@ private:
 
   void printCutFlowResult(vid::CutFlowResult &cutflow);
 
-  InputTag eleLabel_, pvLabel_, packedPFCandsLabel_, convLabel_, rho_;
-  InputTag triggerResultsLabel_, triggerSummaryLabel_;
+  EDGetTokenT< std::vector< pat::Electron > > eleLabel_;
+  EDGetTokenT< std::vector< reco::Vertex > > pvLabel_;
+  EDGetTokenT< pat::PackedCandidateCollection > packedPFCandsLabel_;
+  EDGetTokenT< reco::ConversionCollection > convLabel_;
+  EDGetTokenT< reco::BeamSpot > beamLabel_;
+  EDGetTokenT< double > rho_;
+  EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
+  EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
   HLTConfigProvider hltConfig;
@@ -82,13 +88,14 @@ private:
 
 
 ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
-   eleLabel_(iConfig.getParameter<edm::InputTag>("eleLabel")),
-   pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
-   packedPFCandsLabel_(iConfig.getParameter<edm::InputTag>("packedPFCands")),
-   convLabel_(iConfig.getParameter<edm::InputTag>("conversion")),   // "offlinePrimaryVertex"
-   rho_( iConfig.getParameter<edm::InputTag>("rho")),
-   triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
-   triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
+   eleLabel_(consumes<std::vector<pat::Electron>>(iConfig.getParameter<edm::InputTag>("eleLabel"))), 
+   pvLabel_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("pv"))), // "offlinePrimaryVertex"
+   packedPFCandsLabel_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("packedPFCands"))), 
+   convLabel_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversion"))),   // "offlinePrimaryVertex"
+   beamLabel_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpot"))), 
+   rho_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), 
+   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
+   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
    hltPath_ (iConfig.getParameter<std::string>("hltPath")),
    electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
@@ -109,11 +116,11 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     
   //PV
   edm::Handle<std::vector<reco::Vertex> > vertices;
-  iEvent.getByLabel(pvLabel_, vertices);
+  iEvent.getByToken(pvLabel_, vertices);
 
   //RHO
   edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(rho_,rhoHandle);
+  iEvent.getByToken(rho_,rhoHandle);
   double rho = *rhoHandle; 
 
   if(debug_>=1) cout<<"vtx size " << vertices->size()<<endl; 
@@ -127,20 +134,20 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     
   //Electrons
   edm::Handle<std::vector<pat::Electron> > eleHandle;
-  iEvent.getByLabel(eleLabel_, eleHandle);
+  iEvent.getByToken(eleLabel_, eleHandle);
   
   auto_ptr<vector<pat::Electron> > eleColl( new vector<pat::Electron> (*eleHandle) );
 
   //PackedPFCands for Mini-iso
   edm::Handle<pat::PackedCandidateCollection> packedPFCands;
-  iEvent.getByLabel(packedPFCandsLabel_, packedPFCands);
+  iEvent.getByToken(packedPFCandsLabel_, packedPFCands);
 
   Handle<reco::BeamSpot> bsHandle;
-  iEvent.getByLabel("offlineBeamSpot", bsHandle);
+  iEvent.getByToken(beamLabel_, bsHandle);
   const reco::BeamSpot &beamspot = *bsHandle.product();
     
   Handle<reco::ConversionCollection> conversions;
-  iEvent.getByLabel(convLabel_, conversions);
+  iEvent.getByToken(convLabel_, conversions);
   //  iEvent.getByLabel("reducedEgamma:reducedConversions", conversions);
 
 
@@ -184,7 +191,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     if (triggerBit == -1) cout << "HLT path not found" << endl;
   }
   edm::Handle<edm::TriggerResults> triggerResults;
-  iEvent.getByLabel(triggerResultsLabel_, triggerResults);
+  iEvent.getByToken(triggerResultsLabel_, triggerResults);
   if (size_t(triggerBit) < triggerResults->size() )
     if (triggerResults->accept(triggerBit))
       std::cout << "event pass : " << hltPath_ << std::endl;
@@ -193,7 +200,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   // }
 
   edm::Handle<trigger::TriggerEvent> triggerSummary;
-  iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
+  iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
 
   //find the index corresponding to the event
   if(false){ ///to be done after understanding which trigger(s) to use.

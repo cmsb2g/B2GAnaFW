@@ -50,8 +50,8 @@ private:
   bool isMatchedWithTrigger();
   bool passIDWP();
   float IsoCalc();
-  InputTag rhoLabel_;
-  InputTag phoLabel_;
+  EDGetTokenT< double > rhoLabel_;
+  EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
   edm::EDGetToken                      photonsMiniAODToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoLooseIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoMediumIdMapToken_;
@@ -76,8 +76,8 @@ private:
 //Necessary for the  Isolation Rho Correction
 
 PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
-  rhoLabel_(iConfig.getParameter<edm::InputTag>("rho")), //rhofixedgridRhoFastjet All"
-  phoLabel_(iConfig.getParameter<edm::InputTag>("pholabel")),
+  rhoLabel_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), //rhofixedgridRhoFastjet All"
+  phoLabel_(consumes<std::vector<pat::Photon>>(iConfig.getParameter<edm::InputTag>("pholabel"))), 
   photonsMiniAODToken_(consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("pholabel"))),
   phoLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoLooseIdMap"))),
   phoMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoMediumIdMap"))),
@@ -106,7 +106,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::ValueMap<float> > ison_idvar;
   edm::Handle<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMap;
   iEvent.getByToken(photonsMiniAODToken_,photonS);
-  iEvent.getByLabel(rhoLabel_,rhoH);
+  iEvent.getByToken(rhoLabel_,rhoH);
   iEvent.getByToken(phoLooseIdMapToken_ ,loose_id_decisions);
   iEvent.getByToken(phoMediumIdMapToken_,medium_id_decisions);
   iEvent.getByToken(phoTightIdMapToken_ ,tight_id_decisions);
@@ -117,7 +117,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   edm::Handle<std::vector<pat::Photon> > photonS2;
-  iEvent.getByLabel(phoLabel_, photonS2);
+  iEvent.getByToken(phoLabel_, photonS2);
   auto_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*photonS2) );
 
   //rho

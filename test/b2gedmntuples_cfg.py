@@ -33,7 +33,7 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-                 '/store/mc/RunIISpring15MiniAODv2/TprimeBToTH_M-1000_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/2464BD5B-B96D-E511-B740-0CC47A00934A.root', 
+                 '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
                  #"root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/05Oct2015-v1/30000/04F50A91-B46F-E511-A2A3-002618943923.root",
 #                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root",
 #                 "root://ccxrootdcms.in2p3.fr:1094//pnfs/in2p3.fr/data/cms/disk/data/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/6E07CD15-D26B-E511-8668-02163E013999.root",
@@ -183,6 +183,7 @@ process.GlobalTag.globaltag = options.globalTag
 
 ### -------------------------------------------------------------------------------------------
 ###  QGL
+'''
 
 
 from CondCore.DBCommon.CondDBSetup_cfi import *
@@ -198,7 +199,7 @@ for type in ['AK4PFchs','AK4PFchs_antib']:
     tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
     label  = cms.untracked.string('QGL_'+type)
   )))
-
+'''
 ### -------------------------------------------------------------------------------------------
 
 
@@ -413,12 +414,14 @@ process.skimmedPatMET = cms.EDFilter(
     )
 
 
-
+##### THERE IS NO slimmedMETsNoHF in miniAODv2
+'''
 process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
     src = cms.InputTag(metNoHFLabel, "", metProcess),
     cut = cms.string("")
     )
+'''
 
 process.skimmedPatJets = cms.EDFilter(
     "PATJetSelector",
@@ -495,6 +498,7 @@ process.electronUserData = cms.EDProducer(
     eleLabel   = cms.InputTag("skimmedPatElectrons"),
     pv         = cms.InputTag(pvLabel),
     packedPFCands = cms.InputTag("packedPFCandidates"),
+    beamSpot = cms.InputTag("offlineBeamSpot"),
     conversion = cms.InputTag(convLabel),
     rho        = cms.InputTag(rhoLabel),
     triggerResults = cms.InputTag(triggerResultsLabel),
@@ -544,6 +548,7 @@ process.vertexInfo = cms.EDProducer(
     )
 
 
+'''
 ### -------------------------------------------------------------------------------------------
 ###  QGL
 
@@ -565,6 +570,7 @@ process.jetUserDataNoHFQGL = cms.EDProducer(
   jetLabel = cms.InputTag("jetUserDataNoHF"),
   qgtagger =  cms.InputTag("QGTaggerNoHF", "qgLikelihood"),
 )
+'''
 
 #
 # Set up photon ID (VID framework)
@@ -661,22 +667,22 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
-    "keep *_photons_*_*",
-    "keep *_photonjets_*_*",
-    "keep *_jetsAK4_*_*",
-    "keep *_jetsAK8_*_*",
+    #"keep *_photons_*_*",
+    #"keep *_photonjets_*_*",
+    #"keep *_jetsAK4_*_*",
+    #"keep *_jetsAK8_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_metFull_*_*",
     "keep *_metNoHF_*_*",
     "keep *_METUserData*_trigger*_*",
     "keep *_eventInfo_*_*",
-    "keep *_subjetsAK8_*_*",
-    "keep *_subjetsCmsTopTag*_*_*",
-    "keep *_jetKeysAK4_*_*",
-    "keep *_jetKeysAK8_*_*",
-    "keep *_subjetKeysAK8_*_*",
-    "keep *_subjetsCmsTopTagKeys_*_*",
+    #"keep *_subjetsAK8_*_*",
+    #"keep *_subjetsCmsTopTag*_*_*",
+    #"keep *_jetKeysAK4_*_*",
+    #"keep *_jetKeysAK8_*_*",
+    #"keep *_subjetKeysAK8_*_*",
+    #"keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_electronKeys_*_*",   
     "keep *_muonKeys_*_*",
     "keep *_TriggerUserData*_trigger*_*",

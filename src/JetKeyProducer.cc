@@ -24,12 +24,12 @@ class JetKeyProducer : public edm::EDProducer {
 
   private:
     void produce( edm::Event &, const edm::EventSetup & );
-  edm::InputTag jLabel_; 
+    edm::EDGetTokenT< std::vector< reco::Jet > > jLabel_;
 };
 
 
 JetKeyProducer::JetKeyProducer(const edm::ParameterSet& iConfig) :
-  jLabel_             (iConfig.getParameter<edm::InputTag>("jetLabel"))
+   jLabel_(consumes<std::vector<reco::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))) 
 {
   produces< index_collection >();
 }
@@ -37,8 +37,8 @@ JetKeyProducer::JetKeyProducer(const edm::ParameterSet& iConfig) :
 
 void JetKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<edm::View<reco::Jet> > jetHandle;
-  iEvent.getByLabel(jLabel_, jetHandle);
+  edm::Handle<std::vector<reco::Jet> > jetHandle;
+  iEvent.getByToken(jLabel_, jetHandle);
   std::auto_ptr< index_collection > keys( new index_collection () );
 
   for ( auto const & jet : *jetHandle ){
