@@ -5,7 +5,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/EDMException.h"
 
-#include "DataFormats/JetReco/interface/Jet.h"
+//#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 
 // trigger
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
@@ -24,12 +25,12 @@ class JetKeyProducer : public edm::EDProducer {
 
   private:
     void produce( edm::Event &, const edm::EventSetup & );
-    edm::EDGetTokenT< std::vector< reco::Jet > > jLabel_;
+    edm::EDGetTokenT< std::vector< pat::Jet > > jLabel_;
 };
 
 
 JetKeyProducer::JetKeyProducer(const edm::ParameterSet& iConfig) :
-   jLabel_(consumes<std::vector<reco::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))) 
+   jLabel_(consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))) 
 {
   produces< index_collection >();
 }
@@ -37,7 +38,7 @@ JetKeyProducer::JetKeyProducer(const edm::ParameterSet& iConfig) :
 
 void JetKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<std::vector<reco::Jet> > jetHandle;
+  edm::Handle<std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(jLabel_, jetHandle);
   std::auto_ptr< index_collection > keys( new index_collection () );
 

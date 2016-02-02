@@ -239,13 +239,22 @@ JetUserData::isMatchedWithTrigger(const pat::Jet& p, trigger::TriggerObjectColle
 JetUserData::getResolutionRatio(double eta)
 {
   eta=fabs(eta);
+  /*// 8TeV
   if(eta>=0.0 && eta<0.5) return 1.079; // +-0.005 +-0.026 
   if(eta>=0.5 && eta<1.1) return 1.099; // +-0.005 +-0.028 
   if(eta>=1.1 && eta<1.7) return 1.121; // +-0.005 +-0.029 
   if(eta>=1.7 && eta<2.3) return 1.208; // +-0.013 +-0.045 
   if(eta>=2.3 && eta<2.8) return 1.254; // +-0.026 +-0.056 
   if(eta>=2.8 && eta<3.2) return 1.395; // +-0.036 +-0.051 
-  if(eta>=3.2 && eta<5.0) return 1.056; // +-0.048 +-0.185 
+  if(eta>=3.2 && eta<5.0) return 1.056; // +-0.048 +-0.185 */
+  /// 13 TeV according to https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+  if(eta>=0.0 && eta<0.8) return 1.061; // +-.023
+  if(eta>=0.8 && eta<1.3) return 1.088; // +-0.029
+  if(eta>=1.3 && eta<1.9) return 1.106; // +-0.030	
+  if(eta>=1.9 && eta<2.5) return 1.126; // +-0.094
+  if(eta>=2.5 && eta<3.0) return 1.343; // +-0.123
+  if(eta>=3.0 && eta<3.2) return 1.303; // +-0.111
+  if(eta>=3.2 && eta<5.0) return 1.320; // +-0.286
   return -1.;
 }
 
@@ -253,13 +262,13 @@ JetUserData::getResolutionRatio(double eta)
 JetUserData::getJERup(double eta)
 {
   eta=fabs(eta);
-  if(eta>=0.0 && eta<0.5) return 1.053 ;
-  if(eta>=0.5 && eta<1.1) return 1.071 ;
-  if(eta>=1.1 && eta<1.7) return 1.092 ;
-  if(eta>=1.7 && eta<2.3) return 1.162 ;
-  if(eta>=2.3 && eta<2.8) return 1.192 ;
-  if(eta>=2.8 && eta<3.2) return 1.332 ;
-  if(eta>=3.2 && eta<5.0) return 0.865 ;
+  if(eta>=0.0 && eta<0.8) return 1.084 ;
+  if(eta>=0.8 && eta<1.3) return 1.117 ;
+  if(eta>=1.3 && eta<1.9) return 1.136 ;
+  if(eta>=1.9 && eta<2.5) return 1.220 ;
+  if(eta>=2.5 && eta<3.0) return 1.466 ;
+  if(eta>=3.0 && eta<3.2) return 1.414 ;
+  if(eta>=3.2 && eta<5.0) return 1.606 ;
   return -1.;  
 }
 
@@ -267,18 +276,16 @@ JetUserData::getJERup(double eta)
 JetUserData::getJERdown(double eta)
 {
   eta=fabs(eta);
-  if(eta>=0.0 && eta<0.5) return 1.105 ;
-  if(eta>=0.5 && eta<1.1) return 1.127 ;
-  if(eta>=1.1 && eta<1.7) return 1.150 ;
-  if(eta>=1.7 && eta<2.3) return 1.254 ;
-  if(eta>=2.3 && eta<2.8) return 1.316 ;
-  if(eta>=2.8 && eta<3.2) return 1.458 ;
-  if(eta>=3.2 && eta<5.0) return 1.247 ;
+  if(eta>=0.0 && eta<0.5) return 1.038 ;
+  if(eta>=0.8 && eta<1.3) return 1.059 ;
+  if(eta>=1.3 && eta<1.9) return 1.076 ;
+  if(eta>=1.9 && eta<2.5) return 1.032 ;
+  if(eta>=2.5 && eta<3.0) return 1.220 ;
+  if(eta>=3.0 && eta<3.2) return 1.192 ;
+  if(eta>=3.2 && eta<5.0) return 1.034 ;
   return -1.;  
 }
 
 
 #include "FWCore/Framework/interface/MakerMacros.h"
-
-
 DEFINE_FWK_MODULE(JetUserData);
