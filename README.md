@@ -19,9 +19,9 @@ Checkout Instructions
 
 Make a new CMSSW area
 
-$ cmsrel CMSSW_7_4_15
+$ cmsrel CMSSW_7_6_3
 
-$ cd CMSSW_7_4_15/src
+$ cd CMSSW_7_6_3/src
 
 $ cmsenv
 
@@ -33,7 +33,7 @@ $ git cms-merge-topic ikrav:egm_id_7.4.12_v1
 Clone the github repository
 ===========================
 
-$ git clone -b v7.4.x_V8 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
+$ git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
 
 Compile
 =======
