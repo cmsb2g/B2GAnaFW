@@ -24,12 +24,12 @@ class SourceKeyProducer : public edm::EDProducer {
 
   private:
     void produce( edm::Event &, const edm::EventSetup & );
-  edm::InputTag jLabel_; 
+  edm::EDGetTokenT< edm::View<reco::Candidate> > jLabel_;
 };
 
 
 SourceKeyProducer::SourceKeyProducer(const edm::ParameterSet& iConfig) :
-  jLabel_             (iConfig.getParameter<edm::InputTag>("srcLabel"))
+   jLabel_(consumes< edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("srcLabel"))) 
 {
   produces< index_collection >();
 }
@@ -38,7 +38,7 @@ SourceKeyProducer::SourceKeyProducer(const edm::ParameterSet& iConfig) :
 void SourceKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   edm::Handle<edm::View<reco::Candidate> > candHandle;
-  iEvent.getByLabel(jLabel_, candHandle);
+  iEvent.getByToken(jLabel_, candHandle);
   std::auto_ptr< index_collection > keys( new index_collection () );
 
   for ( auto const & cand : *candHandle ){
