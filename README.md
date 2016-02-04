@@ -14,22 +14,22 @@ https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptRe
 
 ## Instructions
 
-1. Make a new CMSSW area:
+ * Make a new CMSSW area:
 ```
 cmsrel CMSSW_7_6_3_patch2/
 cd CMSSW_7_6_3_patch2/src
 cmsenv
 ```
-2. Needed to run VID for electron ID
+ * Needed to run VID for electron ID
 ```
 git cms-merge-topic ikrav:egm_id_7.4.12_v1
 ```
-3. Clone the github repository
+ * Clone the github repository
 ```
 git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
-4. Compile
+ * Compile
 ```
 scram b -j 10
 ```
