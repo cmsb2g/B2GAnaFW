@@ -1,10 +1,8 @@
-B2GAnaFW
-========
+# B2GAnaFW
 
 Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG) of the Compact Muon Solenoid (CMS) Experiment
 
-Version
-=======
+## Version
 
 This version is used to produced B2G EDMNtuples for the re-MiniAOD of the MC and Run2012D, as weill as the Run2012D_PromptReco-v4
 
@@ -14,42 +12,37 @@ https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015_B_C_50ns_
 
 https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptReco_v4_Data_2015
 
-Checkout Instructions
-=====================
+## Instructions
 
-Make a new CMSSW area
+1. Make a new CMSSW area:
+```
+cmsrel CMSSW_7_6_3_patch2/
+cd CMSSW_7_6_3_patch2/src
+cmsenv
+```
+2. Needed to run VID for electron ID
+```
+git cms-merge-topic ikrav:egm_id_7.4.12_v1
+```
+3. Clone the github repository
+```
+git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
+```
+4. Compile
+```
+scram b -j 10
+```
 
-$ cmsrel CMSSW_7_6_3
-
-$ cd CMSSW_7_6_3/src
-
-$ cmsenv
-
-Needed to run VID for electron ID
-=================================
-
-$ git cms-merge-topic ikrav:egm_id_7.4.12_v1
-
-Clone the github repository
-===========================
-
-$ git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
-
-Compile
-=======
-
-$ scram b -j 10
-
-Running
-=======
+## Running
 
 The python configuration file for cmsRun is B2GAnaFW/test/b2gedmntuples_cfg.py. It runs on the miniAOD data tier and produces an EDM-ntuple.
 
 The configuration file contians a header explaining usage. Do
-
-$ cd Analysis/B2GAnaFW/test
-
-$ python b2gedmntuples_cfg.py 
+```
+cd Analysis/B2GAnaFW/test
+python b2gedmntuples_cfg.py 
+```
 
 for running instructions. 
 
