@@ -277,12 +277,24 @@ muonVars = (
 jetVars = (
     ### B-TAGGING
     cms.PSet(
-      tag = cms.untracked.string("CSV"),
+      tag = cms.untracked.string("CSVv2"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
       ),
     cms.PSet(
-      tag = cms.untracked.string("CSVV1"),
+      tag = cms.untracked.string("CSVv1"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CMVA"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CvsLTagger"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsLJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CvsBTagger"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsBJetTags')")
       ),
     ### GEN PARTON
     cms.PSet(
@@ -499,7 +511,10 @@ jetVars = (
         tag = cms.untracked.string("jetArea"),
         quantity = cms.untracked.string("jetArea")
         ),
-    #### FOR SYSTEMATICS
+    )
+
+#### FOR SYSTEMATICS
+jetVarsForSys = (
     cms.PSet(
         tag = cms.untracked.string("SmearedPt"),
         quantity = cms.untracked.string("userFloat('SmearedPt')")
@@ -607,6 +622,14 @@ genPartVars = (
 ### jet variables
 jetAK8Vars = (
     #### SUBSTRUCTURE
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBAK8"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBCA15"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
+      ),
     cms.PSet(
       tag = cms.untracked.string("vSubjetIndex0"),
       quantity = cms.untracked.string("? subjets(0).size() > 0 ? subjets(0).at(0).key() : -1 ")
@@ -789,7 +812,6 @@ jetToolboxAK8PuppiVars = (
         ),
 )
 
-
 ### copying the muon set of variables from basic,
 ### adding the set of variable which are related to muons only
 muons = copy.deepcopy(basic)
@@ -945,14 +967,15 @@ photons = cms.EDProducer(
     prefix=cms.untracked.string("basic"),
     eventInfo=cms.untracked.bool(False),
     variables = cms.VPSet(
-        cms.PSet(
-            tag = cms.untracked.string("SClusterEta"),
-            quantity = cms.untracked.string("userFloat('phoSceta')")
-            ),
-        cms.PSet(
-            tag = cms.untracked.string("SClusterPhi"),
-            quantity = cms.untracked.string("userFloat('phoScphi')")
-            ),
+	    ##### THIS DOES NOT WORK
+#        cms.PSet(
+#            tag = cms.untracked.string("SClusterEta"),
+#            quantity = cms.untracked.string("userFloat('phoSceta')")
+#            ),
+#        cms.PSet(
+#            tag = cms.untracked.string("SClusterPhi"),
+#            quantity = cms.untracked.string("userFloat('phoScphi')")
+#            ),
         cms.PSet(
             tag = cms.untracked.string("Eta"),
             quantity = cms.untracked.string("userFloat('phoEta')")
@@ -969,10 +992,11 @@ photons = cms.EDProducer(
             tag = cms.untracked.string("Energy"),
             quantity = cms.untracked.string("userFloat('phoen')")
             ),
-        cms.PSet(
-            tag = cms.untracked.string("HasPixelSeed"),
-            quantity = cms.untracked.string("userFloat('hasPixelSeed')")
-            ),
+	######## THIS DOES NOT WORK
+#        cms.PSet(
+#            tag = cms.untracked.string("HasPixelSeed"),
+#            quantity = cms.untracked.string("userFloat('hasPixelSeed')")
+#            ),
         cms.PSet(
             tag = cms.untracked.string("SigmaIEtaIEta"),
             quantity = cms.untracked.string("userFloat('sigmaIetaIeta')")
@@ -1105,7 +1129,7 @@ photonjets =  cms.EDProducer(
 #photonjets = copy.deepcopy(PhotonVars)                                                                                                    
 #photonjets.variables += photonJetVars                                                                                                     
 #photonjets = photonJetVars                                                                                                                
-photonjets.prefix = cms.untracked.string("phoJets")
+#photonjets.prefix = cms.untracked.string("phoJets")
 
 
 qglVars = (
@@ -1121,6 +1145,7 @@ qglVars = (
 jetsAK4 = copy.deepcopy(basic)
 jetsAK4.variables += jetVars
 jetsAK4.variables += qglVars
+jetsAK4.variables += jetVarsForSys
 jetsAK4.prefix = cms.untracked.string("jetAK4")
 jetsAK4.src = cms.InputTag("jetUserData")
 #jetsAK4.src = cms.InputTag("jetUserDataQGL")
@@ -1139,6 +1164,7 @@ jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
 ###patjets
 jetsAK8 = copy.deepcopy(basic)
 jetsAK8.variables += jetVars
+jetsAK8.variables += jetVarsForSys
 jetsAK8.prefix = cms.untracked.string("jetAK8")
 jetsAK8.src = cms.InputTag("jetUserDataAK8")
 jetKeysAK8 = copy.deepcopy( jetKeys )
@@ -1213,8 +1239,10 @@ eventInfo =  cms.EDProducer(
 
 
 ### No HF MET used as default for the time being
+'''
 metNoHF = copy.deepcopy(metFull)
 metNoHF.prefix = cms.untracked.string("metNoHF")
 metNoHF.src = cms.InputTag("skimmedPatMETNoHF")
+'''
 
 print "DONE STANDARD"

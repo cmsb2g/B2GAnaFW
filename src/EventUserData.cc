@@ -18,15 +18,15 @@ public:
 private:
   void produce( edm::Event &, const edm::EventSetup & );
   //InputTag LHELabel_;
-  edm::InputTag m_PileupSrc;
-  edm::InputTag m_pvSrc;
+  edm::EDGetTokenT< std::vector< PileupSummaryInfo > > m_PileupSrc;
+  edm::EDGetTokenT< std::vector< reco::Vertex > > m_pvSrc;
  };
 
 
-EventUserData::EventUserData(const edm::ParameterSet& iConfig)
+EventUserData::EventUserData(const edm::ParameterSet& iConfig):
+   m_PileupSrc(consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileup"))),
+   m_pvSrc(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("pvSrc")))
  {
-   m_PileupSrc = iConfig.getParameter<edm::InputTag>("pileup");
-   m_pvSrc = iConfig.getParameter<edm::InputTag>("pvSrc");
    
    produces<std::vector<int> >("puBX");
    produces<std::vector<int> >("puNInt");
@@ -48,7 +48,7 @@ void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
   if ( ! iEvent.eventAuxiliary().isRealData() ) {
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    iEvent.getByLabel(m_PileupSrc, PupInfo);
+    iEvent.getByToken(m_PileupSrc, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       //std::cout << " Pileup Information: bunchXing, nInt, TrueNInt " << PVI->getBunchCrossing() << " " << PVI->getPU_NumInteractions() << " "<< PVI->getTrueNumInteractions() <<endl;
@@ -68,7 +68,7 @@ void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) 
   std::auto_ptr<double> vz (new double() );
 
   edm::Handle<std::vector<reco::Vertex> > h_vtx;
-  iEvent.getByLabel( m_pvSrc, h_vtx );
+  iEvent.getByToken( m_pvSrc, h_vtx );
   *npv = h_vtx->size();
   if ( h_vtx->size() > 0 ) {
     *vx = h_vtx->front().x();
