@@ -35,11 +35,11 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-                 '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+                 #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+		 '/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
                  #"root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/05Oct2015-v1/30000/04F50A91-B46F-E511-A2A3-002618943923.root",
 #                 "root://xrootd.unl.edu//store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root",
 #                 "root://ccxrootdcms.in2p3.fr:1094//pnfs/in2p3.fr/data/cms/disk/data/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/6E07CD15-D26B-E511-8668-02163E013999.root",
-#                 '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/00000/0014DC94-DC5C-E511-82FB-7845C4FC39F5.root',
                  opts.VarParsing.multiplicity.singleton,
                  opts.VarParsing.varType.string,
                  'Sample to analyze')
@@ -106,6 +106,8 @@ if options.globalTag != "":
 else: 
   if options.DataProcessing=="MC25ns_MiniAOD_76X":
     options.globalTag="76X_mcRun2_asymptotic_v12"
+  elif options.DataProcessing=="Data25ns_76X":
+    options.globalTag="76X_dataRun2_v15"
   elif options.DataProcessing=="MC25ns_MiniAODv2":
     options.globalTag="74X_mcRun2_asymptotic_v2"
   elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
@@ -130,33 +132,33 @@ if "Data" in options.DataProcessing:
   options.lheLabel = ""
 
 ###inputTag labels
-rhoLabel          = "fixedGridRhoFastjetAll"
-muLabel           = 'slimmedMuons'
-elLabel           = 'slimmedElectrons'
+rhoLabel          	= "fixedGridRhoFastjetAll"
+muLabel           	= 'slimmedMuons'
+elLabel           	= 'slimmedElectrons'
 
-pvLabel           = 'offlineSlimmedPrimaryVertices'
-convLabel         = 'reducedEgamma:reducedConversions'
-particleFlowLabel = 'packedPFCandidates'    
-metLabel = 'slimmedMETs'
-metNoHFLabel = 'slimmedMETsNoHF'
+pvLabel           	= 'offlineSlimmedPrimaryVertices'
+convLabel         	= 'reducedEgamma:reducedConversions'
+particleFlowLabel 	= 'packedPFCandidates'    
+metLabel 		= 'slimmedMETs'
+metNoHFLabel 		= 'slimmedMETsNoHF'
 
-triggerResultsLabel = "TriggerResults"
-triggerSummaryLabel = "hltTriggerSummaryAOD"
-hltMuonFilterLabel       = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
-hltPathLabel             = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
+triggerResultsLabel 	= "TriggerResults"
+triggerSummaryLabel 	= "hltTriggerSummaryAOD"
+hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
+hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-triggerResultsLabel    = "TriggerResults"
-triggerSummaryLabel    = "hltTriggerSummaryAOD"
-hltMuonFilterLabel     = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
-hltPathLabel           = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
-hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
+triggerResultsLabel    	= "TriggerResults"
+triggerSummaryLabel    	= "hltTriggerSummaryAOD"
+hltMuonFilterLabel     	= "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
+hltPathLabel           	= "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
+hltElectronFilterLabel 	= "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-metProcess = "PAT"
-if(options.DataProcessing=="Data25ns_PromptRecov4"):metProcess = "RECO"
-elif(options.DataProcessing=="Data25ns_ReReco"):metProcess = "RECO"
+if(options.DataProcessing in [ "Data25ns_PromptRecov4","Data25ns_ReReco", "Data25ns_76X" ]): metProcess = "RECO"
+else: metProcess = "PAT"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
+
 
 process = cms.Process("b2gEDMNtuples")
 
@@ -189,15 +191,13 @@ process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 #process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV51_cff')
 
-### External JECs =====================================================================================================
 
+### External JECs =====================================================================================================
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if ("Data" in options.DataProcessing and options.forceResiduals):
   corrections.extend(['L2L3Residual'])
 
 if options.usePrivateSQLite:
-    #jLabel = 'updatedPatJetsAK4'
-    #jLabelAK8 = 'updatedPatJetsAK8'
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
@@ -268,22 +268,12 @@ if options.usePrivateSQLite:
 
 ### =====================================================================================================
 
-### ------------------------------------------------------------------
-### Running puppi
-### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/PUPPI#Using_PUPPI)
-### ------------------------------------------------------------------
-process.load('CommonTools/PileupAlgos/Puppi_cff')
-## e.g. to run on miniAOD
-process.puppi.candName = cms.InputTag('packedPFCandidates')
-process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
 
 ### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
 ### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetToolbox)
 ### ------------------------------------------------------------------
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-process.puppiOnTheFly = process.puppi.clone()
-process.puppiOnTheFly.useExistingWeights = True
 
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
@@ -291,12 +281,12 @@ if "MC" in options.DataProcessing:
 	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, Cut=ak4Cut )
 	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
 	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
 else:
 	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, Cut=ak4Cut )
 	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
 	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
 
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
@@ -340,7 +330,7 @@ if options.useNoHFMET:
 
 if ("Data" in options.DataProcessing and  options.forceResiduals):
   #Take new pat jets as input of the entuples
-  process.patJetCorrFactors.levels = corrections 
+  #process.patJetCorrFactors.levels = corrections 
   if options.useNoHFMET:
     process.patJetCorrFactorsNoHF.levels = corrections 
 else: 
@@ -427,8 +417,8 @@ process.jetUserData = cms.EDProducer(
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
-    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
-    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hltJetFilter       = cms.InputTag("hltPFHT"),
+    hltPath            = cms.string("HLT_PFHT800"),
     hlt2reco_deltaRmax = cms.double(0.2),
     )
 
@@ -472,8 +462,8 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
-    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
-    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
+    hltJetFilter       = cms.InputTag("hltAK8PFJetsTrimR0p1PT0p03"),
+    hltPath            = cms.string("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50"),
     hlt2reco_deltaRmax = cms.double(0.2)
 )
 
@@ -602,18 +592,12 @@ process.TriggerUserData = cms.EDProducer(
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 
-hltProcForMETUserData = "PAT"
-if options.DataProcessing=="Data25ns_PromptRecov4":
-  hltProcForMETUserData = "RECO"
-elif options.DataProcessing=="Data25ns_ReReco":
-  hltProcForMETUserData = "RECO"
-
 process.METUserData = cms.EDProducer(
   'TriggerUserData',
-  bits = cms.InputTag("TriggerResults","",hltProcForMETUserData),
+  bits = cms.InputTag("TriggerResults","", metProcess),
   prescales = cms.InputTag("patTrigger"),
   storePrescales = cms.untracked.bool(False), 
-  hltProcName = cms.untracked.string(hltProcForMETUserData), 
+  hltProcName = cms.untracked.string(metProcess), 
   objects = cms.InputTag("selectedPatTrigger")
   )
 
@@ -641,7 +625,7 @@ process.jetsAK8Puppi.variables += jetVars
 process.jetsAK8Puppi.variables += jetVarsForSys
 process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
 process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
-process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
+process.jetsAK8Puppi.src = 'boostedJetUserDataAK8Puppi'
 process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Puppi' )
 
