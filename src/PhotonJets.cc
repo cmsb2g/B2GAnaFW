@@ -75,8 +75,6 @@ public:
 private:
   void produce( edm::Event &, const edm::EventSetup & );
   bool isMatchedWithTrigger();
-  bool passIDWP();
-  float IsoCalc();
 
   EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
   EDGetTokenT< std::vector< pat::Jet > > jLabel_;
@@ -85,8 +83,6 @@ private:
   EDGetTokenT< double > rhoLabel_;
   edm::EDGetTokenT<EcalRecHitCollection> ebReducedRecHitCollection_;
   edm::EDGetTokenT<EcalRecHitCollection> eeReducedRecHitCollection_;
-  // edm::EDGetTokenT<std::vector<pat::Jet> > jetToken_;
-  
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
@@ -108,13 +104,6 @@ bool isInFootprint(const T& thefootprint, const U& theCandidate) {
   }
   return false;
 }
-
-
-
-
-
-// The Cut based Photon ID's - the current is PHYS 14 first Iteration
-
 
 
 PhotonJets::PhotonJets(const edm::ParameterSet& iConfig):
@@ -313,14 +302,15 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	if(sindx != -99) {
 	  photon_subjet_frac = max_g_pt/subjets[sindx].pt();
 	}
+	subindx = sindx;	
       }// If subjet size is 3      
     }//EOF FOUND photon in the jet
     
   
     //store the reconstructed quantities
-    jett.addUserInt("jetIndex",ijet);
-    jett.addUserInt("phoIndex",phoindx);
-    jett.addUserInt("subIndex",subindx);
+    jett.addUserFloat("jetIndex",ijet);
+    jett.addUserFloat("phoIndex",phoindx);
+    jett.addUserFloat("subIndex",subindx);
     jett.addUserFloat("phoSubjetPtFrac",photon_subjet_frac);
         
     jett.addUserFloat("SubPt0", spt0);
@@ -341,24 +331,12 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 }
 
-float
-PhotonJets::IsoCalc(){
-
-  return 2.0;
-
-}
-
 
 bool
 PhotonJets::isMatchedWithTrigger(){
   return true;
 }
 
-
-bool PhotonJets::passIDWP(){
- 
-  return true;
-}
 
 
 
