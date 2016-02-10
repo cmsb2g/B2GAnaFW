@@ -308,9 +308,9 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     
   
     //store the reconstructed quantities
-    jett.addUserFloat("jetIndex",ijet);
-    jett.addUserFloat("phoIndex",phoindx);
-    jett.addUserFloat("subIndex",subindx);
+    jett.addUserInt("jetIndex",ijet);
+    jett.addUserInt("phoIndex",phoindx);
+    jett.addUserInt("subIndex",subindx);
     jett.addUserFloat("phoSubjetPtFrac",photon_subjet_frac);
         
     jett.addUserFloat("SubPt0", spt0);

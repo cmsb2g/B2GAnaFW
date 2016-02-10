@@ -966,16 +966,16 @@ electrons.src = cms.InputTag("electronUserData")
 ###photons                                                           
 photonVars = (
     cms.PSet(
-        tag = cms.untracked.string("scEta"),
+        tag = cms.untracked.string("SCEta"),
         quantity = cms.untracked.string("superCluster().eta()")
         ),
     cms.PSet(
-        tag = cms.untracked.string("scPhi"),
+        tag = cms.untracked.string("SCPhi"),
         quantity = cms.untracked.string("superCluster.phi()")
         ),
     cms.PSet(
-        tag = cms.untracked.string("hasPixelSeed"),
-        quantity = cms.untracked.string("userFloat('hasPixelSeed')")
+        tag = cms.untracked.string("HasPixelSeed"),
+        quantity = cms.untracked.string("userInt('hasPixelSeed')")
         ),
     cms.PSet(
         tag = cms.untracked.string("SigmaIEtaIEta"),
@@ -1015,15 +1015,15 @@ photonVars = (
         ),
     cms.PSet(
         tag = cms.untracked.string("PassLooseID"),
-        quantity = cms.untracked.string("userFloat('isLoose')")
+        quantity = cms.untracked.string("userInt('isLoose')")
         ),
     cms.PSet(
         tag = cms.untracked.string("PassMediumID"),
-        quantity = cms.untracked.string("userFloat('isMedium')")
+        quantity = cms.untracked.string("userInt('isMedium')")
         ),
     cms.PSet(
         tag = cms.untracked.string("PassTightID"),
-        quantity = cms.untracked.string("userFloat('isTight')")
+        quantity = cms.untracked.string("userInt('isTight')")
         )
     )
 ### copying the muon set of variables from basic,
@@ -1045,18 +1045,16 @@ photonjets =  cms.EDProducer(
     variables = cms.VPSet(
     cms.PSet(
         tag = cms.untracked.string("JetIndex"),
-        quantity = cms.untracked.string("userFloat('jetIndex')")
-       # quantity = cms.untracked.string("? hasUserInt('jetIndex') ? userInt('jetIndex') : -1")
+        quantity = cms.untracked.string("userInt('jetIndex')")
+      
         ),
     cms.PSet(
         tag = cms.untracked.string("PhotonIndex"),
-        quantity = cms.untracked.string("userFloat('phoIndex')")
-    #    quantity = cms.untracked.string("? hasUserInt('phoIndex') ? userInt('phoIndex') : -1")
-        ),
+        quantity = cms.untracked.string("userInt('phoIndex')")
+            ),
     cms.PSet(
         tag = cms.untracked.string("SubwGammatIndex"),
-        quantity = cms.untracked.string("userFloat('subIndex')")
-      #  quantity = cms.untracked.string("? hasUserInt('subIndex') ? userInt('subIndex') : -1")
+        quantity = cms.untracked.string("userInt('subIndex')")
         ),
     cms.PSet(
         tag = cms.untracked.string("PhotonSubjetFrac"),

@@ -151,38 +151,12 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     float pho_sieie = (*full5x5SigmaIEtaIEtaMap)[pho];
     float pho_hoe = pho->hadTowOverEm();
     
-    //Kinematical 
 
-    
-    //float phophi = pho->phi();
-    //float phoeta = pho->eta();
-
-
-    //std::cout<<pho_eta<<endl;
-    //std::cout<<pho_phi<<endl;
-    
-    //float pho_pt  = pho->pt();
-
-    //float pho_ene =pho->energy();
-
-    //float pho_eta = pho->superCluster()->eta();
-    //float pho_phi = pho->superCluster()->phi();
-
-    
-    //other
-    //
-    float hasPixelSeed = pho->hasPixelSeed(); 
-
-    //Kinematical
-    //phoi.addUserFloat("phoSCeta",pho_eta);
-    //phoi.addUserFloat("phoSCphi",pho_phi);
-
-
-    cout<<"what the heck !"<<endl;
+    bool hasPixelSeed = pho->hasPixelSeed(); 
 
     //Shower shapes
-    phoi.addUserFloat("hasPixelSeed", hasPixelSeed);
-      phoi.addUserFloat("sigmaIetaIeta", pho_sieie);
+    phoi.addUserInt("hasPixelSeed", hasPixelSeed);
+    phoi.addUserFloat("sigmaIetaIeta", pho_sieie);
     phoi.addUserFloat("hoe", pho_hoe);
     phoi.addUserFloat("r9",  pho_r9);
 
@@ -197,11 +171,11 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     phoi.addUserFloat("isoP_EAcor",pho_isoPea);
     phoi.addUserFloat("isoN_EAcor",pho_isoNea);
 
-    phoi.addUserFloat("isLoose",    pho_isLoose);
-    phoi.addUserFloat("isMedium",   pho_isMedium);
-    phoi.addUserFloat("isTight",    pho_isTight);
+    phoi.addUserInt("isLoose",    pho_isLoose);
+    phoi.addUserInt("isMedium",   pho_isMedium);
+    phoi.addUserInt("isTight",    pho_isTight);
     
-    cout<<"Done !"<<i<<endl;
+
 
 
 
