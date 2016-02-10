@@ -49,7 +49,8 @@ private:
   void produce( edm::Event &, const edm::EventSetup & );
   bool isMatchedWithTrigger();
   bool passIDWP();
-  float IsoCalc();
+  float EA25nsPho(float eta);
+  float EA25nsNeu(float eta);
   EDGetTokenT< double > rhoLabel_;
   EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
   edm::EDGetToken                      photonsMiniAODToken_;
@@ -59,9 +60,6 @@ private:
   edm::EDGetTokenT<edm::ValueMap<float> > phoISOCMapToken_;
   edm::EDGetTokenT<edm::ValueMap<float> > phoISOPMapToken_;
   edm::EDGetTokenT<edm::ValueMap<float> > phoISONMapToken_;
-  EffectiveAreas effAreaChHadrons_;
-  EffectiveAreas effAreaNeuHadrons_;
-  EffectiveAreas effAreaPhotons_;
   edm::EDGetTokenT<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMapToken_;
   
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
@@ -85,9 +83,6 @@ PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
   phoISOCMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoChgIsoMap"))),
   phoISOPMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoPhoIsoMap"))),
   phoISONMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoNeuIsoMap"))),
-  effAreaChHadrons_( (iConfig.getParameter<edm::FileInPath>("effAreaChHadFile")).fullPath() ),
-  effAreaNeuHadrons_( (iConfig.getParameter<edm::FileInPath>("effAreaNeuHadFile")).fullPath() ),
-  effAreaPhotons_( (iConfig.getParameter<edm::FileInPath>("effAreaPhoFile")).fullPath() ),
   full5x5SigmaIEtaIEtaMapToken_(consumes <edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
@@ -125,61 +120,42 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   rho_ = *rhoH;
 
   //Photon Loop
-  for (size_t i = 0; i < photonS->size(); ++i){
+  //cout<<"size :"<<phoColl->size()<<endl;
+
+  for (size_t i = 0; i < phoColl->size(); ++i){
     const auto pho = photonS->ptrAt(i);
     pat::Photon & phoi = (*phoColl)[i];
-    if(pho->pt() < 15 ) continue;
-    if(pho->hadTowOverEm() > 0.15 ) continue;
+   if(phoi.hadTowOverEm() > 0.15 ) continue;
+   
+    float pho_isoC       = 1*rho_; //(*isoc_idvar)[pho];
+  
+    
     bool pho_isLoose  = (*loose_id_decisions)[pho];
     bool pho_isMedium = (*medium_id_decisions)[pho];
     bool pho_isTight  = (*tight_id_decisions)[pho];
   
     //Isolations raw and EA corrected
-    float pho_isoC       = (*isoc_idvar)[pho];
     float pho_isoP       = (*isop_idvar)[pho];
     float pho_isoN       = (*ison_idvar)[pho];
     
     
     float abseta = fabs(pho->eta());    
 
-    float pho_isoCea     = std::max( float(0.0) ,(*isoc_idvar)[pho] - rho_*effAreaChHadrons_.getEffectiveArea(abseta));
-    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*effAreaPhotons_.getEffectiveArea(abseta)) ;
-    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta));
+    float pho_isoCea     = std::max( float(0.0) ,(*isoc_idvar)[pho]                         );
+    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*EA25nsPho(abseta)) ;
+    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EA25nsNeu(abseta));
 
 
     //showershapes 
     float pho_r9 = pho->r9();
     float pho_sieie = (*full5x5SigmaIEtaIEtaMap)[pho];
     float pho_hoe = pho->hadTowOverEm();
-
-    //Kinematical 
-    float phophi = pho->phi();
-    float phoeta = pho->eta();
-
-    float pho_eta = pho->superCluster()->eta();
-    float pho_phi = pho->superCluster()->phi();
-    float pho_pt  = pho->pt();
-
-    float pho_ene =pho->energy();
-    
-    //other
-    bool pho_hasPixelSeed = pho->hasPixelSeed(); 
-
     
 
+    bool hasPixelSeed = pho->hasPixelSeed(); 
 
-
-    //Kinematical
-    phoi.addUserFloat("phoSceta",pho_eta);
-    phoi.addUserFloat("phoScphi",pho_phi);
-    phoi.addUserFloat("phoEta",phoeta);
-    phoi.addUserFloat("phoPhi",phophi);
-
-    phoi.addUserFloat("phopt",pho_pt);
-    phoi.addUserFloat("phoen",pho_ene);
-
-    //Showe shapes
-    phoi.addUserInt("hasPixelSeed", pho_hasPixelSeed);
+    //Shower shapes
+    phoi.addUserInt("hasPixelSeed", hasPixelSeed);
     phoi.addUserFloat("sigmaIetaIeta", pho_sieie);
     phoi.addUserFloat("hoe", pho_hoe);
     phoi.addUserFloat("r9",  pho_r9);
@@ -187,30 +163,64 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     //isolation
     phoi.addUserFloat("isoC",pho_isoC);
+  
+    
     phoi.addUserFloat("isoP",pho_isoP);
     phoi.addUserFloat("isoN",pho_isoN);
     phoi.addUserFloat("isoC_EAcor",pho_isoCea);
     phoi.addUserFloat("isoP_EAcor",pho_isoPea);
     phoi.addUserFloat("isoN_EAcor",pho_isoNea);
 
-    phoi.addUserFloat("isLoose",    pho_isLoose);
-    phoi.addUserFloat("isMedium",   pho_isMedium);
-    phoi.addUserFloat("isTight",    pho_isTight);
+    phoi.addUserInt("isLoose",    pho_isLoose);
+    phoi.addUserInt("isMedium",   pho_isMedium);
+    phoi.addUserInt("isTight",    pho_isTight);
+    
 
 
 
-  }//EOF photons loop
+
+  }
+//EOF photons loop
   iEvent.put( phoColl );
-  
+  //cout<<"Done ! event"<<endl;
+
 
 }
 
 float
-PhotonUserData::IsoCalc(){
+PhotonUserData::EA25nsPho(float eta){
+  //Returns the Effective areas for the PF:gamma Isolation
 
-  return 2.0;
+ float effArea = 0; 
+  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.1271;
+  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.1101;
+  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.0756;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.1175;
+  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.1498;
+  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.1857;
+  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.2183;
+  return effArea;
 
 }
+
+
+float
+PhotonUserData::EA25nsNeu(float eta){
+  //Returns the Effective areas for the PF:h0 Isolation
+  float effArea = 0; 
+  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.0599;
+  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.0819;
+  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.0696;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0360;
+  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.0360;
+  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.0462;
+  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.0656;
+  return effArea;
+
+}
+
+
+
 
 
 bool
