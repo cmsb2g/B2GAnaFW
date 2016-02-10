@@ -120,7 +120,6 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   rho_ = *rhoH;
 
   //Photon Loop
-  cout<<"size :"<<phoColl->size()<<endl;
 
   for (size_t i = 0; i < phoColl->size(); ++i){
     const auto pho = photonS->ptrAt(i);
@@ -182,8 +181,6 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 //EOF photons loop
   iEvent.put( phoColl );
-  cout<<"Done ! event"<<endl;
-
 
 }
 

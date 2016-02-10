@@ -281,20 +281,24 @@ jetVars = (
       quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
       ),
     cms.PSet(
-      tag = cms.untracked.string("CSVv1"),
-      quantity = cms.untracked.string("bDiscriminator('pfCombinedSecondaryVertexV1BJetTags')")
+      tag = cms.untracked.string("DoubleB"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CMVAv2"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CvsL"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsLJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("CvsB"),
+      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsBJetTags')")
       ),
     cms.PSet(
       tag = cms.untracked.string("CMVA"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("CvsLTagger"),
-      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsLJetTags')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("CvsBTagger"),
-      quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsBJetTags')")
       ),
     ### GEN PARTON
     cms.PSet(
