@@ -119,7 +119,7 @@ else:
 rhoLabel          	= "fixedGridRhoFastjetAll"
 muLabel           	= 'slimmedMuons'
 elLabel           	= 'slimmedElectrons'
-
+phoLabel                = 'slimmedPhotons'
 pvLabel           	= 'offlineSlimmedPrimaryVertices'
 convLabel         	= 'reducedEgamma:reducedConversions'
 particleFlowLabel 	= 'packedPFCandidates'    
@@ -347,8 +347,8 @@ process.skimmedPatMuons = cms.EDFilter(
 
 process.skimmedPatPhotons = cms.EDFilter(
     "PATPhotonSelector",
-    src = cms.InputTag("slimmedPhotons"),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4"),
+    src = cms.InputTag(phoLabel),
+    cut = cms.string("pt > 10.0 && abs(eta) < 2.4"),
 )
 
 process.skimmedPatElectrons = cms.EDFilter(
@@ -494,15 +494,12 @@ process.photonUserData = cms.EDProducer(
     'PhotonUserData',
     rho                     = cms.InputTag(rhoLabel),
     pholabel                = cms.InputTag("slimmedPhotons"),
-    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-loose"),
-    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-medium"),
-    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight"),
+    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-loose"),
+    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-medium"),
+    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-tight"),
     phoChgIsoMap            = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
-    effAreaChHadFile        = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_V2.txt"),
-    effAreaNeuHadFile       = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_V2.txt"),
-    effAreaPhoFile          = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_V2.txt"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta")
     )
 
@@ -541,10 +538,10 @@ switchOnVIDPhotonIdProducer(process, dataFormat)
 switchOnVIDElectronIdProducer(process, dataFormat)
 
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_PHYS14_PU20bx25_V2_cff']
+my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff']
 
 #add them to the VID producer
-for idmod in my_id_modules:
+for idmod in my_phoid_modules:
   setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 #
@@ -627,8 +624,8 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
-    #"keep *_photons_*_*",
-    #"keep *_photonjets_*_*",
+    "keep *_photons_*_*",
+    "keep *_photonjets_*_*",
     "keep *_jetsAK4_*_*",
     "keep *_jetsAK8*_*_*",
     "keep *_eventShape*_*_*",
@@ -644,6 +641,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_subjetKeysAK8*_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_electronKeys_*_*",   
+    "keep *_photonKeys_*_*",   
     "keep *_muonKeys_*_*",
     "keep *_TriggerUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
