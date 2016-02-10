@@ -3,7 +3,7 @@ header = """
 ### Usage:
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
-###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data25ns_76X' or 'MC25ns_MiniAOD_76X'
+###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data25ns_76X' or 'MC25ns_MiniAOD_76X' or 'MC25ns_MiniAODv2_FastSim' 
 ###
 ### Examples: 
 ###    Running on 25 ns MiniAODv1 and MiniAODv2 MC in 76X:
@@ -51,7 +51,7 @@ options.register('lheLabel',
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
-    True,
+    False,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Adding met without HF and relative jets')
@@ -86,7 +86,7 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'.\n")
+  sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
 
 
 if options.globalTag != "": 
@@ -96,20 +96,8 @@ else:
     options.globalTag="76X_mcRun2_asymptotic_v12"
   elif options.DataProcessing=="Data25ns_76X":
     options.globalTag="76X_dataRun2_v15"
-  elif options.DataProcessing=="MC25ns_MiniAODv2":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
-  elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
-  elif options.DataProcessing=="Data25ns_ReReco":
-    options.globalTag="74X_dataRun2_v4"
-  elif options.DataProcessing=="MC50ns_MiniAODv2":
-    options.globalTag="74X_mcRun2_asymptotic50ns_v0"
-  elif options.DataProcessing=="Data50ns_MiniAODv2":
-    options.globalTag="74X_dataRun2_reMiniAOD_v0"
   else:
-    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
-        "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
-        "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
+    sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
 
     if "Data" in options.DataProcessing:
       print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
@@ -704,4 +692,4 @@ if "MC" in options.DataProcessing:
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+open('B2GEntupleFileDump.py','w').write(process.dumpPython())
