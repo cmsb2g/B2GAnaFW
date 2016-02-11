@@ -3,7 +3,7 @@ header = """
 ### Usage:
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
-###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data25ns_76X' or 'MC25ns_MiniAOD_76X'
+###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data25ns_76X' or 'MC25ns_MiniAOD_76X' or 'MC25ns_MiniAODv2_FastSim' 
 ###
 ### Examples: 
 ###    Running on 25 ns MiniAODv1 and MiniAODv2 MC in 76X:
@@ -25,8 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
-		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
+     #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+		 '/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -41,7 +41,7 @@ options.register('DataProcessing',
     "",
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
-    'Data processing types. Options are: MC25ns_MiniAODv2, Data25ns_MiniAODv2, Data25ns_PromptRecov4')
+    'Data processing types. Options are: Data25ns_76X or MC25ns_MiniAOD_76X or MC25ns_MiniAODv2_FastSim')
 
 options.register('lheLabel',
     "",
@@ -51,7 +51,7 @@ options.register('lheLabel',
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
-    True,
+    False,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Adding met without HF and relative jets')
@@ -86,48 +86,36 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!Error: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAODv2', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4'.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
 
 
 if options.globalTag != "": 
-  print "!!!!Warning: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
+  print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
   if options.DataProcessing=="MC25ns_MiniAOD_76X":
     options.globalTag="76X_mcRun2_asymptotic_v12"
   elif options.DataProcessing=="Data25ns_76X":
     options.globalTag="76X_dataRun2_v15"
-  elif options.DataProcessing=="MC25ns_MiniAODv2":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
-  elif options.DataProcessing=="MC25ns_MiniAODv2_FastSim":
-    options.globalTag="74X_mcRun2_asymptotic_v2"
-  elif options.DataProcessing=="Data25ns_ReReco":
-    options.globalTag="74X_dataRun2_v4"
-  elif options.DataProcessing=="MC50ns_MiniAODv2":
-    options.globalTag="74X_mcRun2_asymptotic50ns_v0"
-  elif options.DataProcessing=="Data50ns_MiniAODv2":
-    options.globalTag="74X_dataRun2_reMiniAOD_v0"
   else:
-    sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
-        "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
-        "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
+    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
 
     if "Data" in options.DataProcessing:
-      print "!!!!Warning: You have chosen to run over data. lheLabel will be unset.\n"
+      print "!!!!WARNING: You have chosen to run over data. lheLabel will be unset.\n"
   options.lheLabel = ""
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
 muLabel           	= 'slimmedMuons'
 elLabel           	= 'slimmedElectrons'
-
+phoLabel            = 'slimmedPhotons'
 pvLabel           	= 'offlineSlimmedPrimaryVertices'
 convLabel         	= 'reducedEgamma:reducedConversions'
 particleFlowLabel 	= 'packedPFCandidates'    
-metLabel 		= 'slimmedMETs'
-metNoHFLabel 		= 'slimmedMETsNoHF'
+metLabel 		        = 'slimmedMETs'
+metNoHFLabel 	     	= 'slimmedMETsNoHF'
 
-triggerResultsLabel 	= "TriggerResults"
-triggerSummaryLabel 	= "hltTriggerSummaryAOD"
+triggerResultsLabel 	  = "TriggerResults"
+triggerSummaryLabel 	  = "hltTriggerSummaryAOD"
 hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
 hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
@@ -183,71 +171,72 @@ if ("Data" in options.DataProcessing and options.forceResiduals):
 
 if options.usePrivateSQLite:
     
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    import os
-    if "Data50ns" in options.DataProcessing:
-      era = "Summer15_50nsV5_DATA"
-    elif "MC50ns" in options.DataProcessing:
-      era = "Summer15_50nsV5_MC"
-    elif "Data25ns" in options.DataProcessing:
-      era = "Summer15_25nsV7_DATA"
-    elif "MC25ns" in options.DataProcessing:
-      era = "Summer15_25nsV7_MC"
-    else:
-      sys.exit("!!!!Error: Wrong DataProcessing option. Choose any of the following options: "
-          "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
-          "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
-      dBFile = era+".db"
-    print "\nUsing private SQLite file", dBFile, "\n"
-    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-        connect = cms.string( "sqlite_file:"+dBFile ),
-        toGet =  cms.VPSet(
-          cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
-            label= cms.untracked.string("AK4PF")
-            ),
-          cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
-            label= cms.untracked.string("AK4PFchs")
-            ),
-          cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
-            label= cms.untracked.string("AK8PF")
-            ),
-          cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
-            label= cms.untracked.string("AK8PFchs")
-            ),
-          )
-        )
-    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
+  sys.exit("!!!!ERROR: No JEC sqlite file for 76X processing yet!!!")
+    ###>>>from CondCore.DBCommon.CondDBSetup_cfi import *
+    ###>>>import os
+    ###>>>if "Data50ns" in options.DataProcessing:
+    ###>>>  era = "Summer15_50nsV5_DATA"
+    ###>>>elif "MC50ns" in options.DataProcessing:
+    ###>>>  era = "Summer15_50nsV5_MC"
+    ###>>>elif "Data25ns" in options.DataProcessing:
+    ###>>>  era = "Summer15_25nsV7_DATA"
+    ###>>>elif "MC25ns" in options.DataProcessing:
+    ###>>>  era = "Summer15_25nsV7_MC"
+    ###>>>else:
+    ###>>>  sys.exit("!!!!ERROR: Wrong DataProcessing option. Choose any of the following options: "
+    ###>>>      "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
+    ###>>>      "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
+    ###>>>  dBFile = era+".db"
+    ###>>>print "\nUsing private SQLite file", dBFile, "\n"
+    ###>>>process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+    ###>>>    connect = cms.string( "sqlite_file:"+dBFile ),
+    ###>>>    toGet =  cms.VPSet(
+    ###>>>      cms.PSet(
+    ###>>>        record = cms.string("JetCorrectionsRecord"),
+    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+    ###>>>        label= cms.untracked.string("AK4PF")
+    ###>>>        ),
+    ###>>>      cms.PSet(
+    ###>>>        record = cms.string("JetCorrectionsRecord"),
+    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+    ###>>>        label= cms.untracked.string("AK4PFchs")
+    ###>>>        ),
+    ###>>>      cms.PSet(
+    ###>>>        record = cms.string("JetCorrectionsRecord"),
+    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
+    ###>>>        label= cms.untracked.string("AK8PF")
+    ###>>>        ),
+    ###>>>      cms.PSet(
+    ###>>>        record = cms.string("JetCorrectionsRecord"),
+    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
+    ###>>>        label= cms.untracked.string("AK8PFchs")
+    ###>>>        ),
+    ###>>>      )
+    ###>>>    )
+    ###>>>process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
 
-    ''' 
-    process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
-    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        rho = cms.InputTag("fixedGridRhoFastjetAll"),
-        src = cms.InputTag("slimmedJets"),
+    ###>>>''' 
+    ###>>>process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
+    ###>>>from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
+    ###>>>process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
+    ###>>>    src = cms.InputTag("slimmedJets"),
 
-        levels = corrections )
-    process.updatedPatJetsAK4 = patJetsUpdated.clone(
-        jetSource = cms.InputTag("slimmedJets"),
-        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
-    process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        src = cms.InputTag("slimmedJetsAK8"),
-        rho = cms.InputTag("fixedGridRhoFastjetAll"),
-        levels = corrections )
+    ###>>>    levels = corrections )
+    ###>>>process.updatedPatJetsAK4 = patJetsUpdated.clone(
+    ###>>>    jetSource = cms.InputTag("slimmedJets"),
+    ###>>>    jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+    ###>>>    )
+    ###>>>process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+    ###>>>    src = cms.InputTag("slimmedJetsAK8"),
+    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
+    ###>>>    levels = corrections )
 
-    process.updatedPatJetsAK8 = patJetsUpdated.clone(
-      jetSource = cms.InputTag("slimmedJetsAK8"),
-      jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
-      )
-    '''
+    ###>>>process.updatedPatJetsAK8 = patJetsUpdated.clone(
+    ###>>>  jetSource = cms.InputTag("slimmedJetsAK8"),
+    ###>>>  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
+    ###>>>  )
+    ###>>>'''
 
     ### =====================================================================================================
 
@@ -257,19 +246,29 @@ if options.usePrivateSQLite:
 ### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetToolbox)
 ### ------------------------------------------------------------------
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+listBtagDiscriminators = [ 
+		'pfJetProbabilityBJetTags',
+		'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+		'pfCombinedMVAV2BJetTags',
+		'pfBoostedDoubleSecondaryVertexAK8BJetTags',
+		'pfCombinedCvsLJetTags',
+		'pfCombinedCvsBJetTags'
+		]
 
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 if "MC" in options.DataProcessing: 
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 else:
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+
+
 
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
@@ -347,8 +346,8 @@ process.skimmedPatMuons = cms.EDFilter(
 
 process.skimmedPatPhotons = cms.EDFilter(
     "PATPhotonSelector",
-    src = cms.InputTag("slimmedPhotons"),
-    cut = cms.string("pt > 30 && abs(eta) < 2.4"),
+    src = cms.InputTag(phoLabel),
+    cut = cms.string("pt > 10.0 && abs(eta) < 2.4"),
 )
 
 process.skimmedPatElectrons = cms.EDFilter(
@@ -494,15 +493,12 @@ process.photonUserData = cms.EDProducer(
     'PhotonUserData',
     rho                     = cms.InputTag(rhoLabel),
     pholabel                = cms.InputTag("slimmedPhotons"),
-    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-loose"),
-    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-medium"),
-    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-PHYS14-PU20bx25-V2-standalone-tight"),
+    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-loose"),
+    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-medium"),
+    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-tight"),
     phoChgIsoMap            = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
-    effAreaChHadFile        = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_V2.txt"),
-    effAreaNeuHadFile       = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_V2.txt"),
-    effAreaPhoFile          = cms.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_V2.txt"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta")
     )
 
@@ -541,10 +537,10 @@ switchOnVIDPhotonIdProducer(process, dataFormat)
 switchOnVIDElectronIdProducer(process, dataFormat)
 
 # define which IDs we want to produce
-my_id_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_PHYS14_PU20bx25_V2_cff']
+my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff']
 
 #add them to the VID producer
-for idmod in my_id_modules:
+for idmod in my_phoid_modules:
   setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 #
@@ -627,8 +623,8 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
-    #"keep *_photons_*_*",
-    #"keep *_photonjets_*_*",
+    "keep *_photons_*_*",
+    "keep *_photonjets_*_*",
     "keep *_jetsAK4_*_*",
     "keep *_jetsAK8*_*_*",
     "keep *_eventShape*_*_*",
@@ -644,6 +640,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_subjetKeysAK8*_*_*",
     "keep *_subjetsCmsTopTagKeys_*_*",
     "keep *_electronKeys_*_*",   
+    "keep *_photonKeys_*_*",   
     "keep *_muonKeys_*_*",
     "keep *_TriggerUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
@@ -696,4 +693,4 @@ if "MC" in options.DataProcessing:
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+open('B2GEntupleFileDump.py','w').write(process.dumpPython())
