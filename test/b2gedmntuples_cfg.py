@@ -294,18 +294,18 @@ from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMet
 
 #For a full met computation, remove the pfCandColl input
 runMetCorAndUncFromMiniAOD(process,
-    isData=("Data" in options.DataProcessing),
-    )
+		isData=("Data" in options.DataProcessing),
+		)
 
 if options.useNoHFMET:
-  runMetCorAndUncFromMiniAOD(process,
-      isData=("Data" in options.DataProcessing),
-      pfCandColl=cms.InputTag("noHFCands"),
-      recoMetFromPFCs=True,
-      reclusterJets=True, 
-      postfix="NoHF"
-      )
-  jLabelNoHF = 'patJetsNoHF'
+	runMetCorAndUncFromMiniAOD(process,
+		  isData=("Data" in options.DataProcessing),
+		  pfCandColl=cms.InputTag("noHFCands"),
+		  recoMetFromPFCs=True,
+		  reclusterJets=True, 
+		  postfix="NoHF"
+		  )
+	jLabelNoHF = 'patJetsNoHF'
 
 ### -------------------------------------------------------------------
 ### the lines below remove the L2L3 residual corrections when processing data
