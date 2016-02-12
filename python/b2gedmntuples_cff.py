@@ -908,26 +908,6 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('hasMatchConv')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("isEB"),
-        quantity = cms.untracked.string("isEB")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("isVeto"),
-        quantity = cms.untracked.string("userFloat('isVeto')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("isLoose"),
-        quantity = cms.untracked.string("userFloat('isLoose')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("isTight"),
-        quantity = cms.untracked.string("userFloat('isTight')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("isMedium"),
-        quantity = cms.untracked.string("userFloat('isMedium')")
-        ),
-    cms.PSet(
         tag = cms.untracked.string("vidVeto"),
         quantity = cms.untracked.string("userFloat('vidVeto')")
         ),
@@ -952,8 +932,12 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("scEta"),
+        tag = cms.untracked.string("SCEta"),
         quantity = cms.untracked.string("superCluster().eta()")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SCPhi"),
+        quantity = cms.untracked.string("superCluster().phi()")
         )
 
     )
