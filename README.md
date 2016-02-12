@@ -20,10 +20,6 @@ cmsrel CMSSW_7_6_3_patch2/
 cd CMSSW_7_6_3_patch2/src
 cmsenv
 ```
- * Needed to run VID for electron ID
-```
-git cms-merge-topic ikrav:egm_id_7.4.12_v1
-```
  * Clone the github repository
 ```
 git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
