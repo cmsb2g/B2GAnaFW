@@ -45,14 +45,9 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
-  float getEA(float);
-  float getEAOld(float);
-  float getEAWithGenWeightOld(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
-  bool passIDWP(string, bool, float, float, float, float, float, float, float, bool, int);
-
   void printCutFlowResult(vid::CutFlowResult &cutflow);
-
+  float getEA(float eta);
   EDGetTokenT< std::vector< pat::Electron > > eleLabel_;
   EDGetTokenT< std::vector< reco::Vertex > > pvLabel_;
   EDGetTokenT< pat::PackedCandidateCollection > packedPFCandsLabel_;
@@ -227,7 +222,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     GsfElectron::PflowIsolationVariables pfIso = el.pfIsolationVariables();
     // Compute isolation with delta beta correction for PU
 
-    bool isEB = el.isEB() ? true : false;
     //float ptEle  = el.pt();
     //float etaEle = el.superCluster()->eta();
     float dEtaIn = el.deltaEtaSuperClusterTrackAtVtx();
@@ -262,10 +256,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     // conversion rejection match
     bool hasMatchConv = ConversionTools::hasMatchedConversion(el, conversions, beamspot.position());
 
-    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
+
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
     const Ptr<pat::Electron> elPtr(eleHandle, i);
@@ -304,10 +295,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
     el.addUserFloat("rho", rho );
     el.addUserFloat("EA", EA );
-    el.addUserFloat("isVeto",     isVeto);
-    el.addUserFloat("isLoose",    isLoose);
-    el.addUserFloat("isMedium",   isMedium);
-    el.addUserFloat("isTight",    isTight);
     el.addUserFloat("vidVeto",    vidVeto );
     el.addUserFloat("vidLoose",   vidLoose );
     el.addUserFloat("vidMedium",  vidMedium );
@@ -340,87 +327,16 @@ ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerOb
 }
 
 
-float ElectronUserData::getEA(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
+float ElectronUserData::getEA(float eta){
   float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.1752;
+  if(abs(eta)>0.0 && abs(eta)<=1.0)   effArea = 0.1752;
   if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.1862;
   if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.1411;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.1534;
-  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.1903;
-  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.2243;
-  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.2687;
+  if(abs(eta)>2.0 && abs(eta)<=2.2)   effArea = 0.1534;
+  if(abs(eta)>2.2 && abs(eta)<=2.3)   effArea = 0.1903;
+  if(abs(eta)>2.3 && abs(eta)<=2.4)   effArea = 0.2243;
+  if(abs(eta)>2.4 && abs(eta)<=2.5)   effArea = 0.2687;
   return effArea;
-}
-
-
-float ElectronUserData::getEAWithGenWeightOld(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
-  float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0958;
-  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0940;
-  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0616;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0708;
-  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1321;
-  return effArea;
-}
-
-
-float ElectronUserData::getEAOld(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
-  float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.1013;
-  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0988;
-  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0572;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0842;
-  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1530;
-  return effArea;
-}
-
-bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, bool conv, int missHits){
-  bool pass = false;
-
-  if(WP == "VETO"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0126 ) && (fabs(dPhiIn) <  0.107 ) && (full5x5 < 0.012 ) && (hoe <  0.186 ) && (fabs(d0) < 0.0621 ) && (fabs(dz) <  0.613 ) && (fabs(ooemoop) <  0.239 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.0109 ) && (fabs(dPhiIn) <  0.219 ) && (full5x5 < 0.0339 ) && (hoe <  0.0962 ) && (fabs(d0) < 0.279 ) && (fabs(dz) < 0.947 ) && (fabs(ooemoop) < 0.141 ) && !conv && (missHits <= 3);
-    }
-  }
-  if(WP == "LOOSE"){
-    if(isEB){
-      pass = (fabs(dEtaIn) < 0.00976 ) && (fabs(dPhiIn) < 0.0929 ) && (full5x5 <  0.0105 ) && (hoe < 0.0765 ) && (fabs(d0) < 0.0227 ) && (fabs(dz) < 0.379 ) && (fabs(ooemoop) <  0.184 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) < 0.00952 ) && (fabs(dPhiIn) < 0.181 ) && (full5x5 < 0.0318 ) && (hoe < 0.0824 ) && (fabs(d0) < 0.242 ) && (fabs(dz) < 0.921 ) && (fabs(ooemoop) < 0.125 ) && !conv && (missHits <= 1);
-    }
-  }
-
-  if(WP == "MEDIUM"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0094 ) && (fabs(dPhiIn) <  0.0296 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0151 ) && (fabs(dz) <  0.238 ) && (fabs(ooemoop) <  0.118 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.00773 ) && (fabs(dPhiIn) <  0.148 ) && (full5x5 <  0.0287 ) && (hoe <  0.0546 ) && (fabs(d0) <  0.0535 ) && (fabs(dz) <  0.572 ) && (fabs(ooemoop) <  0.104 ) && !conv && (missHits <= 1);
-    }
-  }
-
-  if(WP == "TIGHT"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0095 ) && (fabs(dPhiIn) <  0.0291 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0144 ) && (fabs(dz) <  0.323 ) && (fabs(ooemoop) <  0.0174 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.00762 ) && (fabs(dPhiIn) <  0.0439 ) && (full5x5 <  0.0287 ) && (hoe <  0.0544 ) && (fabs(d0) <  0.0377 ) && (fabs(dz) <  0.571 ) && (fabs(ooemoop) <  0.01 ) && !conv && (missHits <= 1);
-    }
-  }
-  return pass;
 }
 
 void ElectronUserData::printCutFlowResult(vid::CutFlowResult &cutflow){
