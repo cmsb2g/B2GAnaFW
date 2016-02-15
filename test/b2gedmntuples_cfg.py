@@ -25,8 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
-		 '/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
+     '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -57,7 +57,7 @@ options.register('useNoHFMET',
     'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-    False,
+    True,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Take Corrections from private SQL file')
@@ -166,54 +166,59 @@ process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 
 ### External JECs =====================================================================================================
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
-if ("Data" in options.DataProcessing and options.forceResiduals):
-  corrections.extend(['L2L3Residual'])
+if ("Data" in options.DataProcessing and options.forceResiduals): corrections.extend(['L2L3Residual'])
 
 if options.usePrivateSQLite:
     
-  sys.exit("!!!!ERROR: No JEC sqlite file for 76X processing yet!!!")
-    ###>>>from CondCore.DBCommon.CondDBSetup_cfi import *
-    ###>>>import os
-    ###>>>if "Data50ns" in options.DataProcessing:
-    ###>>>  era = "Summer15_50nsV5_DATA"
-    ###>>>elif "MC50ns" in options.DataProcessing:
-    ###>>>  era = "Summer15_50nsV5_MC"
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    import os
+    if "Data" in options.DataProcessing: era = "Fall15_25nsV1_DATA"
+    elif "MC" in options.DataProcessing: era = "Fall15_25nsV1_MC"
     ###>>>elif "Data25ns" in options.DataProcessing:
     ###>>>  era = "Summer15_25nsV7_DATA"
     ###>>>elif "MC25ns" in options.DataProcessing:
     ###>>>  era = "Summer15_25nsV7_MC"
-    ###>>>else:
-    ###>>>  sys.exit("!!!!ERROR: Wrong DataProcessing option. Choose any of the following options: "
-    ###>>>      "'MC25ns_MiniAODv2', 'MC25ns_MiniAODv2_FastSim', 'Data25ns_ReReco', 'Data25ns_MiniAODv2', 'Data25ns_PromptRecov4',\n"
-    ###>>>      "'MC50ns_MiniAODv2', 'Data50ns_MiniAODv2'\n")
-    ###>>>  dBFile = era+".db"
-    ###>>>print "\nUsing private SQLite file", dBFile, "\n"
-    ###>>>process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-    ###>>>    connect = cms.string( "sqlite_file:"+dBFile ),
-    ###>>>    toGet =  cms.VPSet(
-    ###>>>      cms.PSet(
-    ###>>>        record = cms.string("JetCorrectionsRecord"),
-    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
-    ###>>>        label= cms.untracked.string("AK4PF")
-    ###>>>        ),
-    ###>>>      cms.PSet(
-    ###>>>        record = cms.string("JetCorrectionsRecord"),
-    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
-    ###>>>        label= cms.untracked.string("AK4PFchs")
-    ###>>>        ),
-    ###>>>      cms.PSet(
-    ###>>>        record = cms.string("JetCorrectionsRecord"),
-    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
-    ###>>>        label= cms.untracked.string("AK8PF")
-    ###>>>        ),
-    ###>>>      cms.PSet(
-    ###>>>        record = cms.string("JetCorrectionsRecord"),
-    ###>>>        tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
-    ###>>>        label= cms.untracked.string("AK8PFchs")
-    ###>>>        ),
-    ###>>>      )
-    ###>>>    )
-    ###>>>process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
+    else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
+
+    dBFile = era+".db"
+    print "\nUsing private SQLite file", dBFile, "\n"
+    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+		    connect = cms.string( "sqlite_file:"+dBFile ),
+		    toGet =  cms.VPSet(
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+				    label= cms.untracked.string("AK4PF")
+				    ),
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+				    label= cms.untracked.string("AK4PFchs")
+				    ),
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFPuppi"),
+				    label= cms.untracked.string("AK4PFPuppi")
+				    ),
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
+				    label= cms.untracked.string("AK8PF")
+				    ),
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
+				    label= cms.untracked.string("AK8PFchs")
+				    ),
+			    cms.PSet(
+				    record = cms.string("JetCorrectionsRecord"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFPuppi"),
+				    label= cms.untracked.string("AK8PFPuppi")
+				    ),
+			    )
+		    )
+
+    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
 
     ###>>>''' 
     ###>>>process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
