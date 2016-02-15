@@ -4,13 +4,7 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This version is used to produced B2G EDMNtuples for the re-MiniAOD of the MC and Run2012D, as weill as the Run2012D_PromptReco-v4
-
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring15MiniAODv2_re_miniAO
-
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015_B_C_50ns_D_05Oct2015_re
-
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptReco_v4_Data_2015
+This version is used to produced B2G EDMNtuples for 76X samples.
 
 ## Instructions
 
@@ -22,7 +16,7 @@ cmsenv
 ```
  * Clone the github repository
 ```
-git clone -b CMSSW_7_6_3 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_6_X_V0 
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
