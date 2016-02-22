@@ -25,7 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+     #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+     '/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06C089EF-2FCC-E511-9946-1CC1DE1CF69A.root',
 		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
@@ -172,8 +173,8 @@ if options.usePrivateSQLite:
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
-    if "Data" in options.DataProcessing: era = "Fall15_25nsV1_DATA"
-    elif "MC" in options.DataProcessing: era = "Fall15_25nsV1_MC"
+    if "Data" in options.DataProcessing: era = "Fall15_25nsV2_DATA"
+    elif "MC" in options.DataProcessing: era = "Fall15_25nsV2_MC"
     ###>>>elif "Data25ns" in options.DataProcessing:
     ###>>>  era = "Summer15_25nsV7_DATA"
     ###>>>elif "MC25ns" in options.DataProcessing:
