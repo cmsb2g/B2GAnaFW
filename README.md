@@ -10,7 +10,7 @@ This version is used to produced B2G EDMNtuples for 76X samples.
 
  * Make a new CMSSW area:
 ```
-cmsrel CMSSW_7_6_3_patch2/
+cmsrel CMSSW_7_6_3_patch2
 cd CMSSW_7_6_3_patch2/src
 cmsenv
 ```
