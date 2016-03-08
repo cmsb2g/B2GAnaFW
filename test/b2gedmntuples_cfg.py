@@ -402,6 +402,7 @@ process.muonUserData = cms.EDProducer(
 process.jetUserData = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag(jLabel),
+    jecCorrection      = cms.string("AK4PFchs"),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -421,6 +422,7 @@ process.jetUserDataNoHF = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    jecCorrection      = cms.string("AK4PFchs"),
     )
 '''
 
@@ -428,6 +430,7 @@ process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag(jLabelAK8),
     pv        = cms.InputTag(pvLabel),
+    jecCorrection      = cms.string("AK8PFchs"),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -447,6 +450,7 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     'JetUserData',
     jetLabel  = cms.InputTag( jLabelAK8Puppi ),
     pv        = cms.InputTag(pvLabel),
+    jecCorrection = cms.string("AK8PFPuppi"),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -462,17 +466,6 @@ process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
-
-
-process.boostedJetUserDataAK8Puppi = cms.EDProducer(
-    'BoostedJetToolboxUserData',
-    jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
-    distMax = cms.double(0.8)
-)
-
-
 
 process.electronUserData = cms.EDProducer(
     'ElectronUserData',
@@ -614,12 +607,13 @@ process.jetsAK8.variables += jetToolboxAK8Vars
 ### Puppi
 process.jetsAK8Puppi = copy.deepcopy(basic)
 process.jetsAK8Puppi.variables += jetVars
+process.jetsAK8Puppi.variables += jetVarsForSys
 process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
 process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
 process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
 process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
-process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Puppi' )
-
+process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
+process.subjetKeysAK8Puppi = process.subjetKeysAK8.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 
 process.edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
@@ -685,7 +679,7 @@ if "MC" in options.DataProcessing:
       "keep LHERunInfoProduct_*_*_*"
       )
 
-  process.edmNtuplesOut.fileName=options.outputLabel
+process.edmNtuplesOut.fileName=options.outputLabel
 
 #process.edmNtuplesOut.SelectEvents = cms.untracked.PSet(
 #    SelectEvents = cms.vstring('filterPath')
@@ -699,4 +693,4 @@ if "MC" in options.DataProcessing:
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
