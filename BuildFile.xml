@@ -55,6 +55,7 @@
 <use   name="RecoJets/JetProducers"/>
 <use   name="JetMETCorrections/Algorithms"/>
 <use   name="JetMETCorrections/Objects"/>
+<use   name="JetMETCorrections/Modules"/>
 <use   name="RecoVertex/AdaptiveVertexFit"/>
 <use   name="RecoLocalCalo/EcalRecAlgos"/>
 <use   name="DataFormats/ParticleFlowCandidate"/>

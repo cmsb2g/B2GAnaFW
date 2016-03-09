@@ -524,6 +524,22 @@ jetVarsForSys = (
         quantity = cms.untracked.string("userFloat('jecUncertainty')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("PtResolution"),
+        quantity = cms.untracked.string("userFloat('PtResolution')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("ScaleFactor"),
+        quantity = cms.untracked.string("userFloat('ScaleFactor')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("ScaleFactorUp"),
+        quantity = cms.untracked.string("userFloat('ScaleFactorUp')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("ScaleFactorDown"),
+        quantity = cms.untracked.string("userFloat('ScaleFactorDown')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("SmearedPt"),
         quantity = cms.untracked.string("userFloat('SmearedPt')")
         ),
@@ -538,18 +554,6 @@ jetVarsForSys = (
     cms.PSet(
         tag = cms.untracked.string("SmearedE"),
         quantity = cms.untracked.string("userFloat('SmearedE')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("JER"),
-        quantity = cms.untracked.string("userFloat('JER')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("JERup"),
-        quantity = cms.untracked.string("userFloat('JERup')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("JERdown"),
-        quantity = cms.untracked.string("userFloat('JERdown')")
         ),
     )
 

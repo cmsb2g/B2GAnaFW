@@ -30,10 +30,11 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h" // gives access to the (release cycle dependent) trigger object codes
 #include "DataFormats/JetReco/interface/Jet.h"
 
-// JEC
+// JEC/JER
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
 
 #include <TFile.h>
 #include <TH1F.h>
@@ -56,34 +57,43 @@ class JetUserData : public edm::EDProducer {
   private:
     void produce( edm::Event &, const edm::EventSetup & );
     bool isMatchedWithTrigger(const pat::Jet&, trigger::TriggerObjectCollection,int&,double&,double);
-    double getResolutionRatio(double eta);
-    double getJERup(double eta);
-    double getJERdown(double eta);
 
     edm::EDGetTokenT<std::vector<pat::Jet> >     jetToken_;
 
     //InputTag jetLabel_;
     EDGetTokenT< std::vector< pat::Jet > > jLabel_;
+    EDGetTokenT<double> rhoLabel_;
+    bool getJERFromTxt_;
+    std::string jetCorrLabel_;
+    std::string jerLabel_;
+    std::string resolutionsFile_;
+    std::string scaleFactorsFile_;
     EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
     EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
     InputTag hltJetFilterLabel_;
     std::string hltPath_;
     double hlt2reco_deltaRmax_;
-    std::string jecCorrection_;
     HLTConfigProvider hltConfig;
     int triggerBit;
 };
 
 
 JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
-   jLabel_(consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))), 
-   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
-   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
+  jLabel_             (consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))), 
+  rhoLabel_           (consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))),
+  getJERFromTxt_      (iConfig.getParameter<bool>("getJERFromTxt")),
+  jetCorrLabel_       (iConfig.getParameter<std::string>("jetCorrLabel")),
+  triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
+  triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
   hltJetFilterLabel_  (iConfig.getParameter<edm::InputTag>("hltJetFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
-  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
-  jecCorrection_       (iConfig.getParameter<std::string>("jecCorrection"))
+  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax"))
 {
+  if (getJERFromTxt_) {
+    resolutionsFile_  = iConfig.getParameter<edm::FileInPath>("resolutionsFile").fullPath();
+    scaleFactorsFile_ = iConfig.getParameter<edm::FileInPath>("scaleFactorsFile").fullPath();
+  } else
+    jerLabel_         = iConfig.getParameter<std::string>("jerLabel");
   produces<vector<pat::Jet> >();
 }
 
@@ -164,9 +174,25 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   // JEC Uncertainty
   edm::ESHandle<JetCorrectorParametersCollection> JetCorrParColl;
-  iSetup.get<JetCorrectionsRecord>().get(jecCorrection_, JetCorrParColl); 
+  iSetup.get<JetCorrectionsRecord>().get(jetCorrLabel_, JetCorrParColl); 
   JetCorrectorParameters const & JetCorrPar = (*JetCorrParColl)["Uncertainty"];
-  JetCorrectionUncertainty *jecUnc = new JetCorrectionUncertainty(JetCorrPar);
+  JetCorrectionUncertainty jecUnc(JetCorrPar);
+
+  // JER
+  // Twiki: https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Scale_factors
+  // Recipe taken from: https://github.com/blinkseb/cmssw/blob/jer_fix_76x/JetMETCorrections/Modules/plugins/JetResolutionDemo.cc
+  edm::Handle<double> rho;
+  iEvent.getByToken(rhoLabel_, rho);
+  JME::JetParameters jetParam;
+  JME::JetResolution resolution;
+  JME::JetResolutionScaleFactor res_sf;
+  if (getJERFromTxt_) {
+    resolution = JME::JetResolution(resolutionsFile_);
+    res_sf = JME::JetResolutionScaleFactor(scaleFactorsFile_);
+  } else {
+    resolution = JME::JetResolution::get(iSetup, jerLabel_);
+    res_sf = JME::JetResolutionScaleFactor::get(iSetup, jerLabel_);
+  }
 
   for (size_t i = 0; i< jetColl->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
@@ -181,13 +207,25 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double hltPt  = ( isMatched2trigger ? JetLegObjects[0].pt()     : -999.);
     double hltE   = ( isMatched2trigger ? JetLegObjects[0].energy() : -999.);
 
+    // JEC uncertainty
+    jecUnc.setJetPt (jet.pt());
+    jecUnc.setJetEta(jet.eta());
+    double jecUncertainty = jecUnc.getUncertainty(true);
+
+    // JER
+    jetParam.setJetPt(jet.pt()).setJetEta(jet.eta()).setRho(*rho);
+    float PtResolution    = resolution.getResolution(jetParam);
+    float ScaleFactor     = res_sf.getScaleFactor(jetParam);
+    float ScaleFactorUp   = res_sf.getScaleFactor(jetParam, Variation::UP);
+    float ScaleFactorDown = res_sf.getScaleFactor(jetParam, Variation::DOWN);
+
     // SMEARING
     // http://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     reco::Candidate::LorentzVector smearedP4;
     if(isMC) {
       const reco::GenJet* genJet=jet.genJet();
       if(genJet) {
-        float smearFactor=getResolutionRatio(jet.eta());
+        float smearFactor=ScaleFactor;
         smearedP4=jet.p4()-genJet->p4();
         smearedP4*=smearFactor; // +- 3*smearFactorErr;
         smearedP4+=genJet->p4();
@@ -195,15 +233,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     } else {
       smearedP4=jet.p4();
     }
-    // JER
-    double JER = getResolutionRatio(jet.eta());
-    double JERup   = getJERup  (jet.eta());
-    double JERdown = getJERdown(jet.eta());
 
-    // JEC uncertainty
-    jecUnc->setJetEta(jet.eta());
-    jecUnc->setJetPt (jet.pt());
-    double jecUncertainty = jecUnc->getUncertainty(true);
     jet.addUserFloat("jecUncertainty",   jecUncertainty);
 
     jet.addUserFloat("HLTjetEta",   hltEta);
@@ -217,9 +247,10 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("SmearedPt",   smearedP4.pt());
     jet.addUserFloat("SmearedE",    smearedP4.energy());
 
-    jet.addUserFloat("JER",     JER);
-    jet.addUserFloat("JERup",   JERup);
-    jet.addUserFloat("JERdown", JERdown);
+    jet.addUserFloat("PtResolution",    PtResolution);
+    jet.addUserFloat("ScaleFactor",     ScaleFactor);
+    jet.addUserFloat("ScaleFactorUp",   ScaleFactorUp);
+    jet.addUserFloat("ScaleFactorDown", ScaleFactorDown);
 
 
     TLorentzVector jetp4 ; 
@@ -255,76 +286,6 @@ JetUserData::isMatchedWithTrigger(const pat::Jet& p, trigger::TriggerObjectColle
   }
   return false;
 }
-
-  double
-JetUserData::getResolutionRatio(double eta)
-{
-  eta=fabs(eta);
-  /*// 8TeV
-  if(eta>=0.0 && eta<0.5) return 1.079; // +-0.005 +-0.026 
-  if(eta>=0.5 && eta<1.1) return 1.099; // +-0.005 +-0.028 
-  if(eta>=1.1 && eta<1.7) return 1.121; // +-0.005 +-0.029 
-  if(eta>=1.7 && eta<2.3) return 1.208; // +-0.013 +-0.045 
-  if(eta>=2.3 && eta<2.8) return 1.254; // +-0.026 +-0.056 
-  if(eta>=2.8 && eta<3.2) return 1.395; // +-0.036 +-0.051 
-  if(eta>=3.2 && eta<5.0) return 1.056; // +-0.048 +-0.185 */
-  /// 13 TeV according to 76X recipe in: https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-  if(eta>=0.0 && eta<0.5) return 1.095; // +-0.018
-  if(eta>=0.5 && eta<0.8) return 1.120; // +-0.028
-  if(eta>=0.8 && eta<1.1) return 1.097; // +-0.017
-  if(eta>=1.1 && eta<1.3) return 1.103; // +-0.033
-  if(eta>=1.3 && eta<1.7) return 1.118; // +-0.014
-  if(eta>=1.7 && eta<1.9) return 1.100; // +-0.033
-  if(eta>=1.9 && eta<2.1) return 1.162; // +-0.044
-  if(eta>=2.1 && eta<2.3) return 1.160; // +-0.048
-  if(eta>=2.3 && eta<2.5) return 1.161; // +-0.060
-  if(eta>=2.5 && eta<2.8) return 1.209; // +-0.059
-  if(eta>=2.8 && eta<3.0) return 1.564; // +-0.321
-  if(eta>=3.0 && eta<3.2) return 1.384; // +-0.033
-  if(eta>=3.2 && eta<5.0) return 1.216; // +-0.050
-  return -1.;
-}
-
-  double
-JetUserData::getJERup(double eta)
-{
-  eta=fabs(eta);
-  if(eta>=0.0 && eta<0.5) return 1.113;
-  if(eta>=0.5 && eta<0.8) return 1.148;
-  if(eta>=0.8 && eta<1.1) return 1.114;
-  if(eta>=1.1 && eta<1.3) return 1.136;
-  if(eta>=1.3 && eta<1.7) return 1.132;
-  if(eta>=1.7 && eta<1.9) return 1.133;
-  if(eta>=1.9 && eta<2.1) return 1.206;
-  if(eta>=2.1 && eta<2.3) return 1.208;
-  if(eta>=2.3 && eta<2.5) return 1.221;
-  if(eta>=2.5 && eta<2.8) return 1.268;
-  if(eta>=2.8 && eta<3.0) return 1.885;
-  if(eta>=3.0 && eta<3.2) return 1.417;
-  if(eta>=3.2 && eta<5.0) return 1.266;
-  return -1.;  
-}
-
-  double
-JetUserData::getJERdown(double eta)
-{
-  eta=fabs(eta);
-  if(eta>=0.0 && eta<0.5) return 1.077;
-  if(eta>=0.5 && eta<0.8) return 1.092;
-  if(eta>=0.8 && eta<1.1) return 1.080;
-  if(eta>=1.1 && eta<1.3) return 1.070;
-  if(eta>=1.3 && eta<1.7) return 1.104;
-  if(eta>=1.7 && eta<1.9) return 1.067;
-  if(eta>=1.9 && eta<2.1) return 1.118;
-  if(eta>=2.1 && eta<2.3) return 1.112;
-  if(eta>=2.3 && eta<2.5) return 1.101;
-  if(eta>=2.5 && eta<2.8) return 1.150;
-  if(eta>=2.8 && eta<3.0) return 1.243;
-  if(eta>=3.0 && eta<3.2) return 1.351;
-  if(eta>=3.2 && eta<5.0) return 1.166;
-  return -1.;  
-}
-
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(JetUserData);
