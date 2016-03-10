@@ -214,10 +214,10 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     // JER
     jetParam.setJetPt(jet.pt()).setJetEta(jet.eta()).setRho(*rho);
-    float PtResolution    = resolution.getResolution(jetParam);
-    float ScaleFactor     = res_sf.getScaleFactor(jetParam);
-    float ScaleFactorUp   = res_sf.getScaleFactor(jetParam, Variation::UP);
-    float ScaleFactorDown = res_sf.getScaleFactor(jetParam, Variation::DOWN);
+    float PtResolution = resolution.getResolution(jetParam);
+    float JERSF        = res_sf.getScaleFactor(jetParam);
+    float JERSFUp      = res_sf.getScaleFactor(jetParam, Variation::UP);
+    float JERSFDown    = res_sf.getScaleFactor(jetParam, Variation::DOWN);
 
     // SMEARING
     // http://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
@@ -225,7 +225,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     if(isMC) {
       const reco::GenJet* genJet=jet.genJet();
       if(genJet) {
-        float smearFactor=ScaleFactor;
+        float smearFactor=JERSF;
         smearedP4=jet.p4()-genJet->p4();
         smearedP4*=smearFactor; // +- 3*smearFactorErr;
         smearedP4+=genJet->p4();
@@ -247,10 +247,10 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("SmearedPt",   smearedP4.pt());
     jet.addUserFloat("SmearedE",    smearedP4.energy());
 
-    jet.addUserFloat("PtResolution",    PtResolution);
-    jet.addUserFloat("ScaleFactor",     ScaleFactor);
-    jet.addUserFloat("ScaleFactorUp",   ScaleFactorUp);
-    jet.addUserFloat("ScaleFactorDown", ScaleFactorDown);
+    jet.addUserFloat("PtResolution", PtResolution);
+    jet.addUserFloat("JERSF",        JERSF);
+    jet.addUserFloat("JERSFUp",      JERSFUp);
+    jet.addUserFloat("JERSFDown",    JERSFDown);
 
 
     TLorentzVector jetp4 ; 

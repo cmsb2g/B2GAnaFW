@@ -528,16 +528,16 @@ jetVarsForSys = (
         quantity = cms.untracked.string("userFloat('PtResolution')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("ScaleFactor"),
-        quantity = cms.untracked.string("userFloat('ScaleFactor')")
+        tag = cms.untracked.string("JERSF"),
+        quantity = cms.untracked.string("userFloat('JERSF')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("ScaleFactorUp"),
-        quantity = cms.untracked.string("userFloat('ScaleFactorUp')")
+        tag = cms.untracked.string("JERSFUp"),
+        quantity = cms.untracked.string("userFloat('JERSFUp')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("ScaleFactorDown"),
-        quantity = cms.untracked.string("userFloat('ScaleFactorDown')")
+        tag = cms.untracked.string("JERSFDown"),
+        quantity = cms.untracked.string("userFloat('JERSFDown')")
         ),
     cms.PSet(
         tag = cms.untracked.string("SmearedPt"),
