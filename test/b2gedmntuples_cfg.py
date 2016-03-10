@@ -281,6 +281,16 @@ jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelNoHF	= 'selectedPatJetsAK4PFCHS'
 
+# JER Twiki:
+#   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Scale_factors
+# Get Latest txt files from:
+#   https://github.com/cms-jet/JRDatabase/tree/master/textFiles
+jetAlgo         = 'AK4PFchs'
+jetAlgoNoHF     = 'AK4PFchs'
+jetAlgoAK8      = 'AK8PFchs'
+jetAlgoAK8Puppi = 'AK8PFPuppi'
+if "Data" in options.DataProcessing: jerEra = "Fall15_25nsV2_DATA"
+elif "MC" in options.DataProcessing: jerEra = "Fall15_25nsV2_MC"
 
 
 ### ---------------------------------------------------------------------------
@@ -401,7 +411,13 @@ process.muonUserData = cms.EDProducer(
 
 process.jetUserData = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag(jLabel),
+    jetLabel          = cms.InputTag(jLabel),
+    rho               = cms.InputTag('fixedGridRhoAll'),
+    getJERFromTxt     = cms.bool(True),
+    jetCorrLabel      = cms.string(jetAlgo),
+    jerLabel          = cms.string(jetAlgo),
+    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgo+'.txt'),
+    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgo+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -410,11 +426,16 @@ process.jetUserData = cms.EDProducer(
     hlt2reco_deltaRmax = cms.double(0.2),
     )
 
-
 '''
 process.jetUserDataNoHF = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag(jLabelNoHF),
+    jetLabel          = cms.InputTag(jLabelNoHF),
+    rho               = cms.InputTag('fixedGridRhoAll'),
+    getJERFromTxt     = cms.bool(True),
+    jetCorrLabel      = cms.string(jetAlgoNoHF),
+    jerLabel          = cms.string(jetAlgoNoHF),
+    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoNoHF+'.txt'),
+    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoNoHF+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -426,8 +447,13 @@ process.jetUserDataNoHF = cms.EDProducer(
 
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag(jLabelAK8),
-    pv        = cms.InputTag(pvLabel),
+    jetLabel          = cms.InputTag(jLabelAK8),
+    rho               = cms.InputTag('fixedGridRhoAll'),
+    getJERFromTxt     = cms.bool(True),
+    jetCorrLabel      = cms.string(jetAlgoAK8),
+    jerLabel          = cms.string(jetAlgoAK8),
+    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoAK8+'.txt'),
+    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoAK8+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -445,8 +471,13 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
 )
 process.jetUserDataAK8Puppi = cms.EDProducer(
     'JetUserData',
-    jetLabel  = cms.InputTag( jLabelAK8Puppi ),
-    pv        = cms.InputTag(pvLabel),
+    jetLabel          = cms.InputTag( jLabelAK8Puppi ),
+    rho               = cms.InputTag('fixedGridRhoAll'),
+    getJERFromTxt     = cms.bool(True),
+    jetCorrLabel      = cms.string(jetAlgoAK8Puppi),
+    jerLabel          = cms.string(jetAlgoAK8Puppi),
+    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
+    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoAK8Puppi+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -462,17 +493,6 @@ process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
-
-
-process.boostedJetUserDataAK8Puppi = cms.EDProducer(
-    'BoostedJetToolboxUserData',
-    jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
-    distMax = cms.double(0.8)
-)
-
-
 
 process.electronUserData = cms.EDProducer(
     'ElectronUserData',
@@ -614,12 +634,13 @@ process.jetsAK8.variables += jetToolboxAK8Vars
 ### Puppi
 process.jetsAK8Puppi = copy.deepcopy(basic)
 process.jetsAK8Puppi.variables += jetVars
+process.jetsAK8Puppi.variables += jetVarsForSys
 process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
 process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
 process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
 process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
-process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'jetUserDataAK8Puppi' )
-
+process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
+process.subjetKeysAK8Puppi = process.subjetKeysAK8.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 
 process.edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
@@ -685,7 +706,7 @@ if "MC" in options.DataProcessing:
       "keep LHERunInfoProduct_*_*_*"
       )
 
-  process.edmNtuplesOut.fileName=options.outputLabel
+process.edmNtuplesOut.fileName=options.outputLabel
 
 #process.edmNtuplesOut.SelectEvents = cms.untracked.PSet(
 #    SelectEvents = cms.vstring('filterPath')
@@ -699,4 +720,4 @@ if "MC" in options.DataProcessing:
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
