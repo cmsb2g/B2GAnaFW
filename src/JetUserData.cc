@@ -30,6 +30,9 @@
 #include "DataFormats/HLTReco/interface/TriggerTypeDefs.h" // gives access to the (release cycle dependent) trigger object codes
 #include "DataFormats/JetReco/interface/Jet.h"
 
+// SVTagInfo
+#include "DataFormats/BTauReco/interface/SecondaryVertexTagInfo.h"
+
 // JEC/JER
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -47,6 +50,8 @@ using namespace reco;
 using namespace edm;
 using namespace std;
 using namespace trigger;
+
+#define DEBUG false
 
 typedef std::vector<pat::Jet> PatJetCollection;
 
@@ -73,8 +78,10 @@ class JetUserData : public edm::EDProducer {
     InputTag hltJetFilterLabel_;
     std::string hltPath_;
     double hlt2reco_deltaRmax_;
+    std::string candSVTagInfos_;
     HLTConfigProvider hltConfig;
     int triggerBit;
+
 };
 
 
@@ -87,7 +94,8 @@ JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
   hltJetFilterLabel_  (iConfig.getParameter<edm::InputTag>("hltJetFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
-  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax"))
+  hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
+  candSVTagInfos_         (iConfig.getParameter<std::string>("candSVTagInfos"))
 {
   if (getJERFromTxt_) {
     resolutionsFile_  = iConfig.getParameter<edm::FileInPath>("resolutionsFile").fullPath();
@@ -252,6 +260,42 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("JERSFUp",      JERSFUp);
     jet.addUserFloat("JERSFDown",    JERSFDown);
 
+    unsigned int nSV(0);
+    float SV0mass(-999), SV1mass(-999) ;
+
+    std::vector<std::string>tagInfoLabels = jet.tagInfoLabels() ;
+    bool hasCandSVTagInfo(jet.hasTagInfo(candSVTagInfos_)) ; 
+#if DEBUG
+    std::cout << " jetTagInfoLabels size = " << tagInfoLabels.size() << std::endl ; 
+    for (std::string tagInfoLabel : tagInfoLabels ) {
+      std::cout << ">>>> Jet has " << tagInfoLabel << std::endl ; 
+    }
+    std::cout << ">>>>>> candSVTagInfo label is " << candSVTagInfos_ << std::endl ; 
+    std::cout << " hasCandSVTagInfo = " << hasCandSVTagInfo << std::endl ; 
+#endif 
+
+    if ( jet.hasTagInfo(candSVTagInfos_) ) {
+      const reco::CandSecondaryVertexTagInfo *candSVTagInfo = jet.tagInfoCandSecondaryVertex("pfInclusiveSecondaryVertexFinder");
+#if DEBUG
+      if ( candSVTagInfo == nullptr ) std::cout << ">>>>>> candSVTagInfo ptr does not exist\n" ;
+      else std::cout << ">>>>>> candSVTagInfo ptr exists\n" ;
+#endif 
+      nSV = candSVTagInfo->nVertices() ; 
+      SV0mass = nSV > 0 ? ((candSVTagInfo->secondaryVertex(0)).p4()).mass() : -999 ;
+      SV1mass = nSV > 1 ? ((candSVTagInfo->secondaryVertex(1)).p4()).mass() : -999 ;
+      if ( nSV > 0 ) {
+#if DEBUG
+        std::cout << ">>>>> nSV = " << nSV 
+          << " SV0 mass = " << SV0mass 
+          << " SV1 mass = " << SV1mass 
+          << std::endl ; 
+#endif 
+      }
+    }
+
+    jet.addUserInt("nSV"     , nSV     ); 
+    jet.addUserFloat("SV0mass", SV0mass); 
+    jet.addUserFloat("SV1mass", SV1mass); 
 
     TLorentzVector jetp4 ; 
     jetp4.SetPtEtaPhiE(jet.pt(), jet.eta(), jet.phi(), jet.energy()) ; 
