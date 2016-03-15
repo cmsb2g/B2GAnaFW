@@ -264,17 +264,15 @@ listBtagDiscriminators = [
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 if "MC" in options.DataProcessing: 
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 else:
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-
-
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
