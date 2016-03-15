@@ -515,6 +515,18 @@ jetVars = (
         tag = cms.untracked.string("jetArea"),
         quantity = cms.untracked.string("jetArea")
         ),
+    cms.PSet(
+        tag = cms.untracked.string("nSV"),
+        quantity = cms.untracked.string("userInt('nSV')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SV0mass"),
+        quantity = cms.untracked.string("userFloat('SV0mass')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SV1mass"),
+        quantity = cms.untracked.string("userFloat('SV1mass')")
+        ),
     )
 
 #### FOR SYSTEMATICS
