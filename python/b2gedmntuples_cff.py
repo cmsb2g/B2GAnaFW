@@ -517,15 +517,15 @@ jetVars = (
         ),
     cms.PSet(
         tag = cms.untracked.string("nSV"),
-        quantity = cms.untracked.string("userInt('nSV')")
+        quantity = cms.untracked.string("? hasUserInt('nSV') ? userInt('nSV') : -999")
         ),
     cms.PSet(
         tag = cms.untracked.string("SV0mass"),
-        quantity = cms.untracked.string("userFloat('SV0mass')")
+        quantity = cms.untracked.string("? hasUserFloat('SV0mass') ? userFloat('SV0mass') : -999")
         ),
     cms.PSet(
         tag = cms.untracked.string("SV1mass"),
-        quantity = cms.untracked.string("userFloat('SV1mass')")
+        quantity = cms.untracked.string("? hasUserFloat('SV1mass') ? userFloat('SV1mass') : -999")
         ),
     )
 
