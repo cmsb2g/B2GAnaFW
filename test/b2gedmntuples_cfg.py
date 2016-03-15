@@ -44,12 +44,6 @@ options.register('DataProcessing',
     opts.VarParsing.varType.string,
     'Data processing types. Options are: Data25ns_76X or MC25ns_MiniAOD_76X or MC25ns_MiniAODv2_FastSim')
 
-options.register('lheLabel',
-    "",
-    opts.VarParsing.multiplicity.singleton,
-    opts.VarParsing.varType.string,
-    'LHE module label, MC sample specific. Can be: externalLHEProducer')
-
 ### Expert options, do not change.
 options.register('useNoHFMET',
     False,
@@ -99,10 +93,6 @@ else:
     options.globalTag="76X_dataRun2_v15"
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
-
-    if "Data" in options.DataProcessing:
-      print "!!!!WARNING: You have chosen to run over data. lheLabel will be unset.\n"
-  options.lheLabel = ""
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
@@ -252,6 +242,9 @@ if options.usePrivateSQLite:
 ### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetToolbox)
 ### ------------------------------------------------------------------
 from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+listBTagInfos = [
+     'pfInclusiveSecondaryVertexFinderTagInfos',
+     ]
 listBtagDiscriminators = [ 
 		'pfJetProbabilityBJetTags',
 		'pfCombinedInclusiveSecondaryVertexV2BJetTags',
@@ -264,17 +257,15 @@ listBtagDiscriminators = [
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 if "MC" in options.DataProcessing: 
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 else:
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-
-
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
@@ -424,6 +415,7 @@ process.jetUserData = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltPFHT"),
     hltPath            = cms.string("HLT_PFHT800"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
     )
 
 '''
@@ -442,6 +434,7 @@ process.jetUserDataNoHF = cms.EDProducer(
     hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
     hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
     hlt2reco_deltaRmax = cms.double(0.2),
+    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
     )
 '''
 
@@ -459,7 +452,8 @@ process.jetUserDataAK8 = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
     hltJetFilter       = cms.InputTag("hltAK8PFJetsTrimR0p1PT0p03"),
     hltPath            = cms.string("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50"),
-    hlt2reco_deltaRmax = cms.double(0.2)
+    hlt2reco_deltaRmax = cms.double(0.2), 
+    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
 )
 
 process.boostedJetUserDataAK8 = cms.EDProducer(
@@ -469,6 +463,7 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
 )
+
 process.jetUserDataAK8Puppi = cms.EDProducer(
     'JetUserData',
     jetLabel          = cms.InputTag( jLabelAK8Puppi ),
@@ -483,7 +478,8 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
     hltJetFilter       = cms.InputTag("hltAK8PFJetsTrimR0p1PT0p03"),
     hltPath            = cms.string("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50"),
-    hlt2reco_deltaRmax = cms.double(0.2)
+    hlt2reco_deltaRmax = cms.double(0.2), 
+    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
     )
 
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
@@ -688,14 +684,6 @@ if not "FastSim" in options.DataProcessing:
 if( options.useNoHFMET ):
   process.edmNtuplesOut.outputCommands+=('keep *_jetsAK4NoHF_*_*',)
 
-### keep info from LHEProducts if they are stored in PatTuples
-if(options.lheLabel != ""):
-  process.LHEUserData = cms.EDProducer("LHEUserData",
-      lheLabel = cms.InputTag(options.lheLabel)
-      )
-  #process.analysisPath+=process.LHEUserData
-  process.edmNtuplesOut.outputCommands+=('keep *_*LHE*_*_*',)
-
 if "MC" in options.DataProcessing: 
   process.edmNtuplesOut.outputCommands+=(
       'keep *_generator_*_*',
@@ -720,4 +708,4 @@ process.edmNtuplesOut.fileName=options.outputLabel
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+open('B2GEntupleFileDump.py','w').write(process.dumpPython())
