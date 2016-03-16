@@ -617,26 +617,14 @@ process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(Fa
 process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
 
 ### Including ntuplizer 
-process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 process.options.allowUnscheduled = cms.untracked.bool(True)
-from Analysis.B2GAnaFW.b2gedmntuples_cff import basic, jetVars, jetToolboxAK8Vars, jetToolboxAK8PuppiVars, jetVarsForSys
-process.subjetKeysAK8.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
-process.subjetsAK8.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
+process.subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+process.subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 process.subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
 process.subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
-process.jetsAK8.src = 'boostedJetUserDataAK8'
-process.jetsAK8.variables += jetToolboxAK8Vars
-
-### Puppi
-process.jetsAK8Puppi = copy.deepcopy(basic)
-process.jetsAK8Puppi.variables += jetVars
-process.jetsAK8Puppi.variables += jetVarsForSys
-process.jetsAK8Puppi.variables += jetToolboxAK8PuppiVars 
-process.jetsAK8Puppi.prefix = 'jetAK8Puppi'
+process.jetsAK8CHS.src = 'boostedJetUserDataAK8'
 process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
-process.subjetsAK8Puppi = process.subjetsAK8.clone( prefix = 'subjetAK8Puppi', src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
-process.jetKeysAK8Puppi = process.jetKeysAK8.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
-process.subjetKeysAK8Puppi = process.subjetKeysAK8.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 
 process.edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
