@@ -1,3 +1,4 @@
+<Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/>
 <use   name="FWCore/PluginManager"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/MessageLogger"/>
