@@ -281,8 +281,12 @@ jetVars = (
       quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
       ),
     cms.PSet(
-      tag = cms.untracked.string("DoubleB"),
+      tag = cms.untracked.string("DoubleBAK8"),
       quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBCA15"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
       ),
     cms.PSet(
       tag = cms.untracked.string("CMVAv2"),
@@ -652,86 +656,6 @@ genPartVars = (
 
 
 ### jet variables
-jetAK8Vars = (
-    #### SUBSTRUCTURE
-    cms.PSet(
-      tag = cms.untracked.string("DoubleBAK8"),
-      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("DoubleBCA15"),
-      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("vSubjetIndex0"),
-      quantity = cms.untracked.string("? subjets(0).size() > 0 ? subjets(0).at(0).key() : -1 ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("vSubjetIndex1"),
-      quantity = cms.untracked.string("? subjets(0).size() > 1 ? subjets(0).at(1).key() : -1  ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("topSubjetIndex0"),
-      quantity = cms.untracked.string("? subjets(1).size() > 0 ? subjets(1).at(0).key() : -1  ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("topSubjetIndex1"),
-      quantity = cms.untracked.string("? subjets(1).size() > 1 ? subjets(1).at(1).key() : -1  ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("topSubjetIndex2"),
-      quantity = cms.untracked.string("? subjets(1).size() > 2 ? subjets(1).at(2).key() : -1  ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("topSubjetIndex3"),
-      quantity = cms.untracked.string("? subjets(1).size() > 3 ? subjets(1).at(3).key() : -1  ")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("tau1"),
-      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("tau2"),
-      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("tau3"),
-      quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("softDropMass"),
-      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSSoftDropMass')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("trimmedMass"),
-      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("prunedMass"),
-      quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
-      ),
-    cms.PSet(
-        tag = cms.untracked.string("filteredMass"),
-        quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("topMass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().topMass : 0")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("wMass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().wMass : 0")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("nSubJets"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().nSubJets : 0")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("minmass"),
-        quantity = cms.untracked.string("? hasTagInfo('caTop') ? tagInfo('caTop').properties().minMass : 0")
-        ),
-    )
-
 jetToolboxAK8Vars = (
 #### SUBSTRUCTURE
      cms.PSet(
