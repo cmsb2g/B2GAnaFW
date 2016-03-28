@@ -264,8 +264,8 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     float SV0mass(-999), SV1mass(-999) ;
 
     std::vector<std::string>tagInfoLabels = jet.tagInfoLabels() ;
-    bool hasCandSVTagInfo(jet.hasTagInfo(candSVTagInfos_)) ; 
 #if DEBUG
+    bool hasCandSVTagInfo(jet.hasTagInfo(candSVTagInfos_)) ; 
     std::cout << " jetTagInfoLabels size = " << tagInfoLabels.size() << std::endl ; 
     for (std::string tagInfoLabel : tagInfoLabels ) {
       std::cout << ">>>> Jet has " << tagInfoLabel << std::endl ; 
