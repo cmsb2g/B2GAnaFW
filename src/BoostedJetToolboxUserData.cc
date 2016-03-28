@@ -52,7 +52,7 @@ class BoostedJetToolboxUserData : public edm::EDProducer {
 
 
     edm::EDGetTokenT<std::vector<pat::Jet> >     jToken_;
-    edm::EDGetTokenT<std::vector<pat::Jet> >     tToken_;
+    //edm::EDGetTokenT<std::vector<pat::Jet> >     tToken_;
     edm::EDGetTokenT<std::vector<pat::Jet> >     vToken_;
 
     double distMax_;
@@ -62,7 +62,7 @@ class BoostedJetToolboxUserData : public edm::EDProducer {
 
 BoostedJetToolboxUserData::BoostedJetToolboxUserData(const edm::ParameterSet& iConfig) :
   jToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("jetLabel") )),
-  tToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("topjetLabel")) ),
+  //tToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("topjetLabel")) ),
   vToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("vjetLabel")) ),
   distMax_            ( iConfig.getParameter<double>( "distMax" ) )
 {
@@ -72,9 +72,9 @@ BoostedJetToolboxUserData::BoostedJetToolboxUserData(const edm::ParameterSet& iC
 
 void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<std::vector<pat::Jet> > jetHandle, topjetHandle, vjetHandle;
+  edm::Handle<std::vector<pat::Jet> > jetHandle, vjetHandle; //topjetHandle
   iEvent.getByToken(jToken_, jetHandle);
-  iEvent.getByToken(tToken_, topjetHandle);
+  //iEvent.getByToken(tToken_, topjetHandle);
   iEvent.getByToken(vToken_, vjetHandle);
 
 
@@ -84,7 +84,7 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
   for (size_t i = 0; i< jetHandle->size(); i++){
     pat::Jet & jet = (*jetColl)[i];
 
-    for ( auto const & topJet : *topjetHandle ) {
+  /*  for ( auto const & topJet : *topjetHandle ) {
       float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),topJet.eta(),topJet.phi());
       if ( temp_dR2 < distMax_ ) {
 	int topSubjet0=-1, topSubjet1=-1, topSubjet2=-1, topSubjet3=-1;
@@ -103,7 +103,7 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
 	break;
       }
 
-    }
+    }*/
 
 
 

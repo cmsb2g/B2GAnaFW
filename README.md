@@ -18,7 +18,7 @@ cmsenv
  * Clone the github repository
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_6_X_V1
-git clone git@github.com:dmajumder/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
 ```

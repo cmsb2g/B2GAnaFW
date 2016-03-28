@@ -98,8 +98,8 @@ JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
   candSVTagInfos_         (iConfig.getParameter<std::string>("candSVTagInfos"))
 {
   if (getJERFromTxt_) {
-    resolutionsFile_  = iConfig.getParameter<edm::FileInPath>("resolutionsFile").fullPath();
-    scaleFactorsFile_ = iConfig.getParameter<edm::FileInPath>("scaleFactorsFile").fullPath();
+    resolutionsFile_  = iConfig.getParameter<std::string>("resolutionsFile");
+    scaleFactorsFile_ = iConfig.getParameter<std::string>("scaleFactorsFile");
   } else
     jerLabel_         = iConfig.getParameter<std::string>("jerLabel");
   produces<vector<pat::Jet> >();
