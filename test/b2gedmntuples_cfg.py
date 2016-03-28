@@ -254,25 +254,21 @@ listBtagDiscriminators = [
 		'pfCombinedCvsBJetTags'
 		]
 
+if "Data" in options.DataProcessing: 
+	jerEra = "Fall15_25nsV2_DATA"
+	runMC = False
+elif "MC" in options.DataProcessing: 
+	jerEra = "Fall15_25nsV2_MC"
+	runMC = True
+
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
-if "MC" in options.DataProcessing: 
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-else:
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
-jLabelNoHF	= 'selectedPatJetsAK4PFCHS'
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelPuppi	= 'selectedPatJetsAK4PFPuppi'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
@@ -283,11 +279,8 @@ jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 #   https://github.com/cms-jet/JRDatabase/tree/master/textFiles
 jetAlgo         = 'AK4PFchs'
 jetAlgoPuppi    = 'AK4PFPuppi'
-jetAlgoNoHF     = 'AK4PFchs'
 jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
-if "Data" in options.DataProcessing: jerEra = "Fall15_25nsV2_DATA"
-elif "MC" in options.DataProcessing: jerEra = "Fall15_25nsV2_MC"
 
 
 ### ---------------------------------------------------------------------------
@@ -442,25 +435,6 @@ process.jetUserDataPuppi = cms.EDProducer(
     candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
     )
 
-'''
-process.jetUserDataNoHF = cms.EDProducer(
-    'JetUserData',
-    jetLabel          = cms.InputTag(jLabelNoHF),
-    rho               = cms.InputTag('fixedGridRhoAll'),
-    getJERFromTxt     = cms.bool(True),
-    jetCorrLabel      = cms.string(jetAlgoNoHF),
-    jerLabel          = cms.string(jetAlgoNoHF),
-    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoNoHF+'.txt'),
-    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoNoHF+'.txt'),
-    ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
-    hltJetFilter       = cms.InputTag("hltSixCenJet20L1FastJet"),
-    hltPath            = cms.string("HLT_QuadJet60_DiJet20_v6"),
-    hlt2reco_deltaRmax = cms.double(0.2),
-    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
-    )
-'''
 
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
@@ -483,7 +457,7 @@ process.jetUserDataAK8 = cms.EDProducer(
 process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8'),
-    topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
+    #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
 )
@@ -664,11 +638,9 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_METUserData*_trigger*_*",
     "keep *_eventInfo_*_*",
     "keep *_subjetsAK8*_*_*",
-    "keep *_subjetsCmsTopTag*_*_*",
     "keep *_jetKeysAK4*_*_*",
     "keep *_jetKeysAK8*_*_*",
     "keep *_subjetKeysAK8*_*_*",
-    "keep *_subjetsCmsTopTagKeys*_*_*",
     "keep *_electronKeys_*_*",   
     "keep *_photonKeys_*_*",   
     "keep *_muonKeys_*_*",
