@@ -25,8 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
-     '/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06C089EF-2FCC-E511-9946-1CC1DE1CF69A.root',
+     '/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
+     #'/store/mc/RunIIFall15MiniAODv2/RPVStopStopToJets_UDD312_M-120_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/50000/06C089EF-2FCC-E511-9946-1CC1DE1CF69A.root',
 		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
@@ -257,26 +257,32 @@ listBtagDiscriminators = [
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 if "MC" in options.DataProcessing: 
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', PUMethod='Puppi', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 else:
-	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
-	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, GetJetMCFlavour=True, GetSubjetMCFlavour=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
+	jetToolbox( process, 'ca8', 'analysisPath', 'edmNtuplesOut', runOnMC=False, PUMethod='Puppi', addCMSTopTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak8Cut )
 
-jLabelAK8	= 'selectedPatJetsAK8PFCHS'
-jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelNoHF	= 'selectedPatJetsAK4PFCHS'
+jLabelAK8	= 'selectedPatJetsAK8PFCHS'
+jLabelPuppi	= 'selectedPatJetsAK4PFPuppi'
+jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 
 # JER Twiki:
 #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Scale_factors
 # Get Latest txt files from:
 #   https://github.com/cms-jet/JRDatabase/tree/master/textFiles
 jetAlgo         = 'AK4PFchs'
+jetAlgoPuppi    = 'AK4PFPuppi'
 jetAlgoNoHF     = 'AK4PFchs'
 jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
@@ -407,8 +413,26 @@ process.jetUserData = cms.EDProducer(
     getJERFromTxt     = cms.bool(True),
     jetCorrLabel      = cms.string(jetAlgo),
     jerLabel          = cms.string(jetAlgo),
-    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgo+'.txt'),
-    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgo+'.txt'),
+    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgo+'.txt'),
+    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgo+'.txt'),
+    ### TTRIGGER ###
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    hltJetFilter       = cms.InputTag("hltPFHT"),
+    hltPath            = cms.string("HLT_PFHT800"),
+    hlt2reco_deltaRmax = cms.double(0.2),
+    candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
+    )
+
+process.jetUserDataPuppi = cms.EDProducer(
+    'JetUserData',
+    jetLabel          = cms.InputTag(jLabelPuppi),
+    rho               = cms.InputTag('fixedGridRhoAll'),
+    getJERFromTxt     = cms.bool(True),
+    jetCorrLabel      = cms.string(jetAlgoPuppi),
+    jerLabel          = cms.string(jetAlgoPuppi),
+    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoPuppi+'.txt'),
+    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoPuppi+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -426,8 +450,8 @@ process.jetUserDataNoHF = cms.EDProducer(
     getJERFromTxt     = cms.bool(True),
     jetCorrLabel      = cms.string(jetAlgoNoHF),
     jerLabel          = cms.string(jetAlgoNoHF),
-    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoNoHF+'.txt'),
-    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoNoHF+'.txt'),
+    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoNoHF+'.txt'),
+    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoNoHF+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -445,8 +469,8 @@ process.jetUserDataAK8 = cms.EDProducer(
     getJERFromTxt     = cms.bool(True),
     jetCorrLabel      = cms.string(jetAlgoAK8),
     jerLabel          = cms.string(jetAlgoAK8),
-    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoAK8+'.txt'),
-    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoAK8+'.txt'),
+    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoAK8+'.txt'),
+    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoAK8+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -471,8 +495,8 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     getJERFromTxt     = cms.bool(True),
     jetCorrLabel      = cms.string(jetAlgoAK8Puppi),
     jerLabel          = cms.string(jetAlgoAK8Puppi),
-    resolutionsFile   = cms.FileInPath(jerEra+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
-    scaleFactorsFile  = cms.FileInPath(jerEra+'_SF_'+jetAlgoAK8Puppi+'.txt'),
+    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
+    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoAK8Puppi+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -485,7 +509,7 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
+    topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
@@ -619,12 +643,6 @@ process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFil
 ### Including ntuplizer 
 process.options.allowUnscheduled = cms.untracked.bool(True)
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
-process.subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
-process.subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
-process.subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
-process.subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
-process.jetsAK8CHS.src = 'boostedJetUserDataAK8'
-process.jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
 
 process.edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
@@ -636,7 +654,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_electrons_*_*",
     "keep *_photons_*_*",
     "keep *_photonjets_*_*",
-    "keep *_jetsAK4_*_*",
+    "keep *_jetsAK4*_*_*",
     "keep *_jetsAK8*_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
@@ -646,10 +664,10 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_eventInfo_*_*",
     "keep *_subjetsAK8*_*_*",
     "keep *_subjetsCmsTopTag*_*_*",
-    "keep *_jetKeysAK4_*_*",
+    "keep *_jetKeysAK4*_*_*",
     "keep *_jetKeysAK8*_*_*",
     "keep *_subjetKeysAK8*_*_*",
-    "keep *_subjetsCmsTopTagKeys_*_*",
+    "keep *_subjetsCmsTopTagKeys*_*_*",
     "keep *_electronKeys_*_*",   
     "keep *_photonKeys_*_*",   
     "keep *_muonKeys_*_*",
@@ -676,8 +694,8 @@ if "MC" in options.DataProcessing:
   process.edmNtuplesOut.outputCommands+=(
       'keep *_generator_*_*',
       "keep *_genPart_*_*",
-      "keep *_genJetsAK8_*_*",
-      "keep *_genJetsAK8SoftDrop_*_*",
+      "keep *_genJetsAK8*_*_*",
+      "keep *_genJetsAK8SoftDrop*_*_*",
       "keep LHEEventProduct_*_*_*",
       "keep LHERunInfoProduct_*_*_*"
       )
@@ -696,4 +714,4 @@ process.edmNtuplesOut.fileName=options.outputLabel
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+#open('B2GEntupleFileDump.py','w').write(process.dumpPython())

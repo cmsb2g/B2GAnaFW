@@ -591,7 +591,7 @@ jetVarsJEC = (
 
 jetKeys = cms.EDProducer(
     "JetKeyProducer",
-    jetLabel = cms.InputTag("ak4PFJetsCHS")
+    jetLabel = cms.InputTag("jetUserData")
     )
 electronKeys = cms.EDProducer(
     "SourceKeyProducer",
@@ -1149,11 +1149,22 @@ jetKeysAK4 = copy.deepcopy( jetKeys )
 jetKeysAK4.jetLabel = cms.InputTag("jetUserData")
 
 ###jets no HF if needed
+'''
 jetsAK4NoHF = copy.deepcopy(basic)
 jetsAK4NoHF.variables += jetVarsJEC
 jetsAK4NoHF.variables += qglVars
 jetsAK4NoHF.prefix = cms.untracked.string("jetAK4NoHF")
 jetsAK4NoHF.src = cms.InputTag("jetUserDataNoHF")
+'''
+
+###jets with Puppi
+jetsAK4Puppi = copy.deepcopy(basic)
+jetsAK4Puppi.variables += jetVars
+jetsAK4Puppi.variables += jetVarsForSys
+jetsAK4Puppi.prefix = cms.untracked.string("jetAK4Puppi")
+jetsAK4Puppi.src = cms.InputTag("jetUserDataPuppi")
+jetKeysAK4Puppi = copy.deepcopy( jetKeys )
+jetKeysAK4Puppi.jetLabel = cms.InputTag("jetUserDataPuppi")
 
 ###AK8 jets with CHS
 jetsAK8CHS = copy.deepcopy(basic)
@@ -1161,9 +1172,9 @@ jetsAK8CHS.variables += jetVars
 jetsAK8CHS.variables += jetVarsForSys
 jetsAK8CHS.variables += jetToolboxAK8Vars
 jetsAK8CHS.prefix = cms.untracked.string("jetAK8CHS")
-jetsAK8CHS.src = cms.InputTag("jetUserDataAK8")
+jetsAK8CHS.src = cms.InputTag("boostedJetUserDataAK8")
 jetKeysAK8CHS = copy.deepcopy( jetKeys )
-jetKeysAK8CHS.jetLabel = cms.InputTag("jetUserDataAK8")
+jetKeysAK8CHS.jetLabel = cms.InputTag("boostedJetUserDataAK8")
 
 ### AK8 jets with Puppi
 jetsAK8Puppi = copy.deepcopy(basic)
@@ -1178,23 +1189,29 @@ jetKeysAK8Puppi = jetKeysAK8CHS.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
 subjetsAK8CHS = copy.deepcopy(basic)
 subjetsAK8CHS.variables += jetVars
 subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")
-subjetsAK8CHS.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
+subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 subjetKeysAK8CHS = copy.deepcopy( jetKeys )
-subjetKeysAK8CHS.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
+subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8Puppi
-subjetsAK8Puppi = subjetsAK8CHS.clone( prefix = 'subjetAK8Puppi', 
-    src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") 
-    )
+subjetsAK8Puppi = subjetsAK8CHS.clone( 
+		prefix = 'subjetAK8Puppi', 
+		src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 subjetKeysAK8Puppi = subjetKeysAK8CHS.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 
 ###subjetsAK8 CMSTopTag
 subjetsCmsTopTag = copy.deepcopy(basic)
 subjetsCmsTopTag.variables += jetVars
 subjetsCmsTopTag.prefix = cms.untracked.string("subjetCmsTopTag")
-subjetsCmsTopTag.src = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
+subjetsCmsTopTag.src = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
 subjetsCmsTopTagKeys = copy.deepcopy( jetKeys )
-subjetsCmsTopTagKeys.jetLabel = cms.InputTag("slimmedJetsCMSTopTagCHSPacked", "SubJets")
+subjetsCmsTopTagKeys.jetLabel = cms.InputTag("patJetsCMSTopTagCHSPacked", "SubJets")
+
+###subjetsAK8 CMSTopTag
+subjetsCmsTopTagPuppi = subjetsCmsTopTag.clone( 
+		prefix = "subjetCmsTopTagPuppi",
+		src = cms.InputTag("patJetsCMSTopTagPuppiPacked", "SubJets") )
+subjetsKeysCmsTopTagPuppiKeys = subjetsCmsTopTagKeys.clone( jetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked', "SubJets") )
 
 ###genPart
 genPart = copy.deepcopy(basic)
