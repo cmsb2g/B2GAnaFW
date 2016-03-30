@@ -239,6 +239,16 @@ if options.usePrivateSQLite:
 
 
 ### ------------------------------------------------------------------
+### Puppi
+### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/PUPPI)
+### ------------------------------------------------------------------
+process.load('CommonTools/PileupAlgos/Puppi_cff')
+process.puppi.candName = cms.InputTag('packedPFCandidates')
+process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
+process.puppiOnTheFly = process.puppi.clone()
+#process.puppiOnTheFly.useExistingWeights = True
+
+### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
 ### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetToolbox)
 ### ------------------------------------------------------------------
@@ -265,9 +275,9 @@ elif "MC" in options.DataProcessing:
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
@@ -485,7 +495,7 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
+    #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
