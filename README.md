@@ -4,8 +4,9 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This version is used to produced B2G EDMNtuples for 76X samples, storing jet SV mass. Needs modified version of JetToolBox, see below:
-N.B.: NOT stable version, testing phase.
+This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.0'':
+- SV mass stored
+- CMSTopTagger not supported any more.
 
 ## Instructions
 
@@ -17,8 +18,8 @@ cmsenv
 ```
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_7_6_X_V1
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b -b v7.6.x_v1.1
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763_v01
 ```
  * Compile
 ```
