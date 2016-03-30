@@ -484,7 +484,7 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
+    #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
