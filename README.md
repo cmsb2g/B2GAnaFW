@@ -16,6 +16,13 @@ cmsrel CMSSW_7_6_3_patch2
 cd CMSSW_7_6_3_patch2/src
 cmsenv
 ```
+ * Some temporary additional fixes for b-taging (only for CMSSW_7_6_3):
+```
+git cms-init
+git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
+git fetch --tags btv-cmssw
+git cms-merge-topic cms-btv-pog:fixTMVAEvaluatorMemoryProblem-from-CMSSW_7_6_3 
+```
  * Clone the github repository
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v1.1
