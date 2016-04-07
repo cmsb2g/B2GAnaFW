@@ -4,9 +4,9 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.0'':
-- SV mass stored
-- CMSTopTagger not supported any more.
+This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.1'':
+- No code change since tag ``v7.6.x_v1.1''
+- Adding instructions for checking out extra CMSSW packages required to run BTagInfos
 
 ## Instructions
 
