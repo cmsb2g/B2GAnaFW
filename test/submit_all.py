@@ -48,6 +48,9 @@ def getOptions() :
     parser.add_option("-s", "--storageSite", dest="storageSite", #default="T3_US_FNALLPC",
         help=("B2GAnaFW version"),
         metavar="VERSION")
+    parser.add_option("-o", "--outLFNDirBase", dest="outLFNDirBase", 
+        help=("B2GAnaFW version"),
+        metavar="LFN")
     (options, args) = parser.parse_args()
 
 
@@ -82,11 +85,13 @@ def main():
     config.section_("Data")
     config.Data.inputDataset = None
     config.Data.splitting = ''
-    config.Data.unitsPerJob = 1
+    config.Data.unitsPerJob = 5
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
     config.Data.outputDatasetTag = options.version
+    if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
+      config.Data.outLFNDirBase = options.outLFNDirBase
     
     config.section_("Site")
     config.Site.storageSite = options.storageSite
