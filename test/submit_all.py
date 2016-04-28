@@ -85,7 +85,7 @@ def main():
     config.section_("Data")
     config.Data.inputDataset = None
     config.Data.splitting = ''
-    config.Data.unitsPerJob = 5
+    config.Data.unitsPerJob = 1
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
@@ -125,7 +125,9 @@ def main():
         ptbin = job.split('/')[1]
         cond = job.split('/')[2]
         datatier = job.split('/')[3]
-        config.General.requestName = ptbin + '_' + cond
+        requestname = ptbin + '_' + cond
+        if len(requestname) > 100: requestname = ''.join((requestname[:100-len(requestname)]).split('_')[:-1])
+        config.General.requestName = requestname
         config.Data.inputDataset = job
         if datatier == 'MINIAODSIM': 
           config.Data.splitting = 'FileBased'
