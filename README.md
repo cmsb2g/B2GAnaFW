@@ -4,9 +4,10 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.1'':
-- No code change since tag ``v7.6.x_v1.1''
-- Adding instructions for checking out extra CMSSW packages required to run BTagInfos
+This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.3'':
+- No code change since tag ``v7.6.x_v1.2''
+- Bugfix in JMEAnalysis/JetToolbox
+- New tag created for NTuple version
 
 ## Instructions
 
@@ -25,7 +26,7 @@ git cms-merge-topic cms-btv-pog:fixTMVAEvaluatorMemoryProblem-from-CMSSW_7_6_3
 ```
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v1.2
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v1.3
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
