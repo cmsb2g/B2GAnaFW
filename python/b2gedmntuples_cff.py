@@ -712,6 +712,93 @@ jetToolboxAK8Vars = (
         ),
 )
 
+
+### jet variables
+jetToolboxAK8SubjetVars = (
+#### SUBSTRUCTURE
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex0"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex1"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex2"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex3"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
+#        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFCHSSoftDropSubjets:tau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFCHSSoftDropSubjets:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFCHSSoftDropSubjets:tau3')")
+        )
+)
+
+
+### jet variables
+jetToolboxAK8SubjetPuppiVars = (
+#### SUBSTRUCTURE
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex0"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex1"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex2"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("topSubjetIndex3"),
+#        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
+#        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFPuppiSoftDropSubjets:tau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFPuppiSoftDropSubjets:tau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3"),
+        quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFPuppiSoftDropSubjets:tau3')")
+        )
+)
+
+
+
+
 jetToolboxAK8PuppiVars = (
 #### SUBSTRUCTURE
      cms.PSet(
@@ -1088,15 +1175,19 @@ jetKeysAK8Puppi = jetKeysAK8CHS.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
 ###subjetsAK8 with CHS
 subjetsAK8CHS = copy.deepcopy(basic)
 subjetsAK8CHS.variables += jetVars
+subjetsAK8CHS.variables += jetToolboxAK8SubjetVars
 subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")
 subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 subjetKeysAK8CHS = copy.deepcopy( jetKeys )
 subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8Puppi
-subjetsAK8Puppi = subjetsAK8CHS.clone( 
-		prefix = 'subjetAK8Puppi', 
-		src = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
+subjetsAK8Puppi = copy.deepcopy(basic)
+subjetsAK8Puppi.variables += jetVars
+subjetsAK8Puppi.variables += jetToolboxAK8SubjetPuppiVars
+subjetsAK8Puppi.prefix = cms.untracked.string("subjetAK8Puppi")
+subjetsAK8Puppi.src = cms.InputTag("selectedPatJetsAK8PFPuppiSoftDropPacked", "SubJets")
+subjetKeysAK8Puppi = copy.deepcopy( jetKeys )
 subjetKeysAK8Puppi = subjetKeysAK8CHS.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
 
 

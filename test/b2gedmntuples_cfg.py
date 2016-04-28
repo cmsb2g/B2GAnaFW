@@ -40,7 +40,7 @@ options.register('outputLabel',
     'Output label')
 
 options.register('DataProcessing',
-    "",
+    '',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
     'Data processing types. Options are: Data25ns_76X or MC25ns_MiniAOD_76X or MC25ns_MiniAODv2_FastSim')
@@ -276,8 +276,9 @@ ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+# Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
