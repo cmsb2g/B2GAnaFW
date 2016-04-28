@@ -680,7 +680,7 @@ if "MC" in options.DataProcessing:
       'keep *_generator_*_*',
       "keep *_genPart_*_*",
       "keep *_genJetsAK8*_*_*",
-      "keep *_genJetsAK8SoftDrop*_*_*",
+      "keep *_genJetsAK8SoftDrop*_*_*",      
       "keep LHEEventProduct_*_*_*",
       "keep LHERunInfoProduct_*_*_*"
       )

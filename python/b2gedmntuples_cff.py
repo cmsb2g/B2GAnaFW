@@ -1172,13 +1172,14 @@ jetsAK8Puppi.prefix = 'jetAK8Puppi'
 jetsAK8Puppi.src = cms.InputTag( 'boostedJetUserDataAK8Puppi' )
 jetKeysAK8Puppi = jetKeysAK8CHS.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
 
-###subjetsAK8 with CHS
-subjetsAK8CHS = copy.deepcopy(basic)
-subjetsAK8CHS.variables += jetVars
-subjetsAK8CHS.variables += jetToolboxAK8SubjetVars
-subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")
-subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
-subjetKeysAK8CHS = copy.deepcopy( jetKeys )
+
+###subjetsAK8 with CHS		
+subjetsAK8CHS = copy.deepcopy(basic)		
+subjetsAK8CHS.variables += jetVars		
+subjetsAK8CHS.variables += jetToolboxAK8SubjetVars		
+subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")		
+subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")		
+subjetKeysAK8CHS = copy.deepcopy( jetKeys )		
 subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8Puppi
@@ -1188,7 +1189,7 @@ subjetsAK8Puppi.variables += jetToolboxAK8SubjetPuppiVars
 subjetsAK8Puppi.prefix = cms.untracked.string("subjetAK8Puppi")
 subjetsAK8Puppi.src = cms.InputTag("selectedPatJetsAK8PFPuppiSoftDropPacked", "SubJets")
 subjetKeysAK8Puppi = copy.deepcopy( jetKeys )
-subjetKeysAK8Puppi = subjetKeysAK8CHS.clone( jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets") )
+subjetKeysAK8Puppi.jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked', "SubJets")
 
 
 ###genPart
@@ -1206,6 +1207,12 @@ genJetsAK8.src = cms.InputTag("ak8GenJetsNoNu")
 genJetsAK8SoftDrop = copy.deepcopy(basic)
 genJetsAK8SoftDrop.prefix = cms.untracked.string("genJetsAK8SoftDrop")
 genJetsAK8SoftDrop.src = cms.InputTag("ak8GenJetsNoNuSoftDrop")
+
+###genJetsAK8 subjets
+genJetsAK8SoftDropSubjets = copy.deepcopy(basic)
+genJetsAK8SoftDropSubjets.prefix = cms.untracked.string("genJetsAK8SoftDropSubJets")
+genJetsAK8SoftDropSubjets.src = cms.InputTag("ak8GenJetsNoNuSoftDrop", "SubJets")
+
 
 ###event variables
 eventShapeVar = (
