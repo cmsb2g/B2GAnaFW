@@ -25,7 +25,7 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-    '/store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/70000/002ABFCA-A0B9-E511-B9BA-0CC47A57CD6A.root', 
+    '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v3/60000/00181849-176A-E511-8B11-848F69FD4C94.root', 
      #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
      #'/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
 		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
@@ -43,7 +43,7 @@ options.register('DataProcessing',
     '',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
-    'Data processing types. Options are: Data25ns_76X or MC25ns_MiniAOD_76X or MC25ns_MiniAODv2_FastSim')
+    'Data processing types. Options are: Data_80X or MC_MiniAODv2_80X')
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
@@ -53,7 +53,7 @@ options.register('useNoHFMET',
     'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-    True,
+    False,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Take Corrections from private SQL file')
@@ -82,18 +82,18 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X or MC_MiniAODv2_80X.\n")
 
 
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="MC25ns_MiniAOD_76X":
-    options.globalTag="76X_mcRun2_asymptotic_v12"
-  elif options.DataProcessing=="Data25ns_76X":
-    options.globalTag="76X_dataRun2_v15"
+  if options.DataProcessing=="MC_MiniAODv2_80X":
+    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2"
+  elif options.DataProcessing=="Data_80X":
+    options.globalTag="80X_dataRun2_Prompt_v8"
   else:
-    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
+    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X or MC_MiniAODv2_80X.\n")
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
@@ -118,8 +118,8 @@ hltMuonFilterLabel     	= "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFilt
 hltPathLabel           	= "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel 	= "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if(options.DataProcessing in [ "Data25ns_PromptRecov4","Data25ns_ReReco", "Data25ns_76X" ]): metProcess = "RECO"
-else: metProcess = "PAT"
+if(options.DataProcessing in [ "Data_80X","MC_MiniAODv2_80X" ]): metProcess = "PAT"
+else: metProcess = "RECO"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
