@@ -25,7 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-    '/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v3/60000/00181849-176A-E511-8B11-848F69FD4C94.root', 
+                 'file:00181849-176A-E511-8B11-848F69FD4C94.root',
+    #'/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v3/60000/00181849-176A-E511-8B11-848F69FD4C94.root', 
      #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
      #'/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
 		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
@@ -355,6 +356,8 @@ if ("Data" in options.DataProcessing and  options.forceResiduals):
 
 ### Selected leptons and jets
 
+### Check PackedCandidate vertex to make sure there is one
+process.chs.cut = 'vertexRef.isNonnull() && fromPV()'
 
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
