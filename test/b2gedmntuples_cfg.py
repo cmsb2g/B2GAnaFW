@@ -25,7 +25,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-                 'file:00181849-176A-E511-8B11-848F69FD4C94.root',
+#                 'file:00181849-176A-E511-8B11-848F69FD4C94.root',
+'/store/mc/RunIISpring16MiniAODv2/TprimeBToTH_M-1800_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/70000/E639441D-AD25-E611-93E2-B499BAABD482.root',
     #'/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v3/60000/00181849-176A-E511-8B11-848F69FD4C94.root', 
      #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
      #'/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
@@ -246,8 +247,9 @@ if options.usePrivateSQLite:
 process.load('CommonTools/PileupAlgos/Puppi_cff')
 process.puppi.candName = cms.InputTag('packedPFCandidates')
 process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
+process.puppi.useExistingWeights = cms.bool(True)
 process.puppiOnTheFly = process.puppi.clone()
-#process.puppiOnTheFly.useExistingWeights = True
+process.puppiOnTheFly.useExistingWeights = True
 
 ### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
