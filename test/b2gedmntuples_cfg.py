@@ -25,9 +25,9 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-    '/store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/70000/002ABFCA-A0B9-E511-B9BA-0CC47A57CD6A.root', 
+     #'/store/mc/RunIIFall15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/70000/002ABFCA-A0B9-E511-B9BA-0CC47A57CD6A.root', 
      #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
-     #'/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
+     '/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
 		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
@@ -245,8 +245,7 @@ if options.usePrivateSQLite:
 process.load('CommonTools/PileupAlgos/Puppi_cff')
 process.puppi.candName = cms.InputTag('packedPFCandidates')
 process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
-process.puppiOnTheFly = process.puppi.clone()
-#process.puppiOnTheFly.useExistingWeights = True
+process.puppi.useExistingWeights = cms.bool(True)
 
 ### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
@@ -275,9 +274,9 @@ elif "MC" in options.DataProcessing:
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppiOnTheFly', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
 # Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
