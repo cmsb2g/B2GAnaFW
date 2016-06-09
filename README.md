@@ -12,20 +12,17 @@ This is a prroduction version of the B2G EDMNtuples. Updates since last producti
 
  * Make a new CMSSW area:
 ```
-cmsrel CMSSW_7_6_3_patch2
-cd CMSSW_7_6_3_patch2/src
+setenv SCRAM_ARCH slc6_amd64_gcc530
+cmsrel CMSSW_8_0_10_patch2
+cd CMSSW_8_0_10_patch2/src
 cmsenv
 ```
- * Some temporary additional fixes for b-taging (only for CMSSW_7_6_3):
+ * Temporary checkouts?:
 ```
-git cms-init
-git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
-git fetch --tags btv-cmssw
-git cms-merge-topic cms-btv-pog:fixTMVAEvaluatorMemoryProblem-from-CMSSW_7_6_3 
 ```
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v7.6.x_v2.0
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V1
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
@@ -53,6 +50,6 @@ To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to s
 
 Example usage: 
 
-ython submit_all.py -f CRAB/tosubmit.txt -s T2_CH_CERN -i Fall15_25nsV2_MC.db -p "DataProcessing=MC25ns_MiniAOD_76X" -o "/store/group/phys_b2g/B2GAnaFW_76X_V2p0" -d  B2GEDMNTuples_76X_V2p0
+python submit_all.py -c b2gedmntuples_cfg.py -f <your_dataset_file> -s "T3_US_FNALLPC" -p "DataProcessing=MC_MiniAODv2_80X" -d B2GEDMNTuples_80x_V1p0 -o "/store/group/lpctlbsm/B2GAnaFW_80X_V1p0" -v RunIISpring16MiniAODv2_B2GAnaFW_80x_V1p0 -i Summer15_25nsV7_DATA.db
 
 See all options with 'python submit_all.py --help'
