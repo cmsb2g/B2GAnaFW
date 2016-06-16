@@ -70,6 +70,31 @@ def main():
     from CRABAPI.RawCommand import crabCommand
     from httplib import HTTPException
 
+
+    #Always need the JEC text files. Don't list them over and over.
+    
+
+    jecfiles = [
+        'Fall15_25nsV2_DATA_PtResolution_AK4PFPuppi.txt',
+        'Fall15_25nsV2_DATA_PtResolution_AK4PFchs.txt',
+        'Fall15_25nsV2_DATA_PtResolution_AK8PFPuppi.txt',
+        'Fall15_25nsV2_DATA_PtResolution_AK8PFchs.txt',
+        'Fall15_25nsV2_DATA_SF_AK4PFPuppi.txt',
+        'Fall15_25nsV2_DATA_SF_AK4PFchs.txt',
+        'Fall15_25nsV2_DATA_SF_AK8PFPuppi.txt',
+        'Fall15_25nsV2_DATA_SF_AK8PFchs.txt',
+        'Fall15_25nsV2_MC_PtResolution_AK4PFPuppi.txt',
+        'Fall15_25nsV2_MC_PtResolution_AK4PFchs.txt',
+        'Fall15_25nsV2_MC_PtResolution_AK8PFPuppi.txt',
+        'Fall15_25nsV2_MC_PtResolution_AK8PFchs.txt',
+        'Fall15_25nsV2_MC_SF_AK4PFPuppi.txt',
+        'Fall15_25nsV2_MC_SF_AK4PFchs.txt',
+        'Fall15_25nsV2_MC_SF_AK8PFPuppi.txt',
+        'Fall15_25nsV2_MC_SF_AK8PFchs.txt',
+        ]    
+    for ijec in jecfiles:
+        options.inputFiles.append( ijec )
+        
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
     config.section_("General")
@@ -85,11 +110,11 @@ def main():
     config.section_("Data")
     config.Data.inputDataset = None
     config.Data.splitting = ''
-    config.Data.unitsPerJob = 1
+    config.Data.unitsPerJob = 40
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
-    config.Data.outputDatasetTag = options.version
+    #config.Data.outputDatasetTag = options.version
     if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
       config.Data.outLFNDirBase = options.outLFNDirBase
     
@@ -127,8 +152,10 @@ def main():
         datatier = job.split('/')[3]
         requestname = ptbin + '_' + cond
         if len(requestname) > 100: requestname = ''.join((requestname[:100-len(requestname)]).split('_')[:-1])
+        print 'requestname = ', requestname
         config.General.requestName = requestname
         config.Data.inputDataset = job
+        config.Data.outputDatasetTag = requestname + '_' + options.version
         if datatier == 'MINIAODSIM': 
           config.Data.splitting = 'FileBased'
         elif datatier == 'MINIAOD': 
