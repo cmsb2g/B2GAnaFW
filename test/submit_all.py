@@ -91,7 +91,7 @@ def main():
     config.Data.publishDBS = 'phys03'
     config.Data.outputDatasetTag = options.version
     if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-      config.Data.outLFNDirBase = options.outLFNDirBase+options.version
+      config.Data.outLFNDirBase = options.outLFNDirBase + '_' + options.version
     
     config.section_("Site")
     config.Site.storageSite = options.storageSite
