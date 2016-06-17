@@ -33,7 +33,7 @@ def getOptions() :
         help=("input parameters for config file"),
         metavar="PARAMS")
     parser.add_option("-l", "--lumiMask", dest="lumiMask",
-        default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON_v2.txt',
+        default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
         help=("The JSON file containing good lumi list"),
         metavar="LUMI")
     parser.add_option("-d", "--dir", dest="dir", default="B2GEDMNTuples",
@@ -42,7 +42,7 @@ def getOptions() :
     parser.add_option("-f", "--datasets", dest="datasets",
         help=("File listing datasets to run over"),
         metavar="FILE")
-    parser.add_option("-v", "--version", dest="version", default="B2GAnaFW_76X_V1p2",
+    parser.add_option("-v", "--version", dest="version", default="B2GAnaFW_80X_V1p2",
         help=("B2GAnaFW version"),
         metavar="VERSION")
     parser.add_option("-s", "--storageSite", dest="storageSite", #default="T3_US_FNALLPC",
