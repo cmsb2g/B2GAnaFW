@@ -170,8 +170,8 @@ if options.usePrivateSQLite:
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
-    if "Data" in options.DataProcessing: era = "Fall15_25nsV2_DATA"
-    elif "MC" in options.DataProcessing: era = "Fall15_25nsV2_MC"
+    if "Data" in options.DataProcessing: era = "Spring16_25nsV3_DATA"
+    elif "MC" in options.DataProcessing: era = "Spring16_25nsV3_MC"
     ###>>>elif "Data25ns" in options.DataProcessing:
     ###>>>  era = "Summer15_25nsV7_DATA"
     ###>>>elif "MC25ns" in options.DataProcessing:
