@@ -53,6 +53,6 @@ To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to s
 
 Example usage: 
 
-ython submit_all.py -f CRAB/tosubmit.txt -s T2_CH_CERN -i Fall15_25nsV2_MC.db -p "DataProcessing=MC25ns_MiniAOD_76X" -o "/store/group/phys_b2g/B2GAnaFW_76X_V2p0" -d  B2GEDMNTuples_76X_V2p0
+python submit_all.py -f CRAB/tosubmit.txt -s T2_CH_CERN -i Fall15_25nsV2_MC.db -p "DataProcessing=MC25ns_MiniAOD_76X" -o "/store/group/phys_b2g/B2GAnaFW_76X_V2p0" -d  B2GEDMNTuples_76X_V2p0
 
 See all options with 'python submit_all.py --help'
