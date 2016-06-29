@@ -3,6 +3,7 @@
 This is a small script that submits a config over many datasets
 """
 import os
+import glob
 from optparse import OptionParser
 
 def make_list(option, opt, value, parser):
@@ -20,8 +21,8 @@ def getOptions() :
         metavar="CONFIG")
     parser.add_option("-i", "--inputFiles", 
         type='string',
-        action='callback',
-        callback=make_list,
+        #action='callback',
+        #callback=make_list,
         dest='inputFiles', 
         help=("Input files that need to be shipped with the job"),
         metavar="INPUTS")
@@ -79,7 +80,8 @@ def main():
     config.section_("JobType")
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = options.cfg
-    config.JobType.inputFiles = options.inputFiles
+    inFiles = glob.glob( options.inputFiles )
+    config.JobType.inputFiles = inFiles #options.inputFiles
     config.JobType.pyCfgParams = options.pyCfgParams
     
     config.section_("Data")
