@@ -560,14 +560,6 @@ jetVarsForSys = (
         quantity = cms.untracked.string("userFloat('SmearedPt')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("SmearedPEta"),
-        quantity = cms.untracked.string("userFloat('SmearedPEta')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("SmearedPhi"),
-        quantity = cms.untracked.string("userFloat('SmearedPhi')")
-        ),
-    cms.PSet(
         tag = cms.untracked.string("SmearedE"),
         quantity = cms.untracked.string("userFloat('SmearedE')")
         ),

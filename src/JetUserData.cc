@@ -38,6 +38,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 #include "JetMETCorrections/Modules/interface/JetResolution.h"
+#include <TRandom3.h>
 
 #include <TFile.h>
 #include <TH1F.h>
@@ -68,6 +69,7 @@ class JetUserData : public edm::EDProducer {
     //InputTag jetLabel_;
     EDGetTokenT< std::vector< pat::Jet > > jLabel_;
     EDGetTokenT<double> rhoLabel_;
+    double coneSize_;
     bool getJERFromTxt_;
     std::string jetCorrLabel_;
     std::string jerLabel_;
@@ -81,13 +83,14 @@ class JetUserData : public edm::EDProducer {
     std::string candSVTagInfos_;
     HLTConfigProvider hltConfig;
     int triggerBit;
-
+    TRandom3 rnd_;
 };
 
 
 JetUserData::JetUserData(const edm::ParameterSet& iConfig) :
   jLabel_             (consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))), 
   rhoLabel_           (consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))),
+  coneSize_           (iConfig.getParameter<double>("coneSize")),
   getJERFromTxt_      (iConfig.getParameter<bool>("getJERFromTxt")),
   jetCorrLabel_       (iConfig.getParameter<std::string>("jetCorrLabel")),
   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
@@ -198,7 +201,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     resolution = JME::JetResolution(resolutionsFile_);
     res_sf = JME::JetResolutionScaleFactor(scaleFactorsFile_);
   } else {
-    resolution = JME::JetResolution::get(iSetup, jerLabel_);
+    resolution = JME::JetResolution::get(iSetup, jerLabel_+"_pt");
     res_sf = JME::JetResolutionScaleFactor::get(iSetup, jerLabel_);
   }
 
@@ -227,19 +230,29 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     float JERSFUp      = res_sf.getScaleFactor(jetParam, Variation::UP);
     float JERSFDown    = res_sf.getScaleFactor(jetParam, Variation::DOWN);
 
-    // SMEARING
-    // http://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
-    reco::Candidate::LorentzVector smearedP4;
+    // Hybrid scaling and smearing procedure applied:
+    //   https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
+    reco::Candidate::LorentzVector smearedP4 =jet.p4();
     if(isMC) {
+      // Hybrid method: Scale jet four momentum for well matched jets ...
+      bool isGenMatched = 0;
       const reco::GenJet* genJet=jet.genJet();
-      if(genJet) {
-        float smearFactor=JERSF;
-        smearedP4=jet.p4()-genJet->p4();
-        smearedP4*=smearFactor; // +- 3*smearFactorErr;
-        smearedP4+=genJet->p4();
+      if (genJet) {
+	TLorentzVector jetp4, genjetp4;
+	jetp4.SetPtEtaPhiE(jet.pt(), jet.eta(), jet.phi(), jet.energy());
+	genjetp4.SetPtEtaPhiE(genJet->pt(), genJet->eta(), genJet->phi(), genJet->energy());
+	float dR = jetp4.DeltaR(genjetp4);
+	float dPt = jet.pt()-genJet->pt();
+	if ((dR<coneSize_/2.0)&&(std::abs(dPt)<(3*PtResolution*jet.pt()))) {
+	  isGenMatched = 1;
+	  smearedP4     *= std::max(0., 1 + (JERSF     - 1) * dPt / jet.pt());
+	}
       }
-    } else {
-      smearedP4=jet.p4();
+      // ... and gaussian smear the rest
+      if (!isGenMatched && JERSF>1) {
+	double sigma = std::sqrt(JERSF * JERSF - 1) * PtResolution;
+	smearedP4 *= 1 + rnd_.Gaus(0, sigma);
+      }
     }
 
     jet.addUserFloat("jecUncertainty",   jecUncertainty);
@@ -250,15 +263,12 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserFloat("HLTjetE",     hltE);
     jet.addUserFloat("HLTjetDeltaR",deltaR);
 
-    jet.addUserFloat("SmearedPEta", smearedP4.eta());
-    jet.addUserFloat("SmearedPhi",  smearedP4.phi());
-    jet.addUserFloat("SmearedPt",   smearedP4.pt());
-    jet.addUserFloat("SmearedE",    smearedP4.energy());
-
     jet.addUserFloat("PtResolution", PtResolution);
     jet.addUserFloat("JERSF",        JERSF);
     jet.addUserFloat("JERSFUp",      JERSFUp);
     jet.addUserFloat("JERSFDown",    JERSFDown);
+    jet.addUserFloat("SmearedPt",    smearedP4.pt());
+    jet.addUserFloat("SmearedE",     smearedP4.energy());
 
     unsigned int nSV(0);
     float SV0mass(-999), SV1mass(-999) ;
@@ -296,9 +306,6 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jet.addUserInt("nSV"     , nSV     ); 
     jet.addUserFloat("SV0mass", SV0mass); 
     jet.addUserFloat("SV1mass", SV1mass); 
-
-    TLorentzVector jetp4 ; 
-    jetp4.SetPtEtaPhiE(jet.pt(), jet.eta(), jet.phi(), jet.energy()) ; 
 
     //// Jet constituent indices for lepton matching
     std::vector<unsigned int> constituentIndices;
