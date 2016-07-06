@@ -118,13 +118,7 @@ hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFilt
 hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-triggerResultsLabel    	= "TriggerResults"
-triggerSummaryLabel    	= "hltTriggerSummaryAOD"
-hltMuonFilterLabel     	= "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
-hltPathLabel           	= "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
-hltElectronFilterLabel 	= "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
-
-if(options.DataProcessing in [ "Data_80X","MC_MiniAODv2_80X" ]): metProcess = "PAT"
+if(options.DataProcessing in [ "MC_MiniAODv2_80X" ]): metProcess = "PAT"
 else: metProcess = "RECO"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
@@ -162,61 +156,138 @@ process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 #process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV51_cff')
 
 
-### External JECs =====================================================================================================
+### External JEC/JERs =====================================================================================================
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if ("Data" in options.DataProcessing and options.forceResiduals): corrections.extend(['L2L3Residual'])
+
+if "Data" in options.DataProcessing:
+  jec_era = "Spring16_25nsV6_DATA"
+  jer_era = "Spring16_25nsV6_DATA"
+elif "MC" in options.DataProcessing:
+  jec_era = "Spring16_25nsV6_MC"
+  jer_era = "Spring16_25nsV6_MC"
+  ###>>>elif "Data25ns" in options.DataProcessing:
+  ###>>>  jec_era = "Summer15_25nsV7_DATA"
+  ###>>>elif "MC25ns" in options.DataProcessing:
+  ###>>>  jec_era = "Summer15_25nsV7_MC"
+else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X'.\n")
 
 if options.usePrivateSQLite:
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
-    if "Data" in options.DataProcessing: era = "Spring16_25nsV3_DATA"
-    elif "MC" in options.DataProcessing: era = "Spring16_25nsV3_MC"
-    ###>>>elif "Data25ns" in options.DataProcessing:
-    ###>>>  era = "Summer15_25nsV7_DATA"
-    ###>>>elif "MC25ns" in options.DataProcessing:
-    ###>>>  era = "Summer15_25nsV7_MC"
-    else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X', 'MC25ns_MiniAODv2_FastSim'.\n")
-
-    dBFile = era+".db"
+    
+    # JEC
+    dBFile = jec_era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
 		    connect = cms.string( "sqlite_file:"+dBFile ),
 		    toGet =  cms.VPSet(
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PF"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PF"),
 				    label= cms.untracked.string("AK4PF")
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFchs"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFchs"),
 				    label= cms.untracked.string("AK4PFchs")
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK4PFPuppi"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFPuppi"),
 				    label= cms.untracked.string("AK4PFPuppi")
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PF"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PF"),
 				    label= cms.untracked.string("AK8PF")
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFchs"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFchs"),
 				    label= cms.untracked.string("AK8PFchs")
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+era+"_AK8PFPuppi"),
+				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFPuppi"),
 				    label= cms.untracked.string("AK8PFPuppi")
 				    ),
 			    )
 		    )
-
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
+    
+    # JER
+    #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_Global_Ta
+    process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
+    process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = cms.string('sqlite_file:'+jer_era+"_JER.db"), # '_JER' added to filename to distinguish from JEC file
+            toGet = cms.VPSet(
+                # Resolution
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PF'),
+                    label  = cms.untracked.string('AK4PF_pt')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFchs'),
+                    label  = cms.untracked.string('AK4PFchs_pt')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFPuppi'),
+                    label  = cms.untracked.string('AK4PFPuppi_pt')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PF'),
+                    label  = cms.untracked.string('AK8PF_pt')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFchs'),
+                    label  = cms.untracked.string('AK8PFchs_pt')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFPuppi'),
+                    label  = cms.untracked.string('AK8PFPuppi_pt')
+                    ),
+                # Scale factors
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PF'),
+                    label  = cms.untracked.string('AK4PF')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFchs'),
+                    label  = cms.untracked.string('AK4PFchs')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFPuppi'),
+                    label  = cms.untracked.string('AK4PFPuppi')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PF'),
+                    label  = cms.untracked.string('AK8PF')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFchs'),
+                    label  = cms.untracked.string('AK8PFchs')
+                    ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFPuppi'),
+                    label  = cms.untracked.string('AK8PFPuppi')
+                    ),
+                ),
+            )
+    process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
     ###>>>''' 
     ###>>>process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
@@ -274,12 +345,7 @@ listBtagDiscriminators = [
 		'pfCombinedCvsBJetTags'
 		]
 
-if "Data" in options.DataProcessing: 
-	jerEra = "Fall15_25nsV2_DATA"
-	runMC = False
-elif "MC" in options.DataProcessing: 
-	jerEra = "Fall15_25nsV2_MC"
-	runMC = True
+runMC = ("MC" in options.DataProcessing)
 
 ak4Cut='pt > 25 && abs(eta) < 5.'
 ak8Cut='pt > 100 && abs(eta) < 5.'
@@ -425,12 +491,13 @@ process.muonUserData = cms.EDProducer(
 process.jetUserData = cms.EDProducer(
     'JetUserData',
     jetLabel          = cms.InputTag(jLabel),
-    rho               = cms.InputTag('fixedGridRhoAll'),
-    getJERFromTxt     = cms.bool(True),
+    rho               = cms.InputTag(rhoLabel),
+    coneSize          = cms.double(0.4),
+    getJERFromTxt     = cms.bool(False),
     jetCorrLabel      = cms.string(jetAlgo),
     jerLabel          = cms.string(jetAlgo),
-    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgo+'.txt'),
-    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgo+'.txt'),
+    resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgo+'.txt'),
+    scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgo+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -443,12 +510,13 @@ process.jetUserData = cms.EDProducer(
 process.jetUserDataPuppi = cms.EDProducer(
     'JetUserData',
     jetLabel          = cms.InputTag(jLabelPuppi),
-    rho               = cms.InputTag('fixedGridRhoAll'),
-    getJERFromTxt     = cms.bool(True),
+    rho               = cms.InputTag(rhoLabel),
+    coneSize          = cms.double(0.4),
+    getJERFromTxt     = cms.bool(False),
     jetCorrLabel      = cms.string(jetAlgoPuppi),
     jerLabel          = cms.string(jetAlgoPuppi),
-    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoPuppi+'.txt'),
-    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoPuppi+'.txt'),
+    resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoPuppi+'.txt'),
+    scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoPuppi+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -462,12 +530,13 @@ process.jetUserDataPuppi = cms.EDProducer(
 process.jetUserDataAK8 = cms.EDProducer(
     'JetUserData',
     jetLabel          = cms.InputTag(jLabelAK8),
-    rho               = cms.InputTag('fixedGridRhoAll'),
-    getJERFromTxt     = cms.bool(True),
+    rho               = cms.InputTag(rhoLabel),
+    coneSize          = cms.double(0.8),
+    getJERFromTxt     = cms.bool(False),
     jetCorrLabel      = cms.string(jetAlgoAK8),
     jerLabel          = cms.string(jetAlgoAK8),
-    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoAK8+'.txt'),
-    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoAK8+'.txt'),
+    resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoAK8+'.txt'),
+    scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoAK8+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -489,12 +558,13 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
 process.jetUserDataAK8Puppi = cms.EDProducer(
     'JetUserData',
     jetLabel          = cms.InputTag( jLabelAK8Puppi ),
-    rho               = cms.InputTag('fixedGridRhoAll'),
-    getJERFromTxt     = cms.bool(True),
+    rho               = cms.InputTag(rhoLabel),
+    coneSize          = cms.double(0.8),
+    getJERFromTxt     = cms.bool(False),
     jetCorrLabel      = cms.string(jetAlgoAK8Puppi),
     jerLabel          = cms.string(jetAlgoAK8Puppi),
-    resolutionsFile   = cms.string(jerEra+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
-    scaleFactorsFile  = cms.string(jerEra+'_SF_'+jetAlgoAK8Puppi+'.txt'),
+    resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
+    scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoAK8Puppi+'.txt'),
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
@@ -520,8 +590,8 @@ process.electronUserData = cms.EDProducer(
     beamSpot = cms.InputTag("offlineBeamSpot"),
     conversion = cms.InputTag(convLabel),
     rho        = cms.InputTag(rhoLabel),
-    triggerResults = cms.InputTag(triggerResultsLabel),
-    triggerSummary = cms.InputTag(triggerSummaryLabel),
+    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
     electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
