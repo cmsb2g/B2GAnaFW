@@ -212,19 +212,18 @@ if options.usePrivateSQLite:
 		    )
     # FastSim JEC is not available for Puppi jets
     if "FastSim" not in options.DataProcessing:
-      process.jec.toGet.append(
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFPuppi"),
-				    label= cms.untracked.string("AK4PFPuppi")
-				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFPuppi"),
-				    label= cms.untracked.string("AK8PFPuppi")
-				    ),
-        )
-    
+      process.jec.toGet.append(cms.PSet(
+        			    record = cms.string("JetCorrectionsRecord"),
+        			    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFPuppi"),
+        			    label= cms.untracked.string("AK4PFPuppi")
+        			    )
+                              )
+      process.jec.toGet.append(cms.PSet(
+        			    record = cms.string("JetCorrectionsRecord"),
+        			    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFPuppi"),
+        			    label= cms.untracked.string("AK8PFPuppi")
+        			    )
+                               )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
     
     # JER
