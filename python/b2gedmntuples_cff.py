@@ -708,14 +708,14 @@ jetToolboxAK8Vars = (
 ### jet variables
 jetToolboxAK8SubjetVars = (
 #### SUBSTRUCTURE
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex0"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex1"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
-        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("vSubjetIndex0"),
+#        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("vSubjetIndex1"),
+#        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+#        ),
 #     cms.PSet(
 #        tag = cms.untracked.string("topSubjetIndex0"),
 #        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
@@ -750,14 +750,14 @@ jetToolboxAK8SubjetVars = (
 ### jet variables
 jetToolboxAK8SubjetPuppiVars = (
 #### SUBSTRUCTURE
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex0"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
-        ),
-     cms.PSet(
-        tag = cms.untracked.string("vSubjetIndex1"),
-        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
-        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("vSubjetIndex0"),
+#        quantity = cms.untracked.string("? hasUserInt('VSubjet0') ? userInt('VSubjet0') : -1 ")
+#        ),
+#     cms.PSet(
+#        tag = cms.untracked.string("vSubjetIndex1"),
+#        quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+#        ),
 #     cms.PSet(
 #        tag = cms.untracked.string("topSubjetIndex0"),
 #        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")

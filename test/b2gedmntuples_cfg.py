@@ -3,17 +3,17 @@ header = """
 ### Usage:
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
-###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data25ns_76X' or 'MC25ns_MiniAOD_76X' or 'MC25ns_MiniAODv2_FastSim' 
+###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data_80X' or 'MC_MiniAODv2_80X' or 'MC_MiniAODv2_80X_FastSim' 
 ###
 ### Examples: 
 ###    Running on 25 ns MiniAODv1 and MiniAODv2 MC in 76X:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAOD_76X'
 ###    Running on 25 ns 16Dec reprocessed data:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_76X'
-###    Running on 25 ns FastSim MC:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAODv2_FastSim'
 ###    Running on 25 ns MC in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X'
+###    Running on 25 ns FastSim MC in 80x:
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_FastSim'
 ###    Running on 25 ns data in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X'
 ###
@@ -49,7 +49,7 @@ options.register('DataProcessing',
     '',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
-    'Data processing types. Options are: Data_80X or MC_MiniAODv2_80X')
+    'Data processing types. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim')
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
@@ -88,7 +88,7 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X or MC_MiniAODv2_80X.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim.\n")
 
 
 if options.globalTag != "": 
@@ -96,10 +96,12 @@ if options.globalTag != "":
 else: 
   if options.DataProcessing=="MC_MiniAODv2_80X":
     options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2"
+  elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
+    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2"
   elif options.DataProcessing=="Data_80X":
     options.globalTag="80X_dataRun2_Prompt_v8"
   else:
-    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X or MC_MiniAODv2_80X.\n")
+    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim.\n")
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
@@ -118,7 +120,7 @@ hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFilt
 hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if(options.DataProcessing in [ "MC_MiniAODv2_80X" ]): metProcess = "PAT"
+if(options.DataProcessing in [ "MC_MiniAODv2_80X", "MC_MiniAODv2_80X_FastSim" ]): metProcess = "PAT"
 else: metProcess = "RECO"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
@@ -164,7 +166,10 @@ if "Data" in options.DataProcessing:
   jec_era = "Spring16_25nsV6_DATA"
   jer_era = "Spring16_25nsV6_DATA"
 elif "MC" in options.DataProcessing:
-  jec_era = "Spring16_25nsV6_MC"
+  if options.DataProcessing=="MC_MiniAODv2_80X":
+    jec_era = "Spring16_25nsV6_MC"
+  if options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
+    jec_era = "Spring16_25nsFastSimMC_V1"
   jer_era = "Spring16_25nsV6_MC"
   ###>>>elif "Data25ns" in options.DataProcessing:
   ###>>>  jec_era = "Summer15_25nsV7_DATA"
@@ -195,11 +200,6 @@ if options.usePrivateSQLite:
 				    ),
 			    cms.PSet(
 				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFPuppi"),
-				    label= cms.untracked.string("AK4PFPuppi")
-				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
 				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PF"),
 				    label= cms.untracked.string("AK8PF")
 				    ),
@@ -208,13 +208,22 @@ if options.usePrivateSQLite:
 				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFchs"),
 				    label= cms.untracked.string("AK8PFchs")
 				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFPuppi"),
-				    label= cms.untracked.string("AK8PFPuppi")
-				    ),
 			    )
 		    )
+    # FastSim JEC is not available for Puppi jets
+    if "FastSim" not in options.DataProcessing:
+      process.jec.toGet.append(cms.PSet(
+        			    record = cms.string("JetCorrectionsRecord"),
+        			    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFPuppi"),
+        			    label= cms.untracked.string("AK4PFPuppi")
+        			    )
+                              )
+      process.jec.toGet.append(cms.PSet(
+        			    record = cms.string("JetCorrectionsRecord"),
+        			    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFPuppi"),
+        			    label= cms.untracked.string("AK8PFPuppi")
+        			    )
+                               )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
     
     # JER
@@ -574,6 +583,11 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
     )
 
+# FastSim JEC is not available for Puppi jets, use CHS instead
+if "FastSim" in options.DataProcessing:
+  process.jetUserDataPuppi.jetCorrLabel    = jetAlgo
+  process.jetUserDataAK8Puppi.jetCorrLabel = jetAlgoAK8
+
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
@@ -744,12 +758,6 @@ process.edmNtuplesOut = cms.OutputModule(
     ),
     dropMetaData = cms.untracked.string('ALL'),
     )
-
-# Some collections are not available in the current FastSim
-if not "FastSim" in options.DataProcessing:
-  process.edmNtuplesOut.outputCommands+=(
-      "keep *_HBHENoiseFilterResultProducer_*_*",
-      )
 
 
   ### keep NoHF jets if needed:
