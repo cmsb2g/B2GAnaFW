@@ -3,7 +3,8 @@ header = """
 ### Usage:
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
-###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of 'Data_80X' or 'MC_MiniAODv2_80X' or 'MC_MiniAODv2_80X_FastSim' 
+###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of
+###        'Data_80X', 'MC_MiniAODv2_80X', MC_MiniAODv2_80X_reHLT or 'MC_MiniAODv2_80X_FastSim' 
 ###
 ### Examples: 
 ###    Running on 25 ns MiniAODv1 and MiniAODv2 MC in 76X:
@@ -12,6 +13,8 @@ header = """
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_76X'
 ###    Running on 25 ns MC in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X'
+###    Running on 25 ns MC in 80x:
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_reHLT'
 ###    Running on 25 ns FastSim MC in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_FastSim'
 ###    Running on 25 ns data in 80x:
@@ -49,7 +52,7 @@ options.register('DataProcessing',
     '',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
-    'Data processing types. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim')
+    'Data processing types. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim')
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
@@ -62,7 +65,13 @@ options.register('usePrivateSQLite',
     False,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
-    'Take Corrections from private SQL file')
+    'Take Jet Energy Corrections from private SQL file')
+
+options.register('usePrivateSQLiteForJER',
+    False,
+    opts.VarParsing.multiplicity.singleton,
+    opts.VarParsing.varType.bool,
+    'Take Jet Enery Resolution from private SQL file')
 
 options.register('forceResiduals',
     True,
@@ -88,20 +97,23 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
 
 
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
   if options.DataProcessing=="MC_MiniAODv2_80X":
-    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2"
+    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+  elif options.DataProcessing=="MC_MiniAODv2_80X_reHLT":
+    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"    
   elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
-    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2"
+    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
+    options.usePrivateSQLite = True
   elif options.DataProcessing=="Data_80X":
-    options.globalTag="80X_dataRun2_Prompt_v8"
+    options.globalTag="80X_dataRun2_Prompt_ICHEP16JEC_v0"
   else:
-    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X or MC_MiniAODv2_80X_FastSim.\n")
+    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
@@ -120,8 +132,11 @@ hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFilt
 hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if(options.DataProcessing in [ "MC_MiniAODv2_80X", "MC_MiniAODv2_80X_FastSim" ]): metProcess = "PAT"
+if(options.DataProcessing in [ "MC_MiniAODv2_80X", "MC_MiniAODv2_80X_reHLT", "MC_MiniAODv2_80X_FastSim" ]): metProcess = "PAT"
 else: metProcess = "RECO"
+
+if options.DataProcessing =="MC_MiniAODv2_80X_reHLT": hltProcess = "HLT2"
+else: hltProcess = "HLT"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
@@ -158,26 +173,18 @@ process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 #process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV51_cff')
 
 
-### External JEC/JERs =====================================================================================================
+### External JEC =====================================================================================================
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if ("Data" in options.DataProcessing and options.forceResiduals): corrections.extend(['L2L3Residual'])
 
-if "Data" in options.DataProcessing:
-  jec_era = "Spring16_25nsV6_DATA"
-  jer_era = "Spring16_25nsV6_DATA"
-elif "MC" in options.DataProcessing:
-  if options.DataProcessing=="MC_MiniAODv2_80X":
-    jec_era = "Spring16_25nsV6_MC"
-  if options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
-    jec_era = "Spring16_25nsFastSimMC_V1"
-  jer_era = "Spring16_25nsV6_MC"
-  ###>>>elif "Data25ns" in options.DataProcessing:
-  ###>>>  jec_era = "Summer15_25nsV7_DATA"
-  ###>>>elif "MC25ns" in options.DataProcessing:
-  ###>>>  jec_era = "Summer15_25nsV7_MC"
-else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: 'MC25ns_MiniAOD_76X', 'Data25ns_76X'.\n")
-
 if options.usePrivateSQLite:
+    if options.DataProcessing=="Data_80X":
+      jec_era = "Spring16_25nsV6_DATA"
+    elif options.DataProcessing=="MC_MiniAODv2_80X":
+      jec_era = "Spring16_25nsV6_MC"
+    elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
+      jec_era = "Spring16_25nsFastSimMC_V1"
+    else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
@@ -226,6 +233,39 @@ if options.usePrivateSQLite:
                                )
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource",'jec')
     
+    ###>>>''' 
+    ###>>>process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
+    ###>>>from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
+    ###>>>process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
+    ###>>>    src = cms.InputTag("slimmedJets"),
+
+    ###>>>    levels = corrections )
+    ###>>>process.updatedPatJetsAK4 = patJetsUpdated.clone(
+    ###>>>    jetSource = cms.InputTag("slimmedJets"),
+    ###>>>    jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+    ###>>>    )
+    ###>>>process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+    ###>>>    src = cms.InputTag("slimmedJetsAK8"),
+    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
+    ###>>>    levels = corrections )
+
+    ###>>>process.updatedPatJetsAK8 = patJetsUpdated.clone(
+    ###>>>  jetSource = cms.InputTag("slimmedJetsAK8"),
+    ###>>>  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
+    ###>>>  )
+    ###>>>'''
+
+    ### =====================================================================================================
+
+### External JER =====================================================================================================
+if "Data" in options.DataProcessing:
+  jer_era = "Spring16_25nsV6_DATA"
+elif "MC" in options.DataProcessing:
+  jer_era = "Spring16_25nsV6_MC"
+else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+
+if options.usePrivateSQLiteForJER:
     # JER
     #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_Global_Ta
     process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
@@ -297,31 +337,6 @@ if options.usePrivateSQLite:
                 ),
             )
     process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
-
-    ###>>>''' 
-    ###>>>process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
-    ###>>>from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated, patJetsUpdated
-    ###>>>process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
-    ###>>>    src = cms.InputTag("slimmedJets"),
-
-    ###>>>    levels = corrections )
-    ###>>>process.updatedPatJetsAK4 = patJetsUpdated.clone(
-    ###>>>    jetSource = cms.InputTag("slimmedJets"),
-    ###>>>    jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-    ###>>>    )
-    ###>>>process.patJetAK8CorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-    ###>>>    src = cms.InputTag("slimmedJetsAK8"),
-    ###>>>    rho = cms.InputTag("fixedGridRhoFastjetAll"),
-    ###>>>    levels = corrections )
-
-    ###>>>process.updatedPatJetsAK8 = patJetsUpdated.clone(
-    ###>>>  jetSource = cms.InputTag("slimmedJetsAK8"),
-    ###>>>  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetAK8CorrFactorsReapplyJEC"))
-    ###>>>  )
-    ###>>>'''
-
-    ### =====================================================================================================
 
 
 ### ------------------------------------------------------------------
@@ -489,8 +504,8 @@ process.muonUserData = cms.EDProducer(
     pv        = cms.InputTag(pvLabel),
     packedPFCands = cms.InputTag("packedPFCandidates"),
     ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltMuonFilter  = cms.InputTag(hltMuonFilterLabel),
     hltPath            = cms.string("HLT_IsoMu40_eta2p1_v11"),
     hlt2reco_deltaRmax = cms.double(0.1),
@@ -508,8 +523,8 @@ process.jetUserData = cms.EDProducer(
     resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgo+'.txt'),
     scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgo+'.txt'),
     ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltJetFilter       = cms.InputTag("hltPFHT"),
     hltPath            = cms.string("HLT_PFHT800"),
     hlt2reco_deltaRmax = cms.double(0.2),
@@ -527,8 +542,8 @@ process.jetUserDataPuppi = cms.EDProducer(
     resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoPuppi+'.txt'),
     scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoPuppi+'.txt'),
     ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltJetFilter       = cms.InputTag("hltPFHT"),
     hltPath            = cms.string("HLT_PFHT800"),
     hlt2reco_deltaRmax = cms.double(0.2),
@@ -547,8 +562,8 @@ process.jetUserDataAK8 = cms.EDProducer(
     resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoAK8+'.txt'),
     scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoAK8+'.txt'),
     ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltJetFilter       = cms.InputTag("hltAK8PFJetsTrimR0p1PT0p03"),
     hltPath            = cms.string("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50"),
     hlt2reco_deltaRmax = cms.double(0.2), 
@@ -575,8 +590,8 @@ process.jetUserDataAK8Puppi = cms.EDProducer(
     resolutionsFile   = cms.string(jer_era+'_PtResolution_'+jetAlgoAK8Puppi+'.txt'),
     scaleFactorsFile  = cms.string(jer_era+'_SF_'+jetAlgoAK8Puppi+'.txt'),
     ### TTRIGGER ###
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltJetFilter       = cms.InputTag("hltAK8PFJetsTrimR0p1PT0p03"),
     hltPath            = cms.string("HLT_AK8PFHT650_TrimR0p1PT0p03Mass50"),
     hlt2reco_deltaRmax = cms.double(0.2), 
@@ -604,8 +619,8 @@ process.electronUserData = cms.EDProducer(
     beamSpot = cms.InputTag("offlineBeamSpot"),
     conversion = cms.InputTag(convLabel),
     rho        = cms.InputTag(rhoLabel),
-    triggerResults = cms.InputTag(triggerResultsLabel,"","HLT"),
-    triggerSummary = cms.InputTag(triggerSummaryLabel,"","HLT"),
+    triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
+    triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
     electronVetoIdMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Spring15-25ns-V1-standalone-veto"),
@@ -701,10 +716,10 @@ process.centrality = cms.EDProducer("CentralityUserData",
 
 process.TriggerUserData = cms.EDProducer(
     'TriggerUserData',
-    bits = cms.InputTag("TriggerResults","","HLT"),
+    bits = cms.InputTag(triggerResultsLabel,"",hltProcess),
     prescales = cms.InputTag("patTrigger"),
     storePrescales = cms.untracked.bool(True), 
-    hltProcName = cms.untracked.string("HLT"), 
+    hltProcName = cms.untracked.string(hltProcess), 
     objects = cms.InputTag("selectedPatTrigger")
     )                                 
 

@@ -13,8 +13,8 @@ This is a prroduction version of the B2G EDMNtuples. Updates since last producti
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_10_patch2
-cd CMSSW_8_0_10_patch2/src
+cmsrel CMSSW_8_0_14
+cd CMSSW_8_0_14/src
 cmsenv
 ```
  * Temporary checkouts:
@@ -22,7 +22,7 @@ cmsenv
 ```
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V1
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
