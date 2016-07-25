@@ -16,6 +16,7 @@
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
 #include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/one/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -53,12 +54,15 @@ using namespace edm;
 using namespace std;
 using namespace trigger;
 
-class  TriggerUserData : public edm::EDProducer {
+class  TriggerUserData : public edm::one::EDProducer<edm::BeginRunProducer,
+						     edm::EndRunProducer> {
 public:
   TriggerUserData( const edm::ParameterSet & );   
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
+  void beginRunProduce(edm::Run& , const edm::EventSetup &);
+  void endRunProduce(edm::Run&, const edm::EventSetup &);
 
   edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
@@ -82,20 +86,13 @@ TriggerUserData::TriggerUserData(const edm::ParameterSet& iConfig):
 {
   produces<std::vector<float>>("triggerBitTree");
   if ( storePrescales_ ) produces<std::vector<int>>("triggerPrescaleTree");  
-  produces<std::vector<std::string>>("triggerNameTree");  
+  produces<std::vector<std::string>, edm::InRun>("triggerNameTree");
  }
 
 void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  bool changedConfig = false;
-
-  if (!hltConfig.init(iEvent.getRun(), iSetup, hltProcName_, changedConfig)) {
-    std::cout << "Initialization of HLTConfigProvider failed!!" << std::endl;
-    return;
-  }
 
   auto_ptr<vector<float> > triggerBitTree( new vector<float> );
   auto_ptr<vector<int> > triggerPrescaleTree( new vector<int> );
-  auto_ptr<vector<std::string> > triggerNameTree( new vector<std::string> );
  
   edm::Handle<edm::TriggerResults> triggerBits;
   edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
@@ -109,14 +106,35 @@ void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup
     if ( storePrescales_ ) triggerPrescaleTree->push_back(triggerPrescales->getPrescaleForIndex(i));
     //std::cout << "TEST " <<  (hltConfig.triggerNames()[i]) << std::endl;
     //const char * name = TString(hltConfig.triggerNames()[i]);
-    triggerNameTree->push_back((hltConfig.triggerNames()[i]));
     //std::cout << typeid((hltConfig.triggerNames()[i])).name() << endl;
   }
   
   iEvent.put( triggerBitTree, "triggerBitTree" );
   if ( storePrescales_ ) iEvent.put( triggerPrescaleTree, "triggerPrescaleTree" );
-  iEvent.put( triggerNameTree, "triggerNameTree" );
 
+}
+
+// ------------ method called when starting to processes a run  ------------
+void 
+TriggerUserData::beginRunProduce(edm::Run& iRun, edm::EventSetup const& iSetup)
+{
+  bool changed(true);
+  if (!hltConfig.init(iRun, iSetup, hltProcName_, changed)) {
+    std::cout << "Initialization of HLTConfigProvider failed!!" << std::endl;
+    return;
+  }
+
+  auto_ptr<vector<std::string> > triggerNameTree( new vector<std::string> );
+  for (unsigned int i = 0, n = hltConfig.triggerNames().size(); i < n; ++i)
+    triggerNameTree->push_back(hltConfig.triggerNames()[i]);
+
+  iRun.put(triggerNameTree, "triggerNameTree");
+}
+
+// ------------ method called when ending the processing of a run  ------------
+void 
+TriggerUserData::endRunProduce(edm::Run& run, edm::EventSetup const& es)
+{
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
