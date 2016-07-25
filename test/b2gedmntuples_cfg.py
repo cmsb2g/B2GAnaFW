@@ -737,6 +737,65 @@ process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
 process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
 process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
 
+# Filter rarely used gen particle types
+# Taken from: https://cmssdt.cern.ch/SDT/doxygen/CMSSW_8_0_9/doc/html/d1/d1f/prunedGenParticles__cfi_8py_source.html
+process.filteredPrunedGenParticles = cms.EDProducer(
+  "GenParticlePruner",
+  src = cms.InputTag("prunedGenParticles"),
+  select = cms.vstring(
+    "drop  *", # this is the default
+    # keep leptons, with history
+    #OPT "++keep abs(pdgId) == 11 || abs(pdgId) == 13 || abs(pdgId) == 15",
+    #OPT --> keep leptons
+    "keep abs(pdgId) == 11 || abs(pdgId) == 13 || abs(pdgId) == 15",
+    # keep neutrinos
+    "keep abs(pdgId) == 12 || abs(pdgId) == 14 || abs(pdgId) == 16",
+    # drop the shower part of the history
+    "drop   status == 2",
+    # keep gamma above 10 GeV (or all prompt) and its first parent
+    "+keep pdgId == 22 && status == 1 && (pt > 10 || isPromptFinalState())",
+    #OPT  # keep first parent of electrons above 3 GeV (or prompt)
+    #OPT  "+keep abs(pdgId) == 11 && status == 1 && (pt > 3 || isPromptFinalState())",
+    # but keep keep taus with decays
+    "keep++ abs(pdgId) == 15",
+    #remove pythia8 garbage
+    "drop  status > 30 && status < 70 ",
+    #remove pythia8 garbage
+    "drop  pdgId == 21 && pt < 5",
+    # but remove again gluons in the inheritance chain
+    "drop   status == 2 && abs(pdgId) == 21",
+    # keep VIP(articles)s
+    #OPT "keep abs(pdgId) == 23 || abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 6 || abs(pdgId) == 37 ",
+    #OPT --> keep VIP(articles)s (Z,W,h,t,H+) and their (grand)children, except for Z
+    "keep++ abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 6 || abs(pdgId) == 37 ",
+    "keep abs(pdgId) == 23 ",
+    # keep K0
+    #OPT "keep abs(pdgId) == 310 && abs(eta) < 2.5 && pt > 1 ",
+    # keep heavy flavour quarks for parton-based jet flavour
+    "keep (4 <= abs(pdgId) <= 5) & (status = 2 || status = 11 || status = 71 || status = 72)",
+    #OPT  # keep light-flavour quarks and gluons for parton-based jet flavour
+    #OPT  "keep (1 <= abs(pdgId) <= 3 || pdgId = 21) & (status = 2 || status = 11 || status = 71 || status = 72) && pt>5", 
+    #OPT  # keep b and c hadrons for hadron-based jet flavour
+    #OPT  "keep (400 < abs(pdgId) < 600) || (4000 < abs(pdgId) < 6000)",
+    #OPT  # additional c hadrons for jet fragmentation studies
+    #OPT  "keep abs(pdgId) = 10411 || abs(pdgId) = 10421 || abs(pdgId) = 10413 || abs(pdgId) = 10423 || abs(pdgId) = 20413 || abs(pdgId) = 20423 || abs(pdgId) = 10431 || abs(pdgId) = 10433 || abs(pdgId) = 20433", 
+    #OPT  # additional b hadrons for jet fragmentation studies
+    #OPT  "keep abs(pdgId) = 10511 || abs(pdgId) = 10521 || abs(pdgId) = 10513 || abs(pdgId) = 10523 || abs(pdgId) = 20513 || abs(pdgId) = 20523 || abs(pdgId) = 10531 || abs(pdgId) = 10533 || abs(pdgId) = 20533 || abs(pdgId) = 10541 || abs(pdgId) = 10543 || abs(pdgId) = 20543", 
+    #keep SUSY particles
+    "keep (1000001 <= abs(pdgId) <= 1000039 ) || ( 2000001 <= abs(pdgId) <= 2000015)",
+    #OPT  # keep protons 
+    #OPT  "keep pdgId = 2212",
+    #OPT  #keep event summary (status=3 for pythia6, 21 <= status <= 29 for pythia8)
+    #OPT  "keep status == 3 || ( 21 <= status <= 29) || ( 11 <= status <= 19)",
+    #OPT  #keep event summary based on status flags
+    #OPT  "keep isHardProcess() || fromHardProcessFinalState() || fromHardProcessDecayed() || fromHardProcessBeforeFSR() || (statusFlags().fromHardProcess() && statusFlags().isLastCopy())",
+    )
+    #select = cms.vstring(
+    #"keep *",
+    #"drop (1 <= abs(pdgId) <= 4)"
+    #)
+)
+
 ### Including ntuplizer 
 process.options.allowUnscheduled = cms.untracked.bool(True)
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
@@ -751,18 +810,24 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_electrons_*_*",
     "keep *_photons_*_*",
     "keep *_photonjets_*_*",
-    "keep *_jetsAK4*_*_*",
-    "keep *_jetsAK8*_*_*",
+    "keep *_jetsAK4CHS_*_*",
+    "keep *_jetsAK8CHS_*_*",
+    "keep *_subjetsAK8CHS_*_*",
+    "keep *_jetKeysAK4CHS_*_*",
+    "keep *_jetKeysAK8CHS_*_*",
+    "keep *_subjetKeysAK8CHS_*_*",
+    "keep *_jetsAK4Puppi_*_*",
+    "keep *_jetsAK8Puppi_*_*",
+    "keep *_subjetsAK8Puppi_*_*",
+    "keep *_jetKeysAK4Puppi_*_*",
+    "keep *_jetKeysAK8Puppi_*_*",
+    "keep *_subjetKeysAK8Puppi_*_*",
     "keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_metFull_*_*",
     "keep *_metNoHF_*_*",
     "keep *_METUserData*_trigger*_*",
     "keep *_eventInfo_*_*",
-    "keep *_subjetsAK8*_*_*",
-    "keep *_jetKeysAK4*_*_*",
-    "keep *_jetKeysAK8*_*_*",
-    "keep *_subjetKeysAK8*_*_*",
     "keep *_electronKeys_*_*",   
     "keep *_photonKeys_*_*",   
     "keep *_muonKeys_*_*",
