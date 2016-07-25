@@ -1188,7 +1188,7 @@ subjetKeysAK8Puppi.jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPac
 genPart = copy.deepcopy(basic)
 genPart.variables += genPartVars
 genPart.prefix = cms.untracked.string("genPart")
-genPart.src = cms.InputTag("prunedGenParticles")
+genPart.src = cms.InputTag("filteredPrunedGenParticles")
 
 ###genJetsAK8
 genJetsAK8 = copy.deepcopy(basic)
