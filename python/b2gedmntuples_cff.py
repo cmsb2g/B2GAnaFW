@@ -81,26 +81,6 @@ metFull =  cms.EDProducer(
 
 ### muon variables
 muonVars = (
-#   cms.PSet(
-#        tag = cms.untracked.string("dB"),
-#        quantity = cms.untracked.string("userFloat('dB')")
-#   ),
-#   cms.PSet(
-#        tag = cms.untracked.string("dBPV2D"),
-#        quantity = cms.untracked.string("userFloat('dBPV2D')")
-#   ),
-#   cms.PSet(
-#        tag = cms.untracked.string("dBPV3D"),
-#        quantity = cms.untracked.string("userFloat('dBPV3D')")
-#   ),
-#   cms.PSet(
-#        tag = cms.untracked.string("dBBS2D"),
-#        quantity = cms.untracked.string("userFloat('dBBS2D')")
-#   ),
-#   cms.PSet(
-#        tag = cms.untracked.string("dBBS3D"),
-#        quantity = cms.untracked.string("userFloat('dBBS3D')")
-#   ),
    cms.PSet(
         tag = cms.untracked.string("Key"),
         quantity = cms.untracked.string("originalObjectRef().key()")
@@ -113,30 +93,31 @@ muonVars = (
         tag = cms.untracked.string("MiniIso"),
         quantity = cms.untracked.string("userFloat('miniIso')")
    ),
-   #OldID cms.PSet(
-   #OldID      tag = cms.untracked.string("D0"),
-   #OldID      quantity = cms.untracked.string("dB")
-   #OldID ),
-   #OldID cms.PSet(
-   #OldID      tag = cms.untracked.string("D0err"),
-   #OldID      quantity = cms.untracked.string("edB")
-   #OldID ),
-   #OldID cms.PSet(
-   #OldID      tag = cms.untracked.string("Dxy"),
-   #OldID      quantity = cms.untracked.string("userFloat('dxy')")
-   #OldID ),
-   #OldID cms.PSet(
-   #OldID      tag = cms.untracked.string("Dxyerr"),
-   #OldID      quantity = cms.untracked.string("userFloat('dxyErr')")
-   #OldID ),
-   #OldID cms.PSet(
-   #OldID      tag = cms.untracked.string("Dz"),
-   #OldID      quantity = cms.untracked.string("userFloat('dz')")
-   #OldID      ),
-   #OldID cms.PSet(
-   #OldID   tag = cms.untracked.string("Dzerr"),
-   #OldID   quantity = cms.untracked.string("userFloat('dzErr')")
-   #OldID   ),
+   # Impact point
+   cms.PSet(
+        tag = cms.untracked.string("Dxy"),
+        quantity = cms.untracked.string("userFloat('dxy')")
+   ),
+   # cms.PSet(
+   #      tag = cms.untracked.string("Dxyerr"),
+   #      quantity = cms.untracked.string("userFloat('dxyErr')")
+   # ),
+   cms.PSet(
+        tag = cms.untracked.string("Dz"),
+        quantity = cms.untracked.string("userFloat('dz')")
+        ),
+   # cms.PSet(
+   #   tag = cms.untracked.string("Dzerr"),
+   #   quantity = cms.untracked.string("userFloat('dzErr')")
+   #   ),
+   cms.PSet(
+        tag = cms.untracked.string("DB"),
+        quantity = cms.untracked.string("userFloat('dB')")
+   ),
+   cms.PSet(
+        tag = cms.untracked.string("DBerr"),
+        quantity = cms.untracked.string("userFloat('dBErr')")
+   ),
    ### the following variables need have track embedded in the pat::muon
     cms.PSet(
         tag = cms.untracked.string("IsSoftMuon"),
@@ -161,52 +142,52 @@ muonVars = (
     ## variables used in ID
 ## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
    ### LOOSE
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("IsPFMuon"),
-   #OldID     quantity = cms.untracked.string("isPFMuon")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("IsGlobalMuon"),
-   #OldID     quantity = cms.untracked.string("isGlobalMuon")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("IsTrackerMuon"),
-   #OldID     quantity = cms.untracked.string("isTrackerMuon")
-   #OldID     ),
-   #OldID ### TIGHT
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("GlbTrkNormChi2"),
-   #OldID     quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.normalizedChi2 : -900")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberValidMuonHits"),
-   #OldID     quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.hitPattern.numberOfValidMuonHits : -900")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberMatchedStations"),
-   #OldID     quantity = cms.untracked.string("numberOfMatchedStations")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberValidPixelHits"),
-   #OldID     quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidPixelHits : -900")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberTrackerLayers"),
-   #OldID     quantity = cms.untracked.string("? track.isNonnull ? track.hitPattern.trackerLayersWithMeasurement : -900")
-   #OldID     ),
-   #OldID ### SOFT
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberOfValidTrackerHits"),
-   #OldID     quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidTrackerHits : -900")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("NumberOfPixelLayers"),
-   #OldID     quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.pixelLayersWithMeasurement : -900")
-   #OldID     ),
-   #OldID cms.PSet(
-   #OldID     tag = cms.untracked.string("InTrkNormChi2"),
-   #OldID     quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
-   #OldID     ),
+   cms.PSet(
+       tag = cms.untracked.string("IsPFMuon"),
+       quantity = cms.untracked.string("isPFMuon")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("IsGlobalMuon"),
+       quantity = cms.untracked.string("isGlobalMuon")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("IsTrackerMuon"),
+       quantity = cms.untracked.string("isTrackerMuon")
+       ),
+   ### TIGHT
+   cms.PSet(
+       tag = cms.untracked.string("GlbTrkNormChi2"),
+       quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.normalizedChi2 : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumberValidMuonHits"),
+       quantity = cms.untracked.string("? globalTrack.isNonnull ? globalTrack.hitPattern.numberOfValidMuonHits : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumberMatchedStations"),
+       quantity = cms.untracked.string("numberOfMatchedStations")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumberValidPixelHits"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidPixelHits : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumberTrackerLayers"),
+       quantity = cms.untracked.string("? track.isNonnull ? track.hitPattern.trackerLayersWithMeasurement : -900")
+       ),
+   ### SOFT
+   cms.PSet(
+       tag = cms.untracked.string("NumberOfValidTrackerHits"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.numberOfValidTrackerHits : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("NumberOfPixelLayers"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.hitPattern.pixelLayersWithMeasurement : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("InTrkNormChi2"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
+       ),
    ## variables used in isolation
 ## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
    cms.PSet(
@@ -882,43 +863,60 @@ electronVars = (
       tag = cms.untracked.string("sumPUPt"),
       quantity = cms.untracked.string("userFloat('sumPUPt')")
       ),
+    # Impact point
+    cms.PSet(
+      tag = cms.untracked.string("Dxy"),
+      quantity = cms.untracked.string("userFloat('dxy')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("Dz"),
+      quantity = cms.untracked.string("userFloat('dz')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DB"),
+      quantity = cms.untracked.string("userFloat('dB')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DBerr"),
+      quantity = cms.untracked.string("userFloat('dBErr')")
+      ),
     # Cut-based ID variables
-    #OldID cms.PSet(
-    #OldID   tag = cms.untracked.string("D0"),
-    #OldID   quantity = cms.untracked.string("userFloat('d0')")
-    #OldID   ),
-    #OldID cms.PSet(
-    #OldID   tag = cms.untracked.string("Dz"),
-    #OldID   quantity = cms.untracked.string("userFloat('dz')")
-    #OldID   ),
-    #OldID cms.PSet(
-    #OldID   tag = cms.untracked.string("dEtaIn"),
-    #OldID   quantity = cms.untracked.string("deltaEtaSuperClusterTrackAtVtx")
-    #OldID   ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("dPhiIn"),
-    #OldID     quantity = cms.untracked.string("deltaPhiSuperClusterTrackAtVtx")
-    #OldID     ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("HoE"),
-    #OldID     quantity = cms.untracked.string("hcalOverEcal")
-    #OldID     ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("full5x5siee"),
-    #OldID     quantity = cms.untracked.string("full5x5_sigmaIetaIeta")
-    #OldID     ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("ooEmooP"),
-    #OldID     quantity = cms.untracked.string("userFloat('ooEmooP')")
-    #OldID     ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("missHits"),
-    #OldID     quantity = cms.untracked.string("userFloat('missHits')")
-    #OldID     ),
-    #OldID cms.PSet(
-    #OldID     tag = cms.untracked.string("hasMatchedConVeto"),
-    #OldID     quantity = cms.untracked.string("userFloat('hasMatchConv')")
-    #OldID     ),
+    cms.PSet(
+      tag = cms.untracked.string("dEtaIn"),
+      quantity = cms.untracked.string("deltaEtaSuperClusterTrackAtVtx")
+      ),
+    cms.PSet(
+        tag = cms.untracked.string("dPhiIn"),
+        quantity = cms.untracked.string("deltaPhiSuperClusterTrackAtVtx")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("HoE"),
+        quantity = cms.untracked.string("hcalOverEcal")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("full5x5siee"),
+        quantity = cms.untracked.string("full5x5_sigmaIetaIeta")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("ooEmooP"),
+        quantity = cms.untracked.string("userFloat('ooEmooP')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("missHits"),
+        quantity = cms.untracked.string("userFloat('missHits')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("hasMatchedConVeto"),
+        quantity = cms.untracked.string("userFloat('hasMatchConv')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SCEta"),
+        quantity = cms.untracked.string("superCluster().eta()")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SCPhi"),
+        quantity = cms.untracked.string("superCluster().phi()")
+        ),
     # IDs
     cms.PSet(
         tag = cms.untracked.string("vidVeto"),
@@ -944,16 +942,6 @@ electronVars = (
         tag = cms.untracked.string("vidHEEPnoiso"),
         quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
         ),
-    # SuperCluster info
-    cms.PSet(
-        tag = cms.untracked.string("SCEta"),
-        quantity = cms.untracked.string("superCluster().eta()")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("SCPhi"),
-        quantity = cms.untracked.string("superCluster().phi()")
-        )
-
     )
 
 

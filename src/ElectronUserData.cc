@@ -54,6 +54,7 @@ private:
   EDGetTokenT< reco::ConversionCollection > convLabel_;
   EDGetTokenT< reco::BeamSpot > beamLabel_;
   EDGetTokenT< double > rho_;
+  EDGetTokenT< double > rho_miniIso_;
   EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
   EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
@@ -89,6 +90,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    convLabel_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversion"))),   // "offlinePrimaryVertex"
    beamLabel_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpot"))), 
    rho_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), 
+   rho_miniIso_(consumes<double>(edm::InputTag("fixedGridRhoFastjetCentralNeutral"))),
    triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
    triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
@@ -114,9 +116,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByToken(pvLabel_, vertices);
 
   //RHO
-  edm::Handle<double> rhoHandle;
+  edm::Handle<double> rhoHandle, rhoHandle_miniIso;
   iEvent.getByToken(rho_,rhoHandle);
-  double rho = *rhoHandle; 
+  iEvent.getByToken(rho_miniIso_,rhoHandle_miniIso);
+  double rho = *rhoHandle, rho_miniIso = *rhoHandle_miniIso;
 
   if(debug_>=1) cout<<"vtx size " << vertices->size()<<endl; 
 
@@ -230,8 +233,8 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float hoe = el.hadronicOverEm();
     float absiso = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
     float relIsoWithDBeta_ = absiso/el.pt();
-    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&el), 0.05, 0.2, 10., false);
     double EA = getEA(el.eta());
+    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&el), 0.05, 0.2, 10., false, true, EA, rho_miniIso);
     //double rho = 1.0;
     float absiso_EA = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
     float relIsoWithEA_ = absiso_EA/el.pt();
@@ -246,11 +249,13 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
       ooEmooP_ = fabs(1.0/el.ecalEnergy() - el.eSuperClusterOverP()/el.ecalEnergy() );
     }
     // Impact parameter
-    float d0 = (-1) * el.gsfTrack()->dxy(vtxPoint);
-    float dz = el.gsfTrack()->dz(vtxPoint);
+    float dxy   = el.gsfTrack()->dxy(vtxPoint);
+    float dz    = el.gsfTrack()->dz(vtxPoint);
+    float dB    = el.dB (pat::Electron::PV3D);
+    float dBErr = el.edB(pat::Electron::PV3D);
 
 
-    if(debug_>=1) cout<<" ele " << i <<" pt "<< el.pt()<<" eta "<<el.eta()<<"fabs(1/E-1/P) "<< ooEmooP_ <<" d0 "<< d0 <<" dz " << dz <<" iso " << relIsoWithDBeta_<<endl; 		    
+    if(debug_>=1) cout<<" ele " << i <<" pt "<< el.pt()<<" eta "<<el.eta()<<"fabs(1/E-1/P) "<< ooEmooP_ <<" dxy "<< dxy <<" dz " << dz <<" iso " << relIsoWithDBeta_<<endl; 		    
     
     float missHits = el.gsfTrack()->hitPattern().numberOfLostTrackerHits(HitPattern::MISSING_INNER_HITS);
     // conversion rejection match
@@ -279,8 +284,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("dPhiIn",      dPhiIn);
     el.addUserFloat("full5x5",     full5x5);
     el.addUserFloat("hoe",         hoe);
-    el.addUserFloat("d0",          d0);
+    el.addUserFloat("dxy",         dxy);
     el.addUserFloat("dz",          dz);
+    el.addUserFloat("dB",          dB);
+    el.addUserFloat("dBErr",       dBErr);
     el.addUserFloat("ooEmooP",     ooEmooP_);
     el.addUserFloat("missHits",     missHits);
     el.addUserFloat("hasMatchConv",     hasMatchConv);   

@@ -766,9 +766,10 @@ process.filteredPrunedGenParticles = cms.EDProducer(
     "drop   status == 2 && abs(pdgId) == 21",
     # keep VIP(articles)s
     #OPT "keep abs(pdgId) == 23 || abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 6 || abs(pdgId) == 37 ",
-    #OPT --> keep VIP(articles)s (Z,W,h,t,H+) and their (grand)children, except for Z
-    "keep++ abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 6 || abs(pdgId) == 37 ",
+    #OPT --> keep VIP(articles)s (Z,W,h,t,H+) and their (grand)children, except for Z, also parent of top
+    "keep++ abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 37 ",
     "keep abs(pdgId) == 23 ",
+    "+keep++ abs(pdgId) == 6",
     # keep K0
     #OPT "keep abs(pdgId) == 310 && abs(eta) < 2.5 && pt > 1 ",
     # keep heavy flavour quarks for parton-based jet flavour
@@ -822,7 +823,7 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_jetKeysAK4Puppi_*_*",
     "keep *_jetKeysAK8Puppi_*_*",
     "keep *_subjetKeysAK8Puppi_*_*",
-    "keep *_eventShape*_*_*",
+    #"keep *_eventShape*_*_*",
     "keep *_*_*centrality*_*",
     "keep *_metFull_*_*",
     "keep *_metNoHF_*_*",
