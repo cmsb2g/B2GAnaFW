@@ -262,14 +262,6 @@ jetVars = (
       quantity = cms.untracked.string("bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')")
       ),
     cms.PSet(
-      tag = cms.untracked.string("DoubleBAK8"),
-      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
-      ),
-    cms.PSet(
-      tag = cms.untracked.string("DoubleBCA15"),
-      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
-      ),
-    cms.PSet(
       tag = cms.untracked.string("CMVAv2"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
       ),
@@ -630,6 +622,14 @@ genPartVars = (
 
 ### jet variables
 jetToolboxAK8Vars = (
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBAK8"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBCA15"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
+      ),
 #### SUBSTRUCTURE
      cms.PSet(
         tag = cms.untracked.string("vSubjetIndex0"),
@@ -684,7 +684,6 @@ jetToolboxAK8Vars = (
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
         ),
 )
-
 
 ### jet variables
 jetToolboxAK8SubjetVars = (
@@ -769,10 +768,15 @@ jetToolboxAK8SubjetPuppiVars = (
         )
 )
 
-
-
-
 jetToolboxAK8PuppiVars = (
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBAK8"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexAK8BJetTags')")
+      ),
+    cms.PSet(
+      tag = cms.untracked.string("DoubleBCA15"),
+      quantity = cms.untracked.string("bDiscriminator('pfBoostedDoubleSecondaryVertexCA15BJetTags')")
+      ),
 #### SUBSTRUCTURE
      cms.PSet(
         tag = cms.untracked.string("vSubjetIndex0"),
