@@ -4,18 +4,31 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.2``:
-- Adding N-subjettiness for soft drop subjets (CHS and PUPPI jets) and subjet subjet indices. Needed for lepton subjet fraction.
-- Bug fix in the jetToolBox
+This is a development branch of the B2G EDMNtuples to be used for 2016 Data and Spring16 MC
 
 ## Instructions
 
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_14
-cd CMSSW_8_0_14/src
+cmsrel CMSSW_8_0_16
+cd CMSSW_8_0_16/src
 cmsenv
+
+```
+ * Mirror for github
+```
+setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
+
+git cms-init
+
+```
+ * Top branch needed to run updated double b tagger training on AK8 jets
+```
+git fetch --tags btv-cmssw
+
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
+
 ```
  * Temporary checkouts:
 ```
