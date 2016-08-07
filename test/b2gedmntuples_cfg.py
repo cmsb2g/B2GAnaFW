@@ -360,7 +360,14 @@ from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
 listBTagInfos = [
      'pfInclusiveSecondaryVertexFinderTagInfos',
      ]
-listBtagDiscriminators = [ 
+listBtagDiscriminatorsAK4 = [ 
+		'pfJetProbabilityBJetTags',
+		'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+		'pfCombinedMVAV2BJetTags',
+		'pfCombinedCvsLJetTags',
+		'pfCombinedCvsBJetTags',
+		]
+listBtagDiscriminatorsAK8 = [ 
 		'pfJetProbabilityBJetTags',
 		'pfCombinedInclusiveSecondaryVertexV2BJetTags',
 		'pfCombinedMVAV2BJetTags',
@@ -373,11 +380,11 @@ listBtagDiscriminators = [
 runMC = ("MC" in options.DataProcessing)
 
 ak4Cut='pt > 25 && abs(eta) < 5.'
-ak8Cut='pt > 100 && abs(eta) < 5.'
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, Cut=ak4Cut )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminators, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+ak8Cut='pt > 200 && abs(eta) < 2.4'
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
 # Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
@@ -870,4 +877,4 @@ process.edmNtuplesOut.fileName=options.outputLabel
 
 process.endPath = cms.EndPath(process.edmNtuplesOut)
 
-#open('B2GEntupleFileDump.py','w').write(process.dumpPython())
+open('B2GEntupleFileDump.py','w').write(process.dumpPython())
