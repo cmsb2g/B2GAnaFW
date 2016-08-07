@@ -364,9 +364,10 @@ listBtagDiscriminators = [
 		'pfJetProbabilityBJetTags',
 		'pfCombinedInclusiveSecondaryVertexV2BJetTags',
 		'pfCombinedMVAV2BJetTags',
-		'pfBoostedDoubleSecondaryVertexAK8BJetTags',
 		'pfCombinedCvsLJetTags',
-		'pfCombinedCvsBJetTags'
+		'pfCombinedCvsBJetTags',
+    'pfBoostedDoubleSecondaryVertexAK8BJetTags',
+    'pfBoostedDoubleSecondaryVertexCA15BJetTags',
 		]
 
 runMC = ("MC" in options.DataProcessing)
