@@ -760,29 +760,29 @@ process.filteredPrunedGenParticles = cms.EDProducer(
     # keep neutrinos
     "keep abs(pdgId) == 12 || abs(pdgId) == 14 || abs(pdgId) == 16",
     # drop the shower part of the history
-    "drop   status == 2",
+    #"drop   status == 2",
     # keep gamma above 10 GeV (or all prompt) and its first parent
-    "+keep pdgId == 22 && status == 1 && (pt > 10 || isPromptFinalState())",
+    #"+keep pdgId == 22 && status == 1 && (pt > 10 || isPromptFinalState())",
     #OPT  # keep first parent of electrons above 3 GeV (or prompt)
     #OPT  "+keep abs(pdgId) == 11 && status == 1 && (pt > 3 || isPromptFinalState())",
     # but keep keep taus with decays
-    "keep++ abs(pdgId) == 15",
+    #"keep++ abs(pdgId) == 15",
     #remove pythia8 garbage
-    "drop  status > 30 && status < 70 ",
+    #"drop  status > 30 && status < 70 ",
     #remove pythia8 garbage
-    "drop  pdgId == 21 && pt < 5",
+    #"drop  pdgId == 21 && pt < 5",
     # but remove again gluons in the inheritance chain
-    "drop   status == 2 && abs(pdgId) == 21",
+    #"drop   status == 2 && abs(pdgId) == 21",
     # keep VIP(articles)s
     #OPT "keep abs(pdgId) == 23 || abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 6 || abs(pdgId) == 37 ",
     #OPT --> keep VIP(articles)s (Z,W,h,t,H+) and their (grand)children, except for Z, also parent of top
-    "keep++ abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 37 ",
-    "keep abs(pdgId) == 23 ",
-    "+keep++ abs(pdgId) == 6",
+    #"keep++ abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 37 ",
+    #"keep abs(pdgId) == 23 ",
+    #"+keep++ abs(pdgId) == 6",
     # keep K0
     #OPT "keep abs(pdgId) == 310 && abs(eta) < 2.5 && pt > 1 ",
     # keep heavy flavour quarks for parton-based jet flavour
-    "keep (4 <= abs(pdgId) <= 5) & (status = 2 || status = 11 || status = 71 || status = 72)",
+    #"keep (4 <= abs(pdgId) <= 5) & (status = 2 || status = 11 || status = 71 || status = 72)",
     #OPT  # keep light-flavour quarks and gluons for parton-based jet flavour
     #OPT  "keep (1 <= abs(pdgId) <= 3 || pdgId = 21) & (status = 2 || status = 11 || status = 71 || status = 72) && pt>5", 
     #OPT  # keep b and c hadrons for hadron-based jet flavour
@@ -792,13 +792,13 @@ process.filteredPrunedGenParticles = cms.EDProducer(
     #OPT  # additional b hadrons for jet fragmentation studies
     #OPT  "keep abs(pdgId) = 10511 || abs(pdgId) = 10521 || abs(pdgId) = 10513 || abs(pdgId) = 10523 || abs(pdgId) = 20513 || abs(pdgId) = 20523 || abs(pdgId) = 10531 || abs(pdgId) = 10533 || abs(pdgId) = 20533 || abs(pdgId) = 10541 || abs(pdgId) = 10543 || abs(pdgId) = 20543", 
     #keep SUSY particles
-    "keep (1000001 <= abs(pdgId) <= 1000039 ) || ( 2000001 <= abs(pdgId) <= 2000015)",
-    #OPT  # keep protons 
-    #OPT  "keep pdgId = 2212",
-    #OPT  #keep event summary (status=3 for pythia6, 21 <= status <= 29 for pythia8)
-    #OPT  "keep status == 3 || ( 21 <= status <= 29) || ( 11 <= status <= 19)",
-    #OPT  #keep event summary based on status flags
-    #OPT  "keep isHardProcess() || fromHardProcessFinalState() || fromHardProcessDecayed() || fromHardProcessBeforeFSR() || (statusFlags().fromHardProcess() && statusFlags().isLastCopy())",
+    #"keep (1000001 <= abs(pdgId) <= 1000039 ) || ( 2000001 <= abs(pdgId) <= 2000015)",
+    # keep protons 
+    "keep pdgId = 2212",
+    #keep event summary (status=3 for pythia6, 21 <= status <= 29 for pythia8)
+    "keep status == 3 || ( 21 <= status <= 29) || ( 11 <= status <= 19)",
+    #keep event summary based on status flags
+    "keep isHardProcess() || fromHardProcessFinalState() || fromHardProcessDecayed() || fromHardProcessBeforeFSR() || (statusFlags().fromHardProcess() && statusFlags().isLastCopy())",
     )
     #select = cms.vstring(
     #"keep *",
@@ -857,7 +857,8 @@ if( options.useNoHFMET ):
 if "MC" in options.DataProcessing: 
   process.edmNtuplesOut.outputCommands+=(
       'keep *_generator_*_*',
-      "keep *_genPart_*_*",
+      #"keep *_genPart_*_*",
+      "keep *_filteredPrunedGenParticles_*_*",
       "keep *_genJetsAK8*_*_*",
       "keep *_genJetsAK8SoftDrop*_*_*",      
       "keep LHEEventProduct_*_*_*",
