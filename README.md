@@ -4,17 +4,16 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v7.6.x_v1.2``:
-- Adding N-subjettiness for soft drop subjets (CHS and PUPPI jets) and subjet subjet indices. Needed for lepton subjet fraction.
-- Bug fix in the jetToolBox
+This is a prroduction version of the B2G EDMNtuples. Updates since last production tag ``v8.0.x_v1.2``:
+- New JECs
 
 ## Instructions
 
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_14
-cd CMSSW_8_0_14/src
+cmsrel CMSSW_8_0_16
+cd CMSSW_8_0_16/src
 cmsenv
 ```
  * Temporary checkouts:
@@ -22,7 +21,7 @@ cmsenv
 ```
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.0
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
 ```
  * Compile
@@ -51,7 +50,10 @@ To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to s
 Example usage: 
 
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f <your_dataset_file> -s "T3_US_FNALLPC" -p "DataProcessing=MC_MiniAODv2_80X" -d B2GEDMNTuples_80x_V1p0 -o "/store/group/lpctlbsm/B2GAnaFW_80X_V1p0" -v RunIISpring16MiniAODv2_B2GAnaFW_80x_V1p0 -i 'Summer15_25nsV7*'
+Prepare a text file CRAB/tosubmit.txt containing list of MiniAOD samples to process.
+
+python submit_all.py -f CRAB/tosubmit.txt -i 'Spring16_25nsV6_MC.db' -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_reHLT" -o "/store/group/phys_b2g" -d B2GAnaFW -v v80x_v2p0
+
 ```
 
 See all options with ```python submit_all.py --help```
