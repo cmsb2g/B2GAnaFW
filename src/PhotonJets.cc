@@ -75,18 +75,14 @@ public:
 private:
   void produce( edm::Event &, const edm::EventSetup & );
   bool isMatchedWithTrigger();
-  bool passIDWP();
-  float IsoCalc();
 
-  InputTag phoLabel_;
-  InputTag pvLabel_, convLabel_;
-  InputTag rhoLabel_;
-  InputTag pckPFCdsLabel_;
-  InputTag jLabel_;
+  EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
+  EDGetTokenT< std::vector< pat::Jet > > jLabel_;
+  EDGetTokenT< std::vector< reco::Vertex > > pvLabel_;
+  EDGetTokenT< std::vector< pat::PackedCandidate > > pckPFCdsLabel_;
+  EDGetTokenT< double > rhoLabel_;
   edm::EDGetTokenT<EcalRecHitCollection> ebReducedRecHitCollection_;
   edm::EDGetTokenT<EcalRecHitCollection> eeReducedRecHitCollection_;
-  // edm::EDGetTokenT<std::vector<pat::Jet> > jetToken_;
-  
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
@@ -110,19 +106,12 @@ bool isInFootprint(const T& thefootprint, const U& theCandidate) {
 }
 
 
-
-
-
-// The Cut based Photon ID's - the current is PHYS 14 first Iteration
-
-
-
 PhotonJets::PhotonJets(const edm::ParameterSet& iConfig):
-   phoLabel_(iConfig.getParameter<edm::InputTag>("phoLabel")),
-   pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
-   rhoLabel_(iConfig.getParameter<edm::InputTag>("rho")), //rhofixedgridRhoFastjet All"
-   pckPFCdsLabel_(iConfig.getParameter<edm::InputTag>("packedPFCands")),
-   jLabel_       (iConfig.getParameter<edm::InputTag>("jetLabel")),
+   phoLabel_(consumes<std::vector<pat::Photon>>(iConfig.getParameter<edm::InputTag>("phoLabel"))),
+   jLabel_(consumes<std::vector<pat::Jet>>(iConfig.getParameter<edm::InputTag>("jetLabel"))),
+   pvLabel_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("pv"))), // "offlinePrimaryVertex"
+   pckPFCdsLabel_(consumes<std::vector<pat::PackedCandidate>>(iConfig.getParameter<edm::InputTag>("packedPFCands"))), 
+   rhoLabel_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), 
    ebReducedRecHitCollection_(consumes <EcalRecHitCollection> (iConfig.getParameter<edm::InputTag>("ebReducedRecHitCollection"))), //Lazy tool additions
    eeReducedRecHitCollection_(consumes <EcalRecHitCollection> (iConfig.getParameter<edm::InputTag>("eeReducedRecHitCollection")))  // Lazy tool additions  
 
@@ -137,35 +126,36 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
   //PV
   edm::Handle<std::vector<reco::Vertex> > vertices;
-  iEvent.getByLabel(pvLabel_, vertices);
+  iEvent.getByToken(pvLabel_, vertices);
 
 
   //Photons
   edm::Handle<std::vector<pat::Photon> > phoHandle;
-  iEvent.getByLabel(phoLabel_, phoHandle);
+  iEvent.getByToken(phoLabel_, phoHandle);
   auto_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*phoHandle) );
   
   
   //Packed PF Cands
   edm::Handle<std::vector<pat::PackedCandidate>> pfCnd1Handle;
-  iEvent.getByLabel(pckPFCdsLabel_,pfCnd1Handle); 
+  iEvent.getByToken(pckPFCdsLabel_,pfCnd1Handle); 
   auto_ptr<vector<pat::PackedCandidate> > CandColl( new vector<pat::PackedCandidate> (*pfCnd1Handle) );
 
 
-  edm::Handle< edm::View<reco::Candidate>> pfCndHandle;
-  iEvent.getByLabel(pckPFCdsLabel_,pfCndHandle);
+  //edm::Handle< edm::View<reco::Candidate>> pfCndHandle;
+  edm::Handle< edm::View<vector<pat::PackedCandidate>>> pfCndHandle;
+  iEvent.getByToken(pckPFCdsLabel_,pfCndHandle);
 
   //Jet collection
   edm::Handle<pat::JetCollection> fatjets;
-  iEvent.getByLabel(jLabel_,fatjets);
+  iEvent.getByToken(jLabel_,fatjets);
 
   //Jet collection
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
-  iEvent.getByLabel(jLabel_, jetHandle);
+  iEvent.getByToken(jLabel_, jetHandle);
   auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
   edm::Handle< double > rhoH;
-  iEvent.getByLabel(rhoLabel_,rhoH);
+  iEvent.getByToken(rhoLabel_,rhoH);
 
 
 
@@ -312,6 +302,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	if(sindx != -99) {
 	  photon_subjet_frac = max_g_pt/subjets[sindx].pt();
 	}
+	subindx = sindx;	
       }// If subjet size is 3      
     }//EOF FOUND photon in the jet
     
@@ -340,24 +331,12 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 }
 
-float
-PhotonJets::IsoCalc(){
-
-  return 2.0;
-
-}
-
 
 bool
 PhotonJets::isMatchedWithTrigger(){
   return true;
 }
 
-
-bool PhotonJets::passIDWP(){
- 
-  return true;
-}
 
 
 

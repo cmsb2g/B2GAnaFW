@@ -1,14 +1,20 @@
 #include "Isolations.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
+// Version 2.0
+
 // Source:
+// V1.0
 // https://hypernews.cern.ch/HyperNews/CMS/get/susy/1991.html
 // https://github.com/manuelfs/CfANtupler/blob/master/minicfa/interface/miniAdHocNTupler.h#L54
+// V2.0:
+// Added EA correction option for pile-up
+// https://hypernews.cern.ch/HyperNews/CMS/get/b2g-selections/259.html
 
 double getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
 		      const reco::Candidate* ptcl,  
 		      double r_iso_min, double r_iso_max, double kt_scale,
-		      bool charged_only) {
+		      bool charged_only, bool use_EA_corr=false, double EA_03=0, double rho=0) {
 
   if (ptcl->pt()<5.) return 99999.;
 
@@ -64,7 +70,10 @@ double getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
     iso = iso_ch;
   } else {
     iso = iso_ph + iso_nh;
-    iso -= 0.5*iso_pu;
+    if (use_EA_corr) {
+      double EA_miniIso = EA_03 * (r_iso/0.3)*(r_iso/0.3);
+      iso -= rho * EA_miniIso;
+    } else iso -= 0.5*iso_pu;
     if (iso>0) iso += iso_ch;
     else iso = iso_ch;
   }

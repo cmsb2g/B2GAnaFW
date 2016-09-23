@@ -48,7 +48,7 @@ private:
   void produce( edm::Event &, const edm::EventSetup & );
   bool isMatchedWithTrigger(const pat::Muon, trigger::TriggerObjectCollection,int&,double&,double);
   void put( edm::Event& evt, double value, const char* instanceName);
-  
+  float getEA(float eta);
 
   TH1F* convertTGraph2TH1F(TGraphAsymmErrors* g);
   double getSF_muonID(double, double);
@@ -58,8 +58,12 @@ private:
   double getSF_singleMuonHLT(double, double);
   double getSF_doubleMuonHLT(double, double, double, double);
 
-  InputTag muLabel_, pvLabel_, packedPFCandsLabel_;
-  InputTag triggerResultsLabel_, triggerSummaryLabel_;
+  EDGetTokenT< std::vector< pat::Muon > > muLabel_;
+  EDGetTokenT< std::vector< reco::Vertex > > pvLabel_;
+  EDGetTokenT< pat::PackedCandidateCollection > packedPFCandsLabel_;
+  EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
+  EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
+  EDGetTokenT< double > rho_miniIso_;
   InputTag hltMuonFilterLabel_;
   std::string hltPath_;
   double hlt2reco_deltaRmax_;
@@ -83,11 +87,12 @@ private:
 
 
 MuonUserData::MuonUserData(const edm::ParameterSet& iConfig):
-  muLabel_(iConfig.getParameter<edm::InputTag>("muonLabel")),
-  pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
-  packedPFCandsLabel_(iConfig.getParameter<edm::InputTag>("packedPFCands")),
-  triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
-  triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
+   muLabel_(consumes<std::vector<pat::Muon>>(iConfig.getParameter<edm::InputTag>("muonLabel"))), 
+   pvLabel_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("pv"))), // "offlinePrimaryVertex"
+   packedPFCandsLabel_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("packedPFCands"))), 
+   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
+   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
+   rho_miniIso_(consumes<double>(edm::InputTag("fixedGridRhoFastjetCentralNeutral"))),
   hltMuonFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltMuonFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
   hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
@@ -136,17 +141,22 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
   //PV
   edm::Handle<std::vector<reco::Vertex> > pvHandle;
-  iEvent.getByLabel(pvLabel_, pvHandle);
+  iEvent.getByToken(pvLabel_, pvHandle);
   const reco::Vertex& PV= pvHandle->front();
+
+  //RHO
+  edm::Handle<double> rhoHandle_miniIso;
+  iEvent.getByToken(rho_miniIso_,rhoHandle_miniIso);
+  double rho_miniIso = *rhoHandle_miniIso;
 
   //Muons
   edm::Handle<std::vector<pat::Muon> > muonHandle;
-  iEvent.getByLabel(muLabel_, muonHandle);
+  iEvent.getByToken(muLabel_, muonHandle);
   auto_ptr<vector<pat::Muon> > muonColl( new vector<pat::Muon> (*muonHandle) );
   
   //PackedPFCands for Mini-isolation
   edm::Handle<pat::PackedCandidateCollection> packedPFCands;
-  iEvent.getByLabel(packedPFCandsLabel_, packedPFCands);
+  iEvent.getByToken(packedPFCandsLabel_, packedPFCands);
 
   /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
   // TRIGGER (this is not really needed ...)
@@ -168,7 +178,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   }
 
   edm::Handle<edm::TriggerResults> triggerResults;
-  iEvent.getByLabel(triggerResultsLabel_, triggerResults);
+  iEvent.getByToken(triggerResultsLabel_, triggerResults);
   if (size_t(triggerBit) < triggerResults->size() && pathFound  )
     if (triggerResults->accept(triggerBit))
       std::cout << "event pass : " << hltPath_ << std::endl;
@@ -184,7 +194,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
  
 
   if ( triggerSummary.isValid() ) {
-    iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
+    iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
     
     // Results from TriggerEvent product - Attention: must look only for
     // modules actually run in this path for this event!
@@ -240,12 +250,12 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     bool isHighPtMuon = m.isHighPtMuon(PV);
     
     // impact parameters
-    //double d0    = m.dB ();
     double dxy = m.muonBestTrack()->dxy(PV.position());     
     double dxyErr = m.muonBestTrack()->dxyError();     
-    //double d0err = m.edB();
     double dz  = m.muonBestTrack()->dz(PV.position());
     double dzErr  = m.muonBestTrack()->dzError();
+    double dB    = m.dB (pat::Muon::PV3D);
+    double dBErr = m.edB(pat::Muon::PV3D);
 
     // isolation (delta beta corrections)
     // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
@@ -255,7 +265,8 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     double sumPUPt            = m.pfIsolationR04().sumPUPt;
     double pt                 = m.pt();
     double iso04 = (sumChargedHadronPt+TMath::Max(0.,sumNeutralHadronPt+sumPhotonPt-0.5*sumPUPt))/pt;
-    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&m), 0.05, 0.2, 10., false);
+    double EA = getEA(m.eta());
+    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&m), 0.05, 0.2, 10., false, true, EA, rho_miniIso);
 
     // trigger matched 
 
@@ -281,12 +292,12 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     m.addUserFloat("isMediumMuon", isMediumMuon);
     m.addUserFloat("isTightMuon", isTightMuon);
     m.addUserFloat("isHighPtMuon", isHighPtMuon);
-    //m.addUserFloat("d0",          d0);
-    //m.addUserFloat("d0err",       d0err);
-    m.addUserFloat("dxy",          dxy);
+    m.addUserFloat("dxy",         dxy);
+    m.addUserFloat("dxyErr",      dxyErr);
     m.addUserFloat("dz",          dz);
-    m.addUserFloat("dxyErr",          dxyErr);
-    m.addUserFloat("dzErr",          dzErr);
+    m.addUserFloat("dzErr",       dzErr);
+    m.addUserFloat("dB",          dB);
+    m.addUserFloat("dBErr",       dBErr);
     m.addUserFloat("iso04",       iso04);
     m.addUserFloat("miniIso",     miniIso);
     
@@ -456,6 +467,16 @@ MuonUserData::convertTGraph2TH1F(TGraphAsymmErrors* g) {
     h->SetBinError(i+1, g->GetEYhigh()[i]);
   }
   return h;
+}
+
+float MuonUserData::getEA(float eta){
+  float effArea = 0.;
+  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0735;
+  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0619;
+  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0465;
+  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0433;
+  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.0577;
+  return effArea;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

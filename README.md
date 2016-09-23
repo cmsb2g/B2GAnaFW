@@ -1,55 +1,71 @@
-B2GAnaFW
-========
+# B2GAnaFW
 
 Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG) of the Compact Muon Solenoid (CMS) Experiment
 
-Version
-=======
+## Version
 
-This version is used to produced B2G EDMNtuples for the re-MiniAOD of the MC and Run2012D, as weill as the Run2012D_PromptReco-v4
+This is a development branch of the B2G EDMNtuples to be used for 2016 Data and Spring16 MC
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2_Spring15MiniAODv2_re_miniAO
+## Instructions
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015_B_C_50ns_D_05Oct2015_re
+ * Make a new CMSSW area:
+```
+setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
+cmsrel CMSSW_8_0_16
+cd CMSSW_8_0_16/src
+cmsenv
 
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#Run2015D_PromptReco_v4_Data_2015
+```
+ * Mirror for github
+```
+setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
 
-Checkout Instructions
-=====================
+git cms-init
 
-Make a new CMSSW area
+```
+ * Top branch needed to run updated double b tagger training on AK8 jets, and latest Run II MET filters
+```
+git fetch --tags btv-cmssw
 
-$ cmsrel CMSSW_7_4_15
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
+git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 
-$ cd CMSSW_7_4_15/src
+```
+ * Temporary checkouts:
+```
+```
+ * Clone the github repository
+```
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
+```
+ * Compile
+```
+scram b -j 10
+```
 
-$ cmsenv
-
-Needed to run VID for electron ID
-=================================
-
-$ git cms-merge-topic ikrav:egm_id_7.4.12_v1
-
-Clone the github repository
-===========================
-
-$ git clone -b v7.4.x_V8 https://github.com/cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW
-
-Compile
-=======
-
-$ scram b -j 10
-
-Running
-=======
+## Running
 
 The python configuration file for cmsRun is B2GAnaFW/test/b2gedmntuples_cfg.py. It runs on the miniAOD data tier and produces an EDM-ntuple.
 
 The configuration file contians a header explaining usage. Do
-
-$ cd Analysis/B2GAnaFW/test
-
-$ python b2gedmntuples_cfg.py 
+```
+cd Analysis/B2GAnaFW/test
+python b2gedmntuples_cfg.py 
+```
 
 for running instructions. 
 
+## CRAB submission
+
+The script test/submit_all.py can be used for mass submission of crab jobs. 
+
+To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to submit.
+
+Example usage: 
+
+```
+python submit_all.py -c b2gedmntuples_cfg.py -f <your_dataset_file> -s "T3_US_FNALLPC" -p "DataProcessing=MC_MiniAODv2_80X" -d B2GEDMNTuples_80x_V1p0 -o "/store/group/lpctlbsm/B2GAnaFW_80X_V1p0" -v RunIISpring16MiniAODv2_B2GAnaFW_80x_V1p0 -i 'Summer15_25nsV7*'
+```
+
+See all options with ```python submit_all.py --help```
