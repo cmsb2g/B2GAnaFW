@@ -697,8 +697,7 @@ for idmod in my_phoid_modules:
 #
 
 my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
-    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff',
-    'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V1_cff']
+    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
 for idmod in my_eid_modules:
   setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
