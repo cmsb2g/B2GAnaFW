@@ -931,16 +931,33 @@ electronVars = (
         quantity = cms.untracked.string("userFloat('vidLoose')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("vidTight"),
-        quantity = cms.untracked.string("userFloat('vidTight')")
-        ),
-    cms.PSet(
         tag = cms.untracked.string("vidMedium"),
         quantity = cms.untracked.string("userFloat('vidMedium')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("vidTight"),
+        quantity = cms.untracked.string("userFloat('vidTight')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("vidHEEP"),
         quantity = cms.untracked.string("userFloat('vidHEEP')")
+        ),
+    # IDs sans iso
+    cms.PSet(
+        tag = cms.untracked.string("vidVetonosiso"),
+        quantity = cms.untracked.string("userFloat('vidVetonoiso')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidLoosenoiso"),
+        quantity = cms.untracked.string("userFloat('vidLoosenoiso')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMediumnoiso"),
+        quantity = cms.untracked.string("userFloat('vidMediumnoiso')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidTightnoiso"),
+        quantity = cms.untracked.string("userFloat('vidTightnoiso')")
         ),
     cms.PSet(
         tag = cms.untracked.string("vidHEEPnoiso"),
