@@ -944,7 +944,7 @@ electronVars = (
         ),
     # IDs sans iso
     cms.PSet(
-        tag = cms.untracked.string("vidVetonosiso"),
+        tag = cms.untracked.string("vidVetonoiso"),
         quantity = cms.untracked.string("userFloat('vidVetonoiso')")
         ),
     cms.PSet(
