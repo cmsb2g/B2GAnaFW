@@ -23,13 +23,13 @@ setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
 git cms-init
 
 ```
- * Top branch needed to run updated double b tagger training on AK8 jets, and latest Run II MET filters
+ * Necessary for the VID tool and the EGamma Ids
 ```
-git fetch --tags btv-cmssw
-
-git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
+git cms-merge-topic ikrav:egm_id_80X_v1
+```
+ * Apply latest Run II MET filters that are not in MINIAOD
+```
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
-
 ```
  * Temporary checkouts:
 ```
