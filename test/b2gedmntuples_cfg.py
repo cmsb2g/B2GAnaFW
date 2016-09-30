@@ -456,6 +456,21 @@ if ("Data" in options.DataProcessing and  options.forceResiduals):
     process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
 ### ------------------------------------------------------------------
 
+### -------------------------------------------------------------------
+### Latest Run II MET Filter recommendations
+### -------------------------------------------------------------------
+
+# Using recipe:
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2?rev=99#How_to_run_the_Bad_Charged_Hadro
+
+process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
+process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+
 
 ### ------------------------------------------------------------------
 ### Configure UserData
@@ -843,6 +858,8 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_TriggerUserData*_trigger*_*",
     "keep *_fixedGridRhoFastjetAll_*_*",
     "keep *_eventUserData_*_*",
+    "keep *_BadPFMuonFilter_*_*",
+    "keep *_BadChargedCandidateFilter_*_*",
     "keep *_eeBadScFilter_*_*"
     ),
     dropMetaData = cms.untracked.string('ALL'),

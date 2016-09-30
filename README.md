@@ -26,7 +26,10 @@ git cms-init
  * Necessary for the VID tool and the EGamma Ids
 ```
 git cms-merge-topic ikrav:egm_id_80X_v1
-
+```
+ * Apply latest Run II MET filters that are not in MINIAOD
+```
+git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 ```
  * Temporary checkouts:
 ```
