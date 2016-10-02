@@ -890,6 +890,10 @@ electronVars = (
       quantity = cms.untracked.string("deltaEtaSuperClusterTrackAtVtx")
       ),
     cms.PSet(
+      tag = cms.untracked.string("dEtaInSeed"),
+      quantity = cms.untracked.string("userFloat('dEtaInSeed')")
+      ),
+    cms.PSet(
         tag = cms.untracked.string("dPhiIn"),
         quantity = cms.untracked.string("deltaPhiSuperClusterTrackAtVtx")
         ),

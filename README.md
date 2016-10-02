@@ -23,9 +23,10 @@ setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
 git cms-init
 
 ```
- * Necessary for the VID tool and the EGamma Ids
+ * Necessary for the VID tool and the EGamma Ids (and a temporary fix for loose cut based ID)
 ```
 git cms-merge-topic ikrav:egm_id_80X_v1
+sed -i "51s/0.0477/0.00477/" RecoEgamma/ElectronIdentification/python/Identification/cutBasedElectronID_Summer16_80X_V1_cff.py
 ```
  * Apply latest Run II MET filters that are not in MINIAOD
 ```
