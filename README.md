@@ -11,15 +11,14 @@ This is a development branch of the B2G EDMNtuples to be used for 2016 Data and 
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 (or in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_16
-cd CMSSW_8_0_16/src
+cmsrel CMSSW_8_0_20
+cd CMSSW_8_0_20/src
 cmsenv
 
 ```
  * Mirror for github
 ```
-setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
-
+setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily  (this is not needed, it just boost your git clone)
 git cms-init
 
 ```
@@ -37,7 +36,7 @@ git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
  * Clone the github repository
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_763
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V2
 ```
  * Compile
 ```
