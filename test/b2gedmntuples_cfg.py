@@ -393,20 +393,11 @@ jetAlgoPuppi    = 'AK4PFPuppi'
 jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
 
-ak4Cut='pt > 25 && abs(eta) < 5.'
-ak8Cut='pt > 200 && abs(eta) < 2.4'
+ak8Cut='pt > 170 && abs(eta) < 2.4'
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4Label, JETCorrPayload=jetAlgo, JETCorrLevels=corrections, addQGTagger=True ) 
 jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4LabelPuppi, JETCorrPayload='AK4PFPuppi', JETCorrLevels=['L2Relative', 'L3Absolute'] )  
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK8Label, JETCorrPayload=jetAlgoAK8, addTrimming=True, rFiltTrim=0.1, addFiltering=True ) #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
-
-''' Leave it there until last tests
-#jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, JETCorrPayload=jetAlgo, JETCorrLevels=corrections, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
-#jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
-#jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
-#jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
-# Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
-'''
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
@@ -487,10 +478,6 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 ### ------------------------------------------------------------------
 
 ### Selected leptons and jets
-
-### Check PackedCandidate vertex to make sure there is one
-#process.chs.cut = 'vertexRef.isNonnull() && fromPV()'  #### TEST
-
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
     src = cms.InputTag(muLabel),
@@ -608,7 +595,6 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
-    #vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),  ### TEST
     vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
     distMax = cms.double(0.8)
 )
@@ -642,7 +628,6 @@ process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
-    #vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),  ### TEST
     vjetLabel = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked', 'SubJets'),
     distMax = cms.double(0.8)
     )

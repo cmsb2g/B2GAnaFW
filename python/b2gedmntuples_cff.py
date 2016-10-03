@@ -1202,20 +1202,17 @@ subjetKeysAK8Puppi.jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPac
 genPart = copy.deepcopy(basic)
 genPart.variables += genPartVars
 genPart.prefix = cms.untracked.string("genPart")
-#genPart.src = cms.InputTag("filteredPrunedGenParticles")
 genPart.src = cms.InputTag("prunedGenParticles")
 
 ###genJetsAK8
 genJetsAK8 = copy.deepcopy(basic)
 genJetsAK8.prefix = cms.untracked.string("genJetsAK8")
-#genJetsAK8.src = cms.InputTag("ak8GenJetsNoNu")
 genJetsAK8.src = cms.InputTag("slimmedGenJetsAK8")
 
 ###genJetsAK8 soft drop
 genJetsAK8SoftDrop = copy.deepcopy(basic)
 genJetsAK8SoftDrop.prefix = cms.untracked.string("genJetsAK8SoftDrop")
 genJetsAK8SoftDrop.src = cms.InputTag("ak8GenJetsNoNuSoftDrop")
-#genJetsAK8.src = cms.InputTag("slimmedGenJetsAK8")
 
 ###genJetsAK8 subjets
 genJetsAK8SoftDropSubjets = copy.deepcopy(basic)
