@@ -139,8 +139,17 @@ muonVars = (
         tag = cms.untracked.string("IsHighPtMuon"),
         quantity = cms.untracked.string("userFloat('isHighPtMuon')")
         ),
-    ## variables used in ID
-## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
+    ### High pT muon variables from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#High_pT_Muon_pT_assignment_detai
+   cms.PSet(
+       tag = cms.untracked.string("InnerTrackPt"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.pt : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("TunePMuonBestTrackPt"),
+       quantity = cms.untracked.string("? tunePMuonBestTrack.isNonnull ? tunePMuonBestTrack.pt : -900")
+       ),
+   ### variables used in ID
+   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Tight_Muon_selection
    ### LOOSE
    cms.PSet(
        tag = cms.untracked.string("IsPFMuon"),
@@ -188,8 +197,8 @@ muonVars = (
        tag = cms.untracked.string("InTrkNormChi2"),
        quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.normalizedChi2 : -900")
        ),
-   ## variables used in isolation
-## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
+   ### variables used in isolation
+   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Accessing_PF_Isolation_from_reco
    cms.PSet(
        tag = cms.untracked.string("SumChargedHadronPt"),
        quantity = cms.untracked.string("pfIsolationR04().sumChargedHadronPt")
@@ -205,6 +214,10 @@ muonVars = (
    cms.PSet(
        tag = cms.untracked.string("SumPUPt"),
        quantity = cms.untracked.string("pfIsolationR04().sumPUPt")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("TrackerSumPt"),
+       quantity = cms.untracked.string("isolationR03().sumPt")
        ),
    ### genLepton
    #Calc cms.PSet(
