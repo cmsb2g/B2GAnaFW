@@ -32,13 +32,7 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-#                 'file:00181849-176A-E511-8B11-848F69FD4C94.root',
-'/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/00000/0064B539-803A-E611-BDEA-002590D0B060.root',
-#'/store/mc/RunIISpring16MiniAODv2/TprimeBToTH_M-1800_LH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/70000/E639441D-AD25-E611-93E2-B499BAABD482.root',
-    #'/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v3/60000/00181849-176A-E511-8B11-848F69FD4C94.root', 
-     #'/store/mc/RunIIFall15MiniAODv2/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/10000/029802B3-83B8-E511-A002-0025905C22AE.root',
-     #'/store/mc/RunIIFall15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/002253C9-DFB8-E511-8B0A-001A648F1C42.root',
-		 #'/store/data/Run2015D/JetHT/MINIAOD/16Dec2015-v1/00000/3085A2EF-6BB0-E511-87ED-0CC47A4D75EE.root',
+	'/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/00000/0064B539-803A-E611-BDEA-002590D0B060.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -111,6 +105,8 @@ else:
   elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
     options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
     options.usePrivateSQLite = True
+  #elif options.DataProcessing=="MC_MiniAODv2_80X_":
+  # options.globalTag="80X_mcRun2_asymptotic_v4"
   elif options.DataProcessing=="Data_80X":
     options.globalTag="80X_dataRun2_Prompt_ICHEP16JEC_v0"
   else:
@@ -118,13 +114,16 @@ else:
 
 ###inputTag labels
 rhoLabel          	= "fixedGridRhoFastjetAll"
+jetAK4Label           	= 'slimmedJets'
+jetAK4LabelPuppi       	= 'slimmedJetsPuppi'
+jetAK8Label           	= 'slimmedJetsAK8'
 muLabel           	= 'slimmedMuons'
 elLabel           	= 'slimmedElectrons'
-phoLabel            = 'slimmedPhotons'
+phoLabel            	= 'slimmedPhotons'
 pvLabel           	= 'offlineSlimmedPrimaryVertices'
 convLabel         	= 'reducedEgamma:reducedConversions'
 particleFlowLabel 	= 'packedPFCandidates'    
-metLabel 		        = 'slimmedMETs'
+metLabel 	        = 'slimmedMETs'
 metNoHFLabel 	     	= 'slimmedMETsNoHF'
 
 triggerResultsLabel 	  = "TriggerResults"
@@ -157,6 +156,8 @@ process.source = cms.Source("PoolSource",
       options.sample
       )
     )
+#from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValTTbarPileUpMINIAODSIM
+#process.source.fileNames = filesRelValTTbarPileUpMINIAODSIM
 ### Setting global tag 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
@@ -344,6 +345,7 @@ if options.usePrivateSQLiteForJER:
 ### Puppi
 ### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/PUPPI)
 ### ------------------------------------------------------------------
+'''
 process.load('CommonTools/PileupAlgos/Puppi_cff')
 process.puppi.candName = cms.InputTag('packedPFCandidates')
 process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
@@ -352,6 +354,7 @@ process.puppi.useExistingWeights = cms.bool(True)
 #process.puppiOnTheFly = process.puppi.clone()
 
 #process.puppiOnTheFly.useExistingWeights = True
+'''
 
 ### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
@@ -380,18 +383,6 @@ listBtagDiscriminatorsAK8 = [
 
 runMC = ("MC" in options.DataProcessing)
 
-ak4Cut='pt > 25 && abs(eta) < 5.'
-ak8Cut='pt > 200 && abs(eta) < 2.4'
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
-# Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
-
-jLabel		= 'selectedPatJetsAK4PFCHS'
-jLabelAK8	= 'selectedPatJetsAK8PFCHS'
-jLabelPuppi	= 'selectedPatJetsAK4PFPuppi'
-jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 
 # JER Twiki:
 #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Scale_factors
@@ -402,6 +393,25 @@ jetAlgoPuppi    = 'AK4PFPuppi'
 jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
 
+ak4Cut='pt > 25 && abs(eta) < 5.'
+ak8Cut='pt > 200 && abs(eta) < 2.4'
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4Label, JETCorrPayload=jetAlgo, JETCorrLevels=corrections, addQGTagger=True ) 
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4LabelPuppi, JETCorrPayload='AK4PFPuppi', JETCorrLevels=['L2Relative', 'L3Absolute'] )  
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK8Label, JETCorrPayload=jetAlgoAK8, addTrimming=True, rFiltTrim=0.1, addFiltering=True ) #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+
+''' Leave it there until last tests
+#jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addQGTagger=True, JETCorrPayload=jetAlgo, JETCorrLevels=corrections, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
+#jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK4, Cut=ak4Cut )
+#jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, addSoftDropSubjets=True, addTrimming=True, rFiltTrim=0.1, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut , addNsubSubjets=True, subjetMaxTau=4 )
+#jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', newPFCollection=True, nameNewPFCollection='puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, addCMSTopTagger=True, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+# Added , addNsubSubjets=True, subjetMaxTau=4  to both ak8 above
+'''
+
+jLabel		= 'selectedPatJetsAK4PFCHS'
+jLabelAK8	= 'selectedPatJetsAK8PFCHS'
+jLabelPuppi	= 'selectedPatJetsAK4PFPuppi'
+jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 
 ### ---------------------------------------------------------------------------
 ### Removing the HF from the MET computation as from 7 Aug 2015 recommendations
@@ -479,7 +489,7 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 ### Selected leptons and jets
 
 ### Check PackedCandidate vertex to make sure there is one
-process.chs.cut = 'vertexRef.isNonnull() && fromPV()'
+#process.chs.cut = 'vertexRef.isNonnull() && fromPV()'  #### TEST
 
 process.skimmedPatMuons = cms.EDFilter(
     "PATMuonSelector",
@@ -598,7 +608,8 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
+    #vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),  ### TEST
+    vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
     distMax = cms.double(0.8)
 )
 
@@ -631,7 +642,8 @@ process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
+    #vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),  ### TEST
+    vjetLabel = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked', 'SubJets'),
     distMax = cms.double(0.8)
     )
 
