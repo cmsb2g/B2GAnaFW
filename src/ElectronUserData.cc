@@ -93,6 +93,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
    hltPath_ (iConfig.getParameter<std::string>("hltPath")),
+   electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleHEEPIdIdFullInfoMap"))),
    eleVetoIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleVetoIdFullInfoMap"))),
    eleLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleLooseIdFullInfoMap"))),
    eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
@@ -220,7 +221,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
     //Cut variables     
-    float dEtaIn = el.superCluster().isNonnull() && el.superCluster()->seed().isNonnull() ? el.deltaEtaSuperClusterTrackAtVtx() - el.superCluster()->eta() + el.superCluster()->seed()->eta() : std::numeric_limits<float>::max();  // the cutID uses the absolute of this variable
+    float dEtaInSeed = el.superCluster().isNonnull() && el.superCluster()->seed().isNonnull() ? el.deltaEtaSuperClusterTrackAtVtx() - el.superCluster()->eta() + el.superCluster()->seed()->eta() : std::numeric_limits<float>::max();  // the cutID uses the absolute of this variable
     float dPhiIn = el.deltaPhiSuperClusterTrackAtVtx(); // the cutID uses the absolute of this variable
     float full5x5 = el.full5x5_sigmaIetaIeta();
     float hoe = el.hadronicOverEm();
@@ -279,7 +280,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
     fullCutFlowData = (*loose_id_cutflow_data)[elPtr];
     maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    bool vidLoose_noiso   =  (int) maskedCutFlowData.cutFlowPassed();\
+    bool vidLoose_noiso   =  (int) maskedCutFlowData.cutFlowPassed();
 
     fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
     maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
@@ -304,7 +305,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
       printCutFlowResult(fullCutFlowData);
     }
 
-    el.addUserFloat("dEtaIn",      dEtaIn);
+    el.addUserFloat("dEtaInSeed",  dEtaInSeed);
     el.addUserFloat("dPhiIn",      dPhiIn);
     el.addUserFloat("full5x5",     full5x5);
     el.addUserFloat("hoe",         hoe);
