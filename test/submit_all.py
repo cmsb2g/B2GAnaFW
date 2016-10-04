@@ -13,7 +13,7 @@ def getOptions() :
     """
     Parse and return the arguments provided by the user.
     """
-    usage = ('usage: python submit_all.py -c CONFIG -p PARAMS -i INPUTS -d DIR -v VERSION -f FILE')
+    usage = ('usage: python submit_all.py -c CFG -p PYCFGPARAMS -o OUTPUTLFNDIRBASE -d DIR -v VERSION -f DATASETS -s STORAGESITE')
 
     parser = OptionParser(usage=usage)    
     parser.add_option("-c", "--config", dest="cfg", default="b2gedmntuples_cfg.py",
@@ -37,25 +37,25 @@ def getOptions() :
         default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
         help=("The JSON file containing good lumi list"),
         metavar="LUMI")
-    parser.add_option("-d", "--dir", dest="dir", default="B2GEDMNTuples",
+    parser.add_option("-d", "--dir", dest="dir", default="B2GAnaFW",
         help=("The crab directory you want to use "),
         metavar="DIR")
     parser.add_option("-f", "--datasets", dest="datasets",
         help=("File listing datasets to run over"),
         metavar="FILE")
-    parser.add_option("-v", "--version", dest="version", default="B2GAnaFW_80X_V1p2",
+    parser.add_option("-v", "--version", dest="version", #default="B2GAnaFW_80X_V2p0",
         help=("B2GAnaFW version"),
         metavar="VERSION")
     parser.add_option("-s", "--storageSite", dest="storageSite", #default="T3_US_FNALLPC",
-        help=("B2GAnaFW version"),
+        help=("storage site"),
         metavar="VERSION")
     parser.add_option("-o", "--outLFNDirBase", dest="outLFNDirBase", 
-        help=("B2GAnaFW version"),
+        help=("EOS path for storage"),
         metavar="LFN")
     (options, args) = parser.parse_args()
 
 
-    if options.cfg == None or options.inputFiles == None or options.pyCfgParams == None or options.dir == None or options.datasets == None or options.version == None or options.storageSite == None:
+    if options.cfg == None or options.pyCfgParams == None or options.dir == None or options.datasets == None or options.version == None or options.storageSite == None or options.outLFNDirBase == None:
         parser.error(usage)
     
     return options
@@ -75,13 +75,14 @@ def main():
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
     config.section_("General")
     config.General.workArea = options.dir + '_' + options.version
-    config.General.transferLogs = True
+    config.General.transferLogs = False
 
     config.section_("JobType")
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = options.cfg
-    inFiles = glob.glob( options.inputFiles )
-    config.JobType.inputFiles = inFiles #options.inputFiles
+    if options.inputFiles != None:
+      inFiles = glob.glob( options.inputFiles )
+      config.JobType.inputFiles = inFiles #options.inputFiles
     config.JobType.pyCfgParams = options.pyCfgParams
     
     config.section_("Data")
@@ -93,7 +94,7 @@ def main():
     config.Data.publishDBS = 'phys03'
     config.Data.outputDatasetTag = options.version
     if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-      config.Data.outLFNDirBase = options.outLFNDirBase + options.dir + '/' + options.version
+      config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
     
     config.section_("Site")
     config.Site.storageSite = options.storageSite
@@ -139,14 +140,14 @@ def main():
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
-        try :
-            from multiprocessing import Process
-            p = Process(target=submit, args=(config,))
-            p.start()
-            p.join()
-            #submit(config)
-        except :
-            print 'Not submitted.'
+        #try :
+        #    from multiprocessing import Process
+        #    p = Process(target=submit, args=(config,))
+        #    p.start()
+        #    p.join()
+        #    #submit(config)
+        #except :
+        #    print 'Not submitted.'
 
 
 
