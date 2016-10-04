@@ -670,15 +670,15 @@ jetToolboxAK8Vars = (
 #        ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau1')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau2')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau3')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
         ),
      cms.PSet(
         tag = cms.untracked.string("softDropMass"),
@@ -1197,11 +1197,13 @@ jetKeysAK8Puppi = jetKeysAK8CHS.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
 ###subjetsAK8 with CHS		
 subjetsAK8CHS = copy.deepcopy(basic)		
 subjetsAK8CHS.variables += jetVars		
-subjetsAK8CHS.variables += jetToolboxAK8SubjetVars		
+#subjetsAK8CHS.variables += jetToolboxAK8SubjetVars		#### FIXME
 subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")		
-subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")		
+#subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")		
+subjetsAK8CHS.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")		
 subjetKeysAK8CHS = copy.deepcopy( jetKeys )		
-subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+#subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+subjetKeysAK8CHS.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8Puppi
 subjetsAK8Puppi = copy.deepcopy(basic)
@@ -1217,12 +1219,12 @@ subjetKeysAK8Puppi.jetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPac
 genPart = copy.deepcopy(basic)
 genPart.variables += genPartVars
 genPart.prefix = cms.untracked.string("genPart")
-genPart.src = cms.InputTag("filteredPrunedGenParticles")
+genPart.src = cms.InputTag("prunedGenParticles")
 
 ###genJetsAK8
 genJetsAK8 = copy.deepcopy(basic)
 genJetsAK8.prefix = cms.untracked.string("genJetsAK8")
-genJetsAK8.src = cms.InputTag("ak8GenJetsNoNu")
+genJetsAK8.src = cms.InputTag("slimmedGenJetsAK8")
 
 ###genJetsAK8 soft drop
 genJetsAK8SoftDrop = copy.deepcopy(basic)
