@@ -394,9 +394,9 @@ jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
 
 ak8Cut='pt > 170 && abs(eta) < 2.4'
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4Label, JETCorrPayload=jetAlgo, JETCorrLevels=corrections, addQGTagger=True ) 
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4LabelPuppi, JETCorrPayload='AK4PFPuppi', JETCorrLevels=['L2Relative', 'L3Absolute'] )  
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK8Label, JETCorrPayload=jetAlgoAK8, addTrimming=True, rFiltTrim=0.1, addFiltering=True ) #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4Label, JETCorrPayload=jetAlgo, addQGTagger=True,  bTagDiscriminators=listBtagDiscriminatorsAK4, bTagInfos=listBTagInfos ) 
+jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4LabelPuppi, JETCorrPayload='AK4PFPuppi', JETCorrLevels=[ 'L2Relative', 'L3Absolute'], bTagDiscriminators=listBtagDiscriminatorsAK4, bTagInfos=listBTagInfos )  
+jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK8Label, JETCorrPayload=jetAlgoAK8, addTrimming=True, rFiltTrim=0.1, addFiltering=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8 ) #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, Cut=ak8Cut
 jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
@@ -438,7 +438,7 @@ if options.useNoHFMET:
 ### -------------------------------------------------------------------
 
 if ("Data" in options.DataProcessing and  options.forceResiduals):
-  #Take new pat jets as input of the entuples
+  #Take new pat jets as input of the ntuples
   #process.patJetCorrFactors.levels = corrections 
   if options.useNoHFMET:
     process.patJetCorrFactorsNoHF.levels = corrections 
