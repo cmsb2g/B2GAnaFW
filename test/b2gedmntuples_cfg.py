@@ -113,24 +113,25 @@ else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
 
 ###inputTag labels
-rhoLabel          	= "fixedGridRhoFastjetAll"
-jetAK4Label           	= 'slimmedJets'
-jetAK4LabelPuppi       	= 'slimmedJetsPuppi'
-jetAK8Label           	= 'slimmedJetsAK8'
-muLabel           	= 'slimmedMuons'
-elLabel           	= 'slimmedElectrons'
-phoLabel            	= 'slimmedPhotons'
-pvLabel           	= 'offlineSlimmedPrimaryVertices'
-convLabel         	= 'reducedEgamma:reducedConversions'
-particleFlowLabel 	= 'packedPFCandidates'    
+rhoLabel          = "fixedGridRhoFastjetAll"
+jetAK4Label       = 'slimmedJets'
+jetAK4LabelPuppi  = 'slimmedJetsPuppi'
+jetAK8Label       = 'slimmedJetsAK8'
+subjetAK8Label    = 'slimmedJetsAK8PFCHSSoftDropPacked:SubJets'
+muLabel           = 'slimmedMuons'
+elLabel           = 'slimmedElectrons'
+phoLabel          = 'slimmedPhotons'
+pvLabel           = 'offlineSlimmedPrimaryVertices'
+convLabel         = 'reducedEgamma:reducedConversions'
+particleFlowLabel = 'packedPFCandidates'    
 metLabel 	        = 'slimmedMETs'
-metNoHFLabel 	     	= 'slimmedMETsNoHF'
+metNoHFLabel 	    = 'slimmedMETsNoHF'
 
-triggerResultsLabel 	  = "TriggerResults"
-triggerSummaryLabel 	  = "hltTriggerSummaryAOD"
-hltMuonFilterLabel      = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
-hltPathLabel            = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
-hltElectronFilterLabel  = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
+triggerResultsLabel 	 = "TriggerResults"
+triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
+hltMuonFilterLabel     = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
+hltPathLabel           = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
+hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
 if(options.DataProcessing in [ "MC_MiniAODv2_80X", "MC_MiniAODv2_80X_reHLT", "MC_MiniAODv2_80X_FastSim" ]): metProcess = "PAT"
 else: metProcess = "RECO"
@@ -144,8 +145,11 @@ print "\nRunning with DataProcessing option ", options.DataProcessing, " and wit
 process = cms.Process("b2gEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
+#process.MessageLogger.cerr.threshold ='ERROR'
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.categories.append('HLTrigReport')
+process.MessageLogger.suppressInfo = cms.untracked.vstring('ak8PFJetsCHSTrimmed','ak8PFJetsCHSFiltered')
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ak8PFJetsCHSTrimmed','ak8PFJetsCHSFiltered')
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(options.wantSummary) )
 ### Number of maximum events to process
@@ -394,10 +398,64 @@ jetAlgoAK8      = 'AK8PFchs'
 jetAlgoAK8Puppi = 'AK8PFPuppi'
 
 ak8Cut='pt > 170 && abs(eta) < 2.4'
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4Label, JETCorrPayload=jetAlgo, addQGTagger=True,  bTagDiscriminators=listBtagDiscriminatorsAK4, bTagInfos=listBTagInfos ) 
-jetToolbox( process, 'ak4', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK4LabelPuppi, JETCorrPayload='AK4PFPuppi', JETCorrLevels=[ 'L2Relative', 'L3Absolute'], bTagDiscriminators=listBtagDiscriminatorsAK4, bTagInfos=listBTagInfos )  
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, updateCollection=jetAK8Label, JETCorrPayload=jetAlgoAK8, addTrimming=True, rFiltTrim=0.1, addFiltering=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8 ) #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, Cut=ak8Cut
-jetToolbox( process, 'ak8', 'analysisPath', 'edmNtuplesOut', runOnMC=runMC, PUMethod='Puppi', addSoftDropSubjets=True, addTrimming=True, addPruning=True, addFiltering=True, addSoftDrop=True, addNsub=True, bTagInfos=listBTagInfos, bTagDiscriminators=listBtagDiscriminatorsAK8, Cut=ak8Cut, addNsubSubjets=True, subjetMaxTau=4 )
+
+jetToolbox( process, 
+  'ak4', 
+  'analysisPath', 
+  'edmNtuplesOut', 
+  runOnMC=runMC, 
+  updateCollection=jetAK4Label, 
+  JETCorrPayload=jetAlgo, 
+  addQGTagger=True,  
+  bTagDiscriminators=listBtagDiscriminatorsAK4, 
+  bTagInfos=listBTagInfos ) 
+
+jetToolbox( process, 
+  'ak4', 
+  'analysisPath', 
+  'edmNtuplesOut', 
+  runOnMC=runMC, 
+  updateCollection=jetAK4LabelPuppi,
+  JETCorrPayload='AK4PFPuppi', 
+  JETCorrLevels=[ 'L2Relative', 'L3Absolute'], 
+  bTagDiscriminators=listBtagDiscriminatorsAK4, 
+  bTagInfos=listBTagInfos )  
+
+jetToolbox( process, 
+  'ak8', 
+  'analysisPath', 
+  'edmNtuplesOut', 
+  runOnMC=runMC, 
+  updateCollection=jetAK8Label, 
+  updateCollectionSubjets=subjetAK8Label, 
+  jetRadius=0.8, 
+  algoLabel='AK',
+  fatJetSource=jetAK8Label, 
+  JETCorrPayload=jetAlgoAK8, 
+  addTrimming=True, 
+  rFiltTrim=0.1, 
+  addFiltering=True, 
+  bTagInfos=listBTagInfos, 
+  bTagDiscriminators=listBtagDiscriminatorsAK8 ) 
+  #, addSoftDropSubjets=True, addPruning=True, addSoftDrop=True, addCMSTopTagger=True , addNsubSubjets=True, subjetMaxTau=4 ) #, addNsub=True, Cut=ak8Cut
+
+jetToolbox( process, 
+  'ak8', 
+  'analysisPath', 
+  'edmNtuplesOut', 
+  runOnMC=runMC, 
+  PUMethod='Puppi', 
+  addSoftDropSubjets=True, 
+  addTrimming=True, 
+  addPruning=True, 
+  addFiltering=True, 
+  addSoftDrop=True, 
+  addNsub=True, 
+  bTagInfos=listBTagInfos, 
+  bTagDiscriminators=listBtagDiscriminatorsAK8, 
+  Cut=ak8Cut, 
+  addNsubSubjets=True, 
+  subjetMaxTau=4 )
 
 jLabel		= 'selectedPatJetsAK4PFCHS'
 jLabelAK8	= 'selectedPatJetsAK8PFCHS'
