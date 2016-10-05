@@ -79,6 +79,11 @@ metFull =  cms.EDProducer(
         ),
     )
 
+puppimetFull = metFull.clone(
+  src = cms.InputTag("skimmedPatPuppiMET"),
+  prefix = cms.untracked.string("puppimetFull"),
+  )
+
 ### muon variables
 muonVars = (
    cms.PSet(
@@ -286,10 +291,10 @@ jetVars = (
       tag = cms.untracked.string("CvsB"),
       quantity = cms.untracked.string("bDiscriminator('pfCombinedCvsBJetTags')")
       ),
-    cms.PSet(
-      tag = cms.untracked.string("CMVA"),
-      quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
-      ),
+    #cms.PSet(
+    #  tag = cms.untracked.string("CMVA"),
+    #  quantity = cms.untracked.string("bDiscriminator('pfCombinedMVAV2BJetTags')")
+    #  ),
     ### GEN PARTON
     #Calc cms.PSet(
     #Calc   tag = cms.untracked.string("GenPartonY"),
