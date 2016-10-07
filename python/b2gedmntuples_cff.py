@@ -675,15 +675,15 @@ jetToolboxAK8Vars = (
 #        ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau1')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau1')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau2"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau2')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau2')")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau3"),
-        quantity = cms.untracked.string("userFloat('NjettinessAK8:tau3')")
+        quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau3')")
         ),
      cms.PSet(
         tag = cms.untracked.string("softDropMass"),
@@ -1202,13 +1202,13 @@ jetKeysAK8Puppi = jetKeysAK8CHS.clone( jetLabel = 'boostedJetUserDataAK8Puppi' )
 ###subjetsAK8 with CHS		
 subjetsAK8CHS = copy.deepcopy(basic)		
 subjetsAK8CHS.variables += jetVars		
-#subjetsAK8CHS.variables += jetToolboxAK8SubjetVars		#### FIXME
+subjetsAK8CHS.variables += jetToolboxAK8SubjetVars		
 subjetsAK8CHS.prefix = cms.untracked.string("subjetAK8CHS")		
-#subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")		
-subjetsAK8CHS.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")		
+subjetsAK8CHS.src = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")		
+#subjetsAK8CHS.src = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")		
 subjetKeysAK8CHS = copy.deepcopy( jetKeys )		
-#subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
-subjetKeysAK8CHS.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
+subjetKeysAK8CHS.jetLabel = cms.InputTag("selectedPatJetsAK8PFCHSSoftDropPacked", "SubJets")
+#subjetKeysAK8CHS.jetLabel = cms.InputTag("slimmedJetsAK8PFCHSSoftDropPacked", "SubJets")
 
 ###subjetsAK8Puppi
 subjetsAK8Puppi = copy.deepcopy(basic)
