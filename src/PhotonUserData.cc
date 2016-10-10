@@ -126,7 +126,6 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     pat::Photon & phoi = (*phoColl)[i];
    if(phoi.hadTowOverEm() > 0.15 ) continue;
    
-    float pho_isoC       = 1*rho_; //(*isoc_idvar)[pho];
   
     
     bool pho_isLoose  = (*loose_id_decisions)[pho];
@@ -136,11 +135,8 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     //Isolations raw and EA corrected
     float pho_isoP       = (*isop_idvar)[pho];
     float pho_isoN       = (*ison_idvar)[pho];
-    
-    
+    float pho_isoC       = (*isoc_idvar)[pho];
     float abseta = fabs(pho->eta());    
-
-    float pho_isoCea     = std::max( float(0.0) ,(*isoc_idvar)[pho]                         );
     float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*EA25nsPho(abseta)) ;
     float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EA25nsNeu(abseta));
 
@@ -149,26 +145,37 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     float pho_r9 = pho->r9();
     float pho_sieie = (*full5x5SigmaIEtaIEtaMap)[pho];
     float pho_hoe = pho->hadTowOverEm();
-    
+    float pho_sieip = pho->sep(); 
+    float pho_sipip = pho->spp(); 
+  
+    float pho_e1x5     = pho->e1x5(); 
+    float pho_e5x5     = pho->e5x5(); 
+  
+
+    //Photon Ele discrimination 
 
     bool hasPixelSeed = pho->hasPixelSeed(); 
+    bool pho_eleveto  = pho->passElectronVeto();
 
-    //Shower shapes
     phoi.addUserInt("hasPixelSeed", hasPixelSeed);
+    phoi.addUserInt("eleveto", pho_eleveto); //
     phoi.addUserFloat("sigmaIetaIeta", pho_sieie);
+    phoi.addUserFloat("sigmaIetaIphi",pho_sieip); //
+    phoi.addUserFloat("sigmaIphiIphi",pho_sipip); //
+    phoi.addUserFloat("e1x5",pho_e1x5); //
+    phoi.addUserFloat("e5x5",pho_e5x5); //
     phoi.addUserFloat("hoe", pho_hoe);
     phoi.addUserFloat("r9",  pho_r9);
-
+    
     
     //isolation
     phoi.addUserFloat("isoC",pho_isoC);
-  
-    
     phoi.addUserFloat("isoP",pho_isoP);
     phoi.addUserFloat("isoN",pho_isoN);
-    phoi.addUserFloat("isoC_EAcor",pho_isoCea);
     phoi.addUserFloat("isoP_EAcor",pho_isoPea);
     phoi.addUserFloat("isoN_EAcor",pho_isoNea);
+    // the ea corrections correspond to sp15 IDs which did not have ISO C eas - thus variable removed. 
+
 
     phoi.addUserInt("isLoose",    pho_isLoose);
     phoi.addUserInt("isMedium",   pho_isMedium);
