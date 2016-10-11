@@ -31,10 +31,6 @@ EventUserData::EventUserData(const edm::ParameterSet& iConfig):
    produces<std::vector<int> >("puBX");
    produces<std::vector<int> >("puNInt");
    produces<int>("puNtrueInt");
-   produces<int>("npv");
-   produces<double>("vx");
-   produces<double>("vy");
-   produces<double>("vz"); 
  }
 
 
@@ -44,7 +40,6 @@ void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) 
   std::auto_ptr<int> puNtrueInt (new int);
   std::auto_ptr<std::vector<int> > puBX(  new std::vector<int> );
   std::auto_ptr<std::vector<int> > puNInt( new std::vector<int> );
-    
 
   if ( ! iEvent.eventAuxiliary().isRealData() ) {
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
@@ -58,33 +53,9 @@ void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) 
     }
   }
 
- 
-
-  // primary vertices
-
-  std::auto_ptr<int> npv (new int() );
-  std::auto_ptr<double> vx (new double() );
-  std::auto_ptr<double> vy (new double() );
-  std::auto_ptr<double> vz (new double() );
-
-  edm::Handle<std::vector<reco::Vertex> > h_vtx;
-  iEvent.getByToken( m_pvSrc, h_vtx );
-  *npv = h_vtx->size();
-  if ( h_vtx->size() > 0 ) {
-    *vx = h_vtx->front().x();
-    *vy = h_vtx->front().y();
-    *vz = h_vtx->front().z();
-  }
-
- 
   iEvent.put(puBX,"puBX");
   iEvent.put(puNInt,"puNInt");
   iEvent.put(puNtrueInt,"puNtrueInt");
-  iEvent.put( npv, "npv"); 
-  iEvent.put( vx, "vx"); 
-  iEvent.put( vy, "vy"); 
-  iEvent.put( vz, "vz"); 
-
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

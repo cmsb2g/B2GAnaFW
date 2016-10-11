@@ -59,6 +59,10 @@ VertexInfo::VertexInfo(const edm::ParameterSet& iConfig):
    src_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("src")))
 {
   // initialize the configurables
+  produces<int>("npv");
+  produces<std::vector<float>>("vx");
+  produces<std::vector<float>>("vy");
+  produces<std::vector<float>>("vz"); 
   produces< std::vector<float> >("chi");
   produces< std::vector<float> >("rho");
   produces< std::vector<float> >("z");
@@ -73,25 +77,41 @@ void VertexInfo::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetu
   iEvent.getByToken(src_, vertices);
 
   
- std::auto_ptr< std::vector< float > >chi_(new std::vector< float >) ;
- std::auto_ptr< std::vector< float > >rho_ (new std::vector< float >) ;
- std::auto_ptr< std::vector< float > >z_ (new std::vector< float >) ;
- std::auto_ptr< std::vector< int > >ndof_ (new std::vector< int >) ;
- 
-  
- for(size_t v = 0; v<vertices->size();++v){;
-   chi_->push_back(vertices->at(v).chi2());
-   ndof_->push_back(vertices->at(v).ndof());
-   z_->push_back(vertices->at(v).position().z());
-   rho_->push_back(vertices->at(v).position().rho());
+  // primary vertices
 
- }
-  
-   
-   iEvent.put(chi_,"chi");
-   iEvent.put(rho_,"rho");
-   iEvent.put(z_,"z");
-   iEvent.put(ndof_,"ndof");
+  std::auto_ptr<int> npv (new int() );
+  std::auto_ptr<std::vector<float>> vx (new std::vector<float> );
+  std::auto_ptr<std::vector<float>> vy (new std::vector<float> );
+  std::auto_ptr<std::vector<float>> vz (new std::vector<float> );
+
+  std::auto_ptr< std::vector< float > >chi_(new std::vector< float >) ;
+  std::auto_ptr< std::vector< float > >rho_ (new std::vector< float >) ;
+  std::auto_ptr< std::vector< float > >z_ (new std::vector< float >) ;
+  std::auto_ptr< std::vector< int > >ndof_ (new std::vector< int >) ;
+
+  *npv = vertices->size();
+
+  for(size_t v = 0; v<vertices->size();++v){;
+    vx -> push_back(vertices->at(v).x()) ;
+    vy -> push_back(vertices->at(v).y()) ;
+    vz -> push_back(vertices->at(v).z()) ;
+    chi_->push_back(vertices->at(v).chi2());
+    ndof_->push_back(vertices->at(v).ndof());
+    z_->push_back(vertices->at(v).position().z());
+    rho_->push_back(vertices->at(v).position().rho());
+
+  }
+
+
+  iEvent.put( npv, "npv"); 
+  iEvent.put( vx, "vx"); 
+  iEvent.put( vy, "vy"); 
+  iEvent.put( vz, "vz"); 
+
+  iEvent.put(chi_,"chi");
+  iEvent.put(rho_,"rho");
+  iEvent.put(z_,"z");
+  iEvent.put(ndof_,"ndof");
 }
 
 VertexInfo::~VertexInfo(){;}
