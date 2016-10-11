@@ -191,7 +191,7 @@ if options.usePrivateSQLite:
     elif options.DataProcessing=="MC_MiniAODv2_80X":
       jec_era = "Spring16_25nsV6_MC"
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
-      jec_era = "Spring16_25nsFastSimV1_MC"
+      jec_era = "Spring16_25nsFastSimMC_V1" ###"Spring16_25nsFastSimV1_MC"
     else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
