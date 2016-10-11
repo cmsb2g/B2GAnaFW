@@ -673,7 +673,8 @@ process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
-    vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
+    #vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
 )
 
@@ -706,7 +707,8 @@ process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
-    vjetLabel = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked', 'SubJets'),
+    #vjetLabel = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked', 'SubJets'),
+    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
 
