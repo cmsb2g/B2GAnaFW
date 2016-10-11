@@ -1007,12 +1007,36 @@ photonVars = (
         quantity = cms.untracked.string("superCluster.phi()")
         ),
     cms.PSet(
+        tag = cms.untracked.string("SCRawE"),
+        quantity = cms.untracked.string("superCluster.rawEnergy()")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("HasPixelSeed"),
         quantity = cms.untracked.string("userInt('hasPixelSeed')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("ElectronVeto"),
+        quantity = cms.untracked.string("userInt('eleveto')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("SigmaIEtaIEta"),
         quantity = cms.untracked.string("userFloat('sigmaIetaIeta')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SigmaIEtaIPhi"),
+        quantity = cms.untracked.string("userFloat('sigmaIetaIphi')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("SigmaIPhiIPhi"),
+        quantity = cms.untracked.string("userFloat('sigmaIphiIphi')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("E1x5"),
+        quantity = cms.untracked.string("userFloat('e1x5')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("E5x5"),
+        quantity = cms.untracked.string("userFloat('e5x5')")
         ),
     cms.PSet(
         tag = cms.untracked.string("HoverE"),
@@ -1035,15 +1059,11 @@ photonVars = (
         quantity = cms.untracked.string("userFloat('isoN')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("ChargedHadronIsoEAcorrected"),
-        quantity = cms.untracked.string("userFloat('isoC_EAcor')")
-        ),        
-    cms.PSet(
-        tag = cms.untracked.string("PhotonIsoEAcorrected"),
+        tag = cms.untracked.string("PhotonIsoEAcorrectedsp15"),
         quantity = cms.untracked.string("userFloat('isoP_EAcor')")
         ),
     cms.PSet(
-        tag = cms.untracked.string("NeutralHadronIsoEAcorrected"),
+        tag = cms.untracked.string("NeutralHadronIsoEAcorrectedsp15"),
         quantity = cms.untracked.string("userFloat('isoN_EAcor')")
         ),
     cms.PSet(
