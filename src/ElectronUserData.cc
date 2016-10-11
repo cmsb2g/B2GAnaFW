@@ -166,59 +166,57 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   maskCuts.push_back("GsfEleTrkPtIsoCut_0"); 
   maskCuts.push_back("GsfEleEmHadD1IsoRhoCut_0");   
   
-  // TRIGGER
-  bool changedConfig = false;
-  if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
-    cout << "Initialization of HLTConfigProvider failed!!" << endl;
-    return;
-  }
+  //// TRIGGER
+  //bool changedConfig = false;
+  //if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
+  //  cout << "Initialization of HLTConfigProvider failed!!" << endl;
+  //  return;
+  //}
 
-  
-  if (changedConfig){
-    std::cout << "the curent menu is " << hltConfig.tableName() << " "<< hltConfig.triggerNames().size() <<endl; 
-    triggerBit = -1;
-    for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
-      if(debug_ ==99) cout<<"trigName " <<j<<" "<< hltConfig.triggerNames()[j] <<endl; 
-      if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) triggerBit = j;
-    }
-    if (triggerBit == -1) cout << "HLT path not found" << endl;
-  }
-  edm::Handle<edm::TriggerResults> triggerResults;
-  iEvent.getByToken(triggerResultsLabel_, triggerResults);
-  if (size_t(triggerBit) < triggerResults->size() )
-    if (triggerResults->accept(triggerBit))
-      std::cout << "event pass : " << hltPath_ << std::endl;
-  // if (triggerResults->accept(triggerBit)){ //crashing here to be understood!
-  //   std::cout << "event pass : " << hltPath_ << std::endl;
-  // }
+  //
+  //if (changedConfig){
+  //  std::cout << "the curent menu is " << hltConfig.tableName() << " "<< hltConfig.triggerNames().size() <<endl; 
+  //  triggerBit = -1;
+  //  for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
+  //    if(debug_ ==99) cout<<"trigName " <<j<<" "<< hltConfig.triggerNames()[j] <<endl; 
+  //    if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) triggerBit = j;
+  //  }
+  //  if (triggerBit == -1) cout << "HLT path not found" << endl;
+  //}
+  //edm::Handle<edm::TriggerResults> triggerResults;
+  //iEvent.getByToken(triggerResultsLabel_, triggerResults);
+  //if (size_t(triggerBit) < triggerResults->size() )
+  //  if (triggerResults->accept(triggerBit))
+  //    std::cout << "event pass : " << hltPath_ << std::endl;
+  //// if (triggerResults->accept(triggerBit)){ //crashing here to be understood!
+  ////   std::cout << "event pass : " << hltPath_ << std::endl;
+  //// }
 
-  edm::Handle<trigger::TriggerEvent> triggerSummary;
-  iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
+  //edm::Handle<trigger::TriggerEvent> triggerSummary;
+  //iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
 
-  //find the index corresponding to the event
-  if(false){ ///to be done after understanding which trigger(s) to use.
-  size_t ElectronFilterIndex = (*triggerSummary).filterIndex(hltElectronFilterLabel_);
-  trigger::TriggerObjectCollection allTriggerObjects = triggerSummary->getObjects();
-  trigger::TriggerObjectCollection ElectronLegObjects;
-  if (ElectronFilterIndex < (*triggerSummary).sizeFilters()) { //check if the trigger object is present
-    //save the trigger objects corresponding to ele leg
-    const trigger::Keys &keysElectrons = (*triggerSummary).filterKeys(ElectronFilterIndex);
-    for (size_t j = 0; j < keysElectrons.size(); j++) {
-      trigger::TriggerObject foundObject = (allTriggerObjects)[keysElectrons[j]];
-      ElectronLegObjects.push_back(foundObject);
-    }
-  }
-  if( debug_ >=1)  std::cout << "ElectronLegObjects: " << ElectronLegObjects.size() << std::endl;
-  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
-  }
-
+  ////find the index corresponding to the event
+  //if(false){ ///to be done after understanding which trigger(s) to use.
+  //size_t ElectronFilterIndex = (*triggerSummary).filterIndex(hltElectronFilterLabel_);
+  //trigger::TriggerObjectCollection allTriggerObjects = triggerSummary->getObjects();
+  //trigger::TriggerObjectCollection ElectronLegObjects;
+  //if (ElectronFilterIndex < (*triggerSummary).sizeFilters()) { //check if the trigger object is present
+  //  //save the trigger objects corresponding to ele leg
+  //  const trigger::Keys &keysElectrons = (*triggerSummary).filterKeys(ElectronFilterIndex);
+  //  for (size_t j = 0; j < keysElectrons.size(); j++) {
+  //    trigger::TriggerObject foundObject = (allTriggerObjects)[keysElectrons[j]];
+  //    ElectronLegObjects.push_back(foundObject);
+  //  }
+  //}
+  //if( debug_ >=1)  std::cout << "ElectronLegObjects: " << ElectronLegObjects.size() << std::endl;
+  ///////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
+  //}
 
   for (size_t i = 0; i< eleColl->size(); i++){
     pat::Electron & el = (*eleColl)[i];
 
     // Isolation
     GsfElectron::PflowIsolationVariables pfIso = el.pfIsolationVariables();
-
 
     //Cut variables     
     float dEtaInSeed = el.superCluster().isNonnull() && el.superCluster()->seed().isNonnull() ? el.deltaEtaSuperClusterTrackAtVtx() - el.superCluster()->eta() + el.superCluster()->seed()->eta() : std::numeric_limits<float>::max();  // the cutID uses the absolute of this variable
@@ -230,7 +228,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float absiso_EA = pfIso.sumChargedHadronPt + std::max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
     float relIsoWithEA_ = absiso_EA/el.pt();
     float missHits = el.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
-   
 
     float ooEmooP_; 
     if( el.ecalEnergy() == 0 ){
@@ -243,8 +240,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
       ooEmooP_ = std::abs(1.0/el.ecalEnergy() - el.eSuperClusterOverP()/el.ecalEnergy() );
     }
 
-
-
     //Other variables
     float absisoWithDBeta = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
     float relIsoWithDBeta_ = absisoWithDBeta/el.pt();
@@ -256,11 +251,9 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     float dB    = el.dB (pat::Electron::PV3D);
     float dBErr = el.edB(pat::Electron::PV3D);
 
-
     if(debug_>=1) cout<<" ele " << i <<" pt "<< el.pt()<<" eta "<<el.eta()<<"fabs(1/E-1/P) "<< ooEmooP_ <<" dxy "<< dxy <<" dz " << dz <<" iso " << relIsoWithDBeta_<<endl; 		    
      // conversion rejection match
     bool hasMatchConv = ConversionTools::hasMatchedConversion(el, conversions, beamspot.position());
-
 
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
@@ -296,9 +289,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     maskedCutFlowData2 = fullCutFlowData.getCutFlowResultMasking(8);
     bool vidHEEP_noiso     = (int) maskedCutFlowData.cutFlowPassed() && (int) maskedCutFlowData2.cutFlowPassed() ;    
 
-    
-
-
     if( verboseIdFlag_ ) {
       vid::CutFlowResult fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
       edm::LogInfo("DEBUG:VID") << "CutFlow, full info for cand with pt= " << elPtr->pt();
@@ -324,7 +314,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("sumPhotonEt",  pfIso.sumPhotonEt );
     el.addUserFloat("sumPUPt", pfIso.sumPUPt  );
 
-
     el.addUserFloat("rho", rho );
     el.addUserFloat("EA", EA );
     el.addUserFloat("vidVeto",    vidVeto );
@@ -337,9 +326,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("vidMediumnoiso",    vidMedium_noiso );
     el.addUserFloat("vidTightnoiso",    vidTight_noiso );
     el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
-
-
-
 
   }
 

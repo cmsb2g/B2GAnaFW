@@ -119,24 +119,24 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
   //// TRIGGER (this is not really needed ...)
-  bool changedConfig = false;
-  bool pathFound = false;
-  if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
-    edm::LogError("HLTConfigProvider") << "Initialization of HLTConfigProvider failed!!" << std::endl;
-    return;
-  }
+  //bool changedConfig = false;
+  //bool pathFound = false;
+  //if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
+  //  edm::LogError("HLTConfigProvider") << "Initialization of HLTConfigProvider failed!!" << std::endl;
+  //  return;
+  //}
 
-  if (changedConfig){
-    edm::LogInfo("HLTMenu") << "the current menu is " << hltConfig.tableName() << std::endl;
-    triggerBit = -1;
-    for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
-      if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) {triggerBit = j;pathFound=true;}
-    }
-    if (triggerBit == -1) edm::LogError("NoHLTPath") << "HLT path not found" << std::endl;
-  }
+  //if (changedConfig){
+  //  edm::LogInfo("HLTMenu") << "the current menu is " << hltConfig.tableName() << std::endl;
+  //  triggerBit = -1;
+  //  for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
+  //    if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) {triggerBit = j;pathFound=true;}
+  //  }
+  //  if (triggerBit == -1) edm::LogError("NoHLTPath") << "HLT path not found" << std::endl;
+  //}
 
-     edm::Handle<edm::TriggerResults> triggerResults;
-     iEvent.getByToken(triggerResultsLabel_, triggerResults);
+  //   edm::Handle<edm::TriggerResults> triggerResults;
+  //   iEvent.getByToken(triggerResultsLabel_, triggerResults);
   /* Why do we need this
      if (size_t(triggerBit) < triggerResults->size() && pathFound)
        if (triggerResults->accept(triggerBit))
@@ -144,44 +144,44 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   */ 
 
   //// TRIGGER MATCHING
-  trigger::TriggerObjectCollection JetLegObjects;
+  //trigger::TriggerObjectCollection JetLegObjects;
 
-  edm::Handle<trigger::TriggerEvent> triggerSummary;
+  //edm::Handle<trigger::TriggerEvent> triggerSummary;
 
-  if ( triggerSummary.isValid() ) {
-    iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
+  //if ( triggerSummary.isValid() ) {
+  //  iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
 
-    // Results from TriggerEvent product - Attention: must look only for
-    // modules actually run in this path for this event!
-    if(pathFound){
-      const unsigned int triggerIndex(hltConfig.triggerIndex(hltPath_));
-      const vector<string>& moduleLabels(hltConfig.moduleLabels(triggerIndex));
-      const unsigned int moduleIndex(triggerResults->index(triggerIndex));
-      for (unsigned int j=0; j<=moduleIndex; ++j) {
-        const string& moduleLabel(moduleLabels[j]);
-        const string  moduleType(hltConfig.moduleType(moduleLabel));
-        // check whether the module is packed up in TriggerEvent product
-        const unsigned int filterIndex(triggerSummary->filterIndex(InputTag(moduleLabel,"","HLT")));
-        if (filterIndex<triggerSummary->sizeFilters()) {
-          TString lable = moduleLabel.c_str();
-          if (lable.Contains(hltJetFilterLabel_.label())) {
+  //  // Results from TriggerEvent product - Attention: must look only for
+  //  // modules actually run in this path for this event!
+  //  if(pathFound){
+  //    const unsigned int triggerIndex(hltConfig.triggerIndex(hltPath_));
+  //    const vector<string>& moduleLabels(hltConfig.moduleLabels(triggerIndex));
+  //    const unsigned int moduleIndex(triggerResults->index(triggerIndex));
+  //    for (unsigned int j=0; j<=moduleIndex; ++j) {
+  //      const string& moduleLabel(moduleLabels[j]);
+  //      const string  moduleType(hltConfig.moduleType(moduleLabel));
+  //      // check whether the module is packed up in TriggerEvent product
+  //      const unsigned int filterIndex(triggerSummary->filterIndex(InputTag(moduleLabel,"","HLT")));
+  //      if (filterIndex<triggerSummary->sizeFilters()) {
+  //        TString lable = moduleLabel.c_str();
+  //        if (lable.Contains(hltJetFilterLabel_.label())) {
 
-            const trigger::Vids& VIDS (triggerSummary->filterIds(filterIndex));
-            const trigger::Keys& KEYS(triggerSummary->filterKeys(filterIndex));
-            const size_type nI(VIDS.size());
-            const size_type nK(KEYS.size());
-            assert(nI==nK);
-            const size_type n(max(nI,nK));
-            const trigger::TriggerObjectCollection& TOC(triggerSummary->getObjects());
-            for (size_type i=0; i!=n; ++i) {
-              const trigger::TriggerObject& TO(TOC[KEYS[i]]);
-              JetLegObjects.push_back(TO);	  
-            }
-          }
-        }
-      }
-    }
-  }
+  //          const trigger::Vids& VIDS (triggerSummary->filterIds(filterIndex));
+  //          const trigger::Keys& KEYS(triggerSummary->filterKeys(filterIndex));
+  //          const size_type nI(VIDS.size());
+  //          const size_type nK(KEYS.size());
+  //          assert(nI==nK);
+  //          const size_type n(max(nI,nK));
+  //          const trigger::TriggerObjectCollection& TOC(triggerSummary->getObjects());
+  //          for (size_type i=0; i!=n; ++i) {
+  //            const trigger::TriggerObject& TO(TOC[KEYS[i]]);
+  //            JetLegObjects.push_back(TO);	  
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
 
   // JEC Uncertainty
   edm::ESHandle<JetCorrectorParametersCollection> JetCorrParColl;
@@ -210,13 +210,13 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     //Individual jet operations to be added here
     // trigger matched 
-    int idx       = -1;
-    double deltaR = -1.;
-    bool isMatched2trigger = isMatchedWithTrigger(jet, JetLegObjects, idx, deltaR, hlt2reco_deltaRmax_) ;
-    double hltEta = ( isMatched2trigger ? JetLegObjects[0].eta()    : -999.);
-    double hltPhi = ( isMatched2trigger ? JetLegObjects[0].phi()    : -999.);
-    double hltPt  = ( isMatched2trigger ? JetLegObjects[0].pt()     : -999.);
-    double hltE   = ( isMatched2trigger ? JetLegObjects[0].energy() : -999.);
+    //int idx       = -1;
+    //double deltaR = -1.;
+    //bool isMatched2trigger = isMatchedWithTrigger(jet, JetLegObjects, idx, deltaR, hlt2reco_deltaRmax_) ;
+    //double hltEta = ( isMatched2trigger ? JetLegObjects[0].eta()    : -999.);
+    //double hltPhi = ( isMatched2trigger ? JetLegObjects[0].phi()    : -999.);
+    //double hltPt  = ( isMatched2trigger ? JetLegObjects[0].pt()     : -999.);
+    //double hltE   = ( isMatched2trigger ? JetLegObjects[0].energy() : -999.);
 
     // JEC uncertainty
     jecUnc.setJetPt (jet.pt());
@@ -257,11 +257,11 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
     jet.addUserFloat("jecUncertainty",   jecUncertainty);
 
-    jet.addUserFloat("HLTjetEta",   hltEta);
-    jet.addUserFloat("HLTjetPhi",   hltPhi);
-    jet.addUserFloat("HLTjetPt",    hltPt);
-    jet.addUserFloat("HLTjetE",     hltE);
-    jet.addUserFloat("HLTjetDeltaR",deltaR);
+    //jet.addUserFloat("HLTjetEta",   hltEta);
+    //jet.addUserFloat("HLTjetPhi",   hltPhi);
+    //jet.addUserFloat("HLTjetPt",    hltPt);
+    //jet.addUserFloat("HLTjetE",     hltE);
+    //jet.addUserFloat("HLTjetDeltaR",deltaR);
 
     jet.addUserFloat("PtResolution", PtResolution);
     jet.addUserFloat("JERSF",        JERSF);
