@@ -38,9 +38,6 @@ def getOptions() :
         default='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt',
         help=("The JSON file containing good lumi list"),
         metavar="LUMI")
-    parser.add_option("-d", "--dir", dest="dir", default="B2GAnaFW",
-        help=("The crab directory you want to use "),
-        metavar="DIR")
     parser.add_option("-f", "--datasets", dest="datasets",
         help=("File listing datasets to run over"),
         metavar="FILE")
@@ -56,7 +53,7 @@ def getOptions() :
     (options, args) = parser.parse_args()
 
 
-    if options.cfg == None or options.pyCfgParams == None or options.dir == None or options.datasets == None or options.version == None or options.storageSite == None or options.outLFNDirBase == None:
+    if options.cfg == None or options.pyCfgParams == None or options.datasets == None or options.version == None or options.storageSite == None or options.outLFNDirBase == None:
         parser.error(usage)
     
     return options
@@ -74,7 +71,7 @@ def main():
 
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
-    config.General.workArea = options.dir + '_' + options.version
+    config.General.workArea = options.version 
     config.General.transferLogs = False
 
     config.JobType.pluginName = 'Analysis'
@@ -90,14 +87,10 @@ def main():
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
-    #config.Data.outputDatasetTag = options.version
-    #if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-    #  config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
-    
     config.Site.storageSite = options.storageSite
 
     print 'Using config ' + options.cfg
-    print 'Writing to directory ' + options.dir
+    print 'Writing to versionectory ' + options.version
     
     def submit(config):
         try:
@@ -135,12 +128,11 @@ def main():
           config.Data.splitting = 'LumiBased'
           config.Data.lumiMask = options.lumiMask
 	if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-          config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,ptbin,cond.split('-')[0])
-        config.Data.outputDatasetTag = cond+'_'+options.dir+'_'+options.version
+          config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.version,ptbin,cond.split('-')[0])
+        config.Data.outputDatasetTag = cond+'_'+options.version
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
-        '''
         try :
             from multiprocessing import Process
             p = Process(target=submit, args=(config,))
@@ -149,7 +141,6 @@ def main():
             #submit(config)
         except :
             print 'Not submitted.'
-	'''
 
 if __name__ == '__main__':
     main()            
