@@ -34,7 +34,8 @@ def getOptions() :
         help=("input parameters for config file"),
         metavar="PARAMS")
     parser.add_option("-l", "--lumiMask", dest="lumiMask",
-        default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
+        #default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
+        default='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt',
         help=("The JSON file containing good lumi list"),
         metavar="LUMI")
     parser.add_option("-d", "--dir", dest="dir", default="B2GAnaFW",
@@ -92,9 +93,9 @@ def main():
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
-    config.Data.outputDatasetTag = options.version
-    if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-      config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
+    #config.Data.outputDatasetTag = options.version
+    #if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
+    #  config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
     
     config.section_("Site")
     config.Site.storageSite = options.storageSite
@@ -137,19 +138,20 @@ def main():
         elif datatier == 'MINIAOD': 
           config.Data.splitting = 'LumiBased'
           config.Data.lumiMask = options.lumiMask
+	if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
+          config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,ptbin,cond.split('-')[0])
+        config.Data.outputDatasetTag = cond+'_'+options.dir+'_'+options.version
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
-        #try :
-        #    from multiprocessing import Process
-        #    p = Process(target=submit, args=(config,))
-        #    p.start()
-        #    p.join()
-        #    #submit(config)
-        #except :
-        #    print 'Not submitted.'
-
-
+        try :
+            from multiprocessing import Process
+            p = Process(target=submit, args=(config,))
+            p.start()
+            p.join()
+            #submit(config)
+        except :
+            print 'Not submitted.'
 
 if __name__ == '__main__':
     main()            

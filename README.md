@@ -73,7 +73,8 @@ To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to s
 Example usage: 
 
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_reHLT" -o "/store/group/phys_b2g/" -d B2GAnaFW -v v80x_v2p0 -i 'JECs/*.db'
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_reHLT" -o "/store/group/phys_b2g/" -d B2GAnaFW -v v80x_v2p1 -i 'JECs/*.db'
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X" -o "/store/group/phys_b2g/" -d B2GAnaFW -v v80x_v2p1 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt"
 ```
 Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing" (recommended).
 
