@@ -34,12 +34,10 @@ def getOptions() :
         help=("input parameters for config file"),
         metavar="PARAMS")
     parser.add_option("-l", "--lumiMask", dest="lumiMask",
-        default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
+        #default='https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt',
+        default='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt',
         help=("The JSON file containing good lumi list"),
         metavar="LUMI")
-    parser.add_option("-d", "--dir", dest="dir", default="B2GAnaFW",
-        help=("The crab directory you want to use "),
-        metavar="DIR")
     parser.add_option("-f", "--datasets", dest="datasets",
         help=("File listing datasets to run over"),
         metavar="FILE")
@@ -55,7 +53,7 @@ def getOptions() :
     (options, args) = parser.parse_args()
 
 
-    if options.cfg == None or options.pyCfgParams == None or options.dir == None or options.datasets == None or options.version == None or options.storageSite == None or options.outLFNDirBase == None:
+    if options.cfg == None or options.pyCfgParams == None or options.datasets == None or options.version == None or options.storageSite == None or options.outLFNDirBase == None:
         parser.error(usage)
     
     return options
@@ -65,19 +63,17 @@ def main():
 
     options = getOptions()
 
-    from WMCore.Configuration import Configuration
-    config = Configuration()
+    from CRABClient.UserUtilities import config
+    config = config()
 
     from CRABAPI.RawCommand import crabCommand
     from httplib import HTTPException
 
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
-    config.section_("General")
-    config.General.workArea = options.dir + '_' + options.version
+    config.General.workArea = options.version 
     config.General.transferLogs = False
 
-    config.section_("JobType")
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = options.cfg
     if options.inputFiles != None:
@@ -85,22 +81,16 @@ def main():
       config.JobType.inputFiles = inFiles #options.inputFiles
     config.JobType.pyCfgParams = options.pyCfgParams
     
-    config.section_("Data")
     config.Data.inputDataset = None
     config.Data.splitting = ''
     config.Data.unitsPerJob = 1
     config.Data.ignoreLocality = False
     config.Data.publication = True    
     config.Data.publishDBS = 'phys03'
-    config.Data.outputDatasetTag = options.version
-    if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
-      config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
-    
-    config.section_("Site")
     config.Site.storageSite = options.storageSite
 
     print 'Using config ' + options.cfg
-    print 'Writing to directory ' + options.dir
+    print 'Writing to versionectory ' + options.version
     
     def submit(config):
         try:
@@ -137,6 +127,9 @@ def main():
         elif datatier == 'MINIAOD': 
           config.Data.splitting = 'LumiBased'
           config.Data.lumiMask = options.lumiMask
+	if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
+          config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.version,ptbin,cond.split('-')[0])
+        config.Data.outputDatasetTag = cond+'_'+options.version
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
