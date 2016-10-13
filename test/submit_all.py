@@ -74,11 +74,9 @@ def main():
 
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
-    config.section_("General")
     config.General.workArea = options.dir + '_' + options.version
     config.General.transferLogs = False
 
-    config.section_("JobType")
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = options.cfg
     if options.inputFiles != None:
@@ -86,7 +84,6 @@ def main():
       config.JobType.inputFiles = inFiles #options.inputFiles
     config.JobType.pyCfgParams = options.pyCfgParams
     
-    config.section_("Data")
     config.Data.inputDataset = None
     config.Data.splitting = ''
     config.Data.unitsPerJob = 1
@@ -97,7 +94,6 @@ def main():
     #if options.outLFNDirBase and not options.outLFNDirBase.isspace(): 
     #  config.Data.outLFNDirBase = os.path.join(options.outLFNDirBase,options.dir,options.version)
     
-    config.section_("Site")
     config.Site.storageSite = options.storageSite
 
     print 'Using config ' + options.cfg
