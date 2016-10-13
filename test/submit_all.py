@@ -140,14 +140,14 @@ def main():
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
-        #try :
-        #    from multiprocessing import Process
-        #    p = Process(target=submit, args=(config,))
-        #    p.start()
-        #    p.join()
-        #    #submit(config)
-        #except :
-        #    print 'Not submitted.'
+        try :
+            from multiprocessing import Process
+            p = Process(target=submit, args=(config,))
+            p.start()
+            p.join()
+            #submit(config)
+        except :
+            print 'Not submitted.'
 
 
 
