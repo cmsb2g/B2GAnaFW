@@ -66,8 +66,8 @@ def main():
 
     options = getOptions()
 
-    from WMCore.Configuration import Configuration
-    config = Configuration()
+    from CRABClient.UserUtilities import config
+    config = config()
 
     from CRABAPI.RawCommand import crabCommand
     from httplib import HTTPException
@@ -140,6 +140,7 @@ def main():
         print 'Submitting ' + config.General.requestName + ', dataset = ' + job
         print 'Configuration :'
         print config
+        '''
         try :
             from multiprocessing import Process
             p = Process(target=submit, args=(config,))
@@ -148,6 +149,7 @@ def main():
             #submit(config)
         except :
             print 'Not submitted.'
+	'''
 
 if __name__ == '__main__':
     main()            
