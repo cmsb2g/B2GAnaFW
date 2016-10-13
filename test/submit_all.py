@@ -138,7 +138,7 @@ def main():
             p = Process(target=submit, args=(config,))
             p.start()
             p.join()
-            #submit(config)
+            submit(config)
         except :
             print 'Not submitted.'
 
