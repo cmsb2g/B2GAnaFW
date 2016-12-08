@@ -674,32 +674,56 @@ jetToolboxAK8Vars = (
 #        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
 #        ),
      cms.PSet(
-        tag = cms.untracked.string("tau1"),
+        tag = cms.untracked.string("tau1CHS"),
         quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau1')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("tau2"),
+        tag = cms.untracked.string("tau2CHS"),
         quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau2')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("tau3"),
+        tag = cms.untracked.string("tau3CHS"),
         quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau3')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("softDropMass"),
+        tag = cms.untracked.string("softDropMassCHS"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSSoftDropMass')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("trimmedMass"),
+        tag = cms.untracked.string("trimmedMassCHS"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSTrimmedMass')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("prunedMass"),
+        tag = cms.untracked.string("prunedMassCHS"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSPrunedMass')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("filteredMass"),
+        tag = cms.untracked.string("filteredMassCHS"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("PtPuppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:pt')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("EtaPuppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:eta')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("PhiPuppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:phi')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau1Puppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau1')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau2Puppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau2')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("tau3Puppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3')")
         ),
 )
 
