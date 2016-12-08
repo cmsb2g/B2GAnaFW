@@ -657,6 +657,14 @@ jetToolboxAK8Vars = (
         tag = cms.untracked.string("vSubjetIndex1"),
         quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
         ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetPuppiIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjetPuppi0') ? userInt('VSubjetPuppi0') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetPuppiIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjetPuppi1') ? userInt('VSubjetPuppi1') : -1 ")
+        ),
 #     cms.PSet(
 #        tag = cms.untracked.string("topSubjetIndex0"),
 #        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
@@ -700,6 +708,10 @@ jetToolboxAK8Vars = (
      cms.PSet(
         tag = cms.untracked.string("filteredMassCHS"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsCHSFilteredMass')")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("softDropMassPuppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:softDropMassPuppi')")
         ),
      cms.PSet(
         tag = cms.untracked.string("PtPuppi"),
@@ -827,6 +839,14 @@ jetToolboxAK8PuppiVars = (
      cms.PSet(
         tag = cms.untracked.string("vSubjetIndex1"),
         quantity = cms.untracked.string("? hasUserInt('VSubjet1') ? userInt('VSubjet1') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetPuppiIndex0"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjetPuppi0') ? userInt('VSubjetPuppi0') : -1 ")
+        ),
+     cms.PSet(
+        tag = cms.untracked.string("vSubjetPuppiIndex1"),
+        quantity = cms.untracked.string("? hasUserInt('VSubjetPuppi1') ? userInt('VSubjetPuppi1') : -1 ")
         ),
      cms.PSet(
         tag = cms.untracked.string("tau1"),

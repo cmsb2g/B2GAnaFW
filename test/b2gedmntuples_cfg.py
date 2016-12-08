@@ -170,15 +170,17 @@ print "\nRunning with DataProcessing option ", options.DataProcessing, " and wit
 process = cms.Process("b2gEDMNtuples")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-#process.MessageLogger.cerr.threshold ='ERROR'
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.threshold ='ERROR'
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.MessageLogger.categories.append('HLTrigReport')
 process.MessageLogger.suppressInfo = cms.untracked.vstring('ak8PFJetsCHSTrimmed','ak8PFJetsCHSFiltered')
 process.MessageLogger.suppressWarning = cms.untracked.vstring('ak8PFJetsCHSTrimmed','ak8PFJetsCHSFiltered')
 ### Output Report
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(options.wantSummary) )
+
 ### Number of maximum events to process
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
+
 ### Source file
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -530,18 +532,22 @@ process.ak8PFJetsPuppiValueMap = cms.EDProducer("RecoJetToPatJetDeltaRValueMapPr
 					'userFloat("NjettinessAK8Puppi:tau1")',
 					'userFloat("NjettinessAK8Puppi:tau2")',
 					'userFloat("NjettinessAK8Puppi:tau3")',
+          'userFloat("ak8PFJetsPuppiSoftDropMass")', 
 					'pt','eta','phi','mass'
 				    ]),
 				    valueLabels = cms.vstring( [
 					'NjettinessAK8PuppiTau1',
 					'NjettinessAK8PuppiTau2',
 					'NjettinessAK8PuppiTau3',
+          'softDropMassPuppi',
 					'pt','eta','phi','mass'
 				    ])
 		)
-getattr( process, 'patJetsAK8PFCHS' ).userData.userFloats.src += [cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau1'),
+getattr( process, 'patJetsAK8PFCHS' ).userData.userFloats.src += [
+             cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau1'),
 					   cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau2'),
 					   cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau3'),
+             cms.InputTag('ak8PFJetsPuppiValueMap','softDropMassPuppi'),
 					   cms.InputTag('ak8PFJetsPuppiValueMap','pt'),
 					   cms.InputTag('ak8PFJetsPuppiValueMap','eta'),
 					   cms.InputTag('ak8PFJetsPuppiValueMap','phi'),
