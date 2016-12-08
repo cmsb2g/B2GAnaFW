@@ -64,7 +64,6 @@ class  MuonUserData : public edm::EDProducer {
     EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
     EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
     EDGetTokenT< double > rho_miniIso_;
-    InputTag hltMuonFilterLabel_;
     std::string hltPath_;
     double hlt2reco_deltaRmax_;
     TString mainROOTFILEdir_;
@@ -93,7 +92,6 @@ MuonUserData::MuonUserData(const edm::ParameterSet& iConfig):
   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
   rho_miniIso_(consumes<double>(edm::InputTag("fixedGridRhoFastjetCentralNeutral"))),
-  hltMuonFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltMuonFilter")),   //trigger objects we want to match
   hltPath_            (iConfig.getParameter<std::string>("hltPath")),
   hlt2reco_deltaRmax_ (iConfig.getParameter<double>("hlt2reco_deltaRmax")),
   mainROOTFILEdir_    (iConfig.getUntrackedParameter<std::string>("mainROOTFILEdir",""))
