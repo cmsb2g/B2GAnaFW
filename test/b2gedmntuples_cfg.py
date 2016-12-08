@@ -4,21 +4,31 @@ header = """
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
 ###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of
-###        'Data_80X', 'MC_MiniAODv2_80X', MC_MiniAODv2_80X_reHLT or 'MC_MiniAODv2_80X_FastSim' 
+###        'Data_80X_Run2016H_PromptReco', 
+###        'Data_80X_Run2016BCD_23Sep2016', 
+###        'Data_80X_Run2016E_23Sep2016', 
+###        'Data_80X_Run2016F_23Sep2016', 
+###        'Data_80X_Run2016G_23Sep2016', 
+###        'MC_MiniAODv2_80X_Summer16', 
+###        'MC_MiniAODv2_80X_FastSim'
 ###
 ### Examples: 
-###    Running on 25 ns MiniAODv1 and MiniAODv2 MC in 76X:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC25ns_MiniAOD_76X'
-###    Running on 25 ns 16Dec reprocessed data:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data25ns_76X'
-###    Running on 25 ns MC in 80x:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X'
-###    Running on 25 ns MC in 80x:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_reHLT'
+###
+###    Running on 25 ns data in 80x PromptReco (Run2016H):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016H_PromptReco'
+###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016BCD):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016BCD_23Sep2016'
+###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016E):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016E_23Sep2016'
+###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016F):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016F_23Sep2016'
+###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016G):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016G_23Sep2016'
+### 
+###    Running on 25 ns MC Sumemer16 in 80x:
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_Summer16'
 ###    Running on 25 ns FastSim MC in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_FastSim'
-###    Running on 25 ns data in 80x:
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X'
 ###
 ### *****************************************************************************************
 """
@@ -32,8 +42,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-	'/store/mc/RunIISpring16MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext3-v1/00000/0064B539-803A-E611-BDEA-002590D0B060.root',
-  #'/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/275/375/00000/A0AD9B85-5639-E611-A51E-02163E0133CC.root',
+     '/store/mc/RunIISummer16MiniAODv2/BulkGravTohhTohbbhbb_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/289B3CE4-89B8-E611-89BF-D8D385AE8B08.root',
+     #'/store/data/Run2016H/JetHT/MINIAOD/PromptReco-v3/000/284/036/00000/1ABD0A12-619F-E611-AAFC-02163E013674.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -48,7 +58,15 @@ options.register('DataProcessing',
     '',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
-    'Data processing types. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim')
+    'Data processing types. Options are:\
+        Data_80X_Run2016H_PromptReco, \
+        Data_80X_Run2016BCD_23Sep2016, \
+        Data_80X_Run2016E_23Sep2016, \
+        Data_80X_Run2016F_23Sep2016, \
+        Data_80X_Run2016G_23Sep2016, \
+        MC_MiniAODv2_80X_Summer16, \
+        MC_MiniAODv2_80X_FastSim'
+    )
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
@@ -99,19 +117,30 @@ if options.DataProcessing == "":
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="MC_MiniAODv2_80X":
-    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
-  elif options.DataProcessing=="MC_MiniAODv2_80X_reHLT":
-    options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"    
+  if options.DataProcessing=="Data_80X_Run2016H_PromptReco":
+    options.globalTag="80X_dataRun2_Prompt_v15"
+  elif options.DataProcessing in [
+        'Data_80X_Run2016BCD_23Sep2016', 
+        'Data_80X_Run2016E_23Sep2016', 
+        'Data_80X_Run2016F_23Sep2016', 
+        'Data_80X_Run2016G_23Sep2016', 
+      ]:
+    options.globalTag="80X_dataRun2_2016SeptRepro_v5"    
+  elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
+    options.globalTag="80X_mcRun2_asymptotic_2016_TrancheIV_v6"
   elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
     options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
     options.usePrivateSQLite = True
-  #elif options.DataProcessing=="MC_MiniAODv2_80X_":
-  # options.globalTag="80X_mcRun2_asymptotic_v4"
-  elif options.DataProcessing=="Data_80X":
-    options.globalTag="80X_dataRun2_Prompt_ICHEP16JEC_v0"
   else:
-    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+    sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
+      'Data_80X_Run2016H_PromptReco', \
+      'Data_80X_Run2016BCD_23Sep2016', \
+      'Data_80X_Run2016E_23Sep2016', \
+      'Data_80X_Run2016F_23Sep2016', \
+      'Data_80X_Run2016G_23Sep2016', \
+      'MC_MiniAODv2_80X_Summer16', \
+      'MC_MiniAODv2_80X_FastSim' \
+      .\n")
 
 ###inputTag labels
 rhoLabel          = "fixedGridRhoFastjetAll"
@@ -131,18 +160,12 @@ metNoHFLabel 	    = 'slimmedMETsNoHF'
 
 triggerResultsLabel 	 = "TriggerResults"
 triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
-hltMuonFilterLabel     = "hltL3crIsoL1sMu16Eta2p1L1f0L2f16QL3f40QL3crIsoRhoFiltered0p15"
-hltPathLabel           = "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if(options.DataProcessing in [ "MC_MiniAODv2_80X", "MC_MiniAODv2_80X_reHLT", "MC_MiniAODv2_80X_FastSim" ]): metProcess = "PAT"
-else: metProcess = "RECO"
-
-if options.DataProcessing =="MC_MiniAODv2_80X_reHLT": hltProcess = "HLT2"
-else: hltProcess = "HLT"
+metProcess = "PAT"
+hltProcess = "HLT"
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
-
 
 process = cms.Process("b2gEDMNtuples")
 
@@ -180,19 +203,45 @@ process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 #process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff')
 
-
-### External JEC =====================================================================================================
 corrections = ['L1FastJet', 'L2Relative', 'L3Absolute']
 if ("Data" in options.DataProcessing and options.forceResiduals): corrections.extend(['L2L3Residual'])
 
+### External JEC =====================================================================================================
 if options.usePrivateSQLite:
-    if options.DataProcessing=="Data_80X":
-      jec_era = "Spring16_25nsV6_DATA"
-    elif options.DataProcessing=="MC_MiniAODv2_80X":
-      jec_era = "Spring16_25nsV6_MC"
+    if options.DataProcessing=="Data_80X_Run2016H_PromptReco":
+      jec_era = "Spring16_25nsV10All_DATA" 
+      iovStart = 281010
+      iovEnd   = 284044
+    elif options.DataProcessing=="Data_80X_Run2016BCD_23Sep2016":
+      jec_era = "Spring16_25nsV10All_DATA" 
+      iovStart = 1
+      iovEnd   = 276811 
+    elif options.DataProcessing=="Data_80X_Run2016E_23Sep2016":
+      jec_era = "Spring16_25nsV10All_DATA" 
+      iovStart = 276831
+      iovEnd   = 277420
+    elif options.DataProcessing=="Data_80X_Run2016F_23Sep2016":
+      jec_era = "Spring16_25nsV10All_DATA" 
+      iovStart = 277772
+      iovEnd   = 278801
+    elif options.DataProcessing=="Data_80X_Run2016G_23Sep2016":
+      jec_era = "Spring16_25nsV10All_DATA" 
+      iovStart = 278802
+      iovEnd   = 284044
+    elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
+      jec_era = "Spring16_25nsV10_MC" 
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
-      jec_era = "Spring16_25nsFastSimMC_V1" ###"Spring16_25nsFastSimV1_MC"
-    else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+      jec_era = "Spring16_25nsFastSimMC_V1" 
+    else: 
+      sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
+        'Data_80X_Run2016H_PromptReco', \
+        'Data_80X_Run2016BCD_23Sep2016', \
+        'Data_80X_Run2016E_23Sep2016', \
+        'Data_80X_Run2016F_23Sep2016', \
+        'Data_80X_Run2016G_23Sep2016', \
+        'MC_MiniAODv2_80X_Summer16', \
+        'MC_MiniAODv2_80X_FastSim' \
+        .\n")
     
     from CondCore.DBCommon.CondDBSetup_cfi import *
     import os
@@ -200,7 +249,8 @@ if options.usePrivateSQLite:
     # JEC
     dBFile = jec_era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
-    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+    process.jec = cms.ESSource("PoolDBESSource",
+        CondDBSetup,
 		    connect = cms.string( "sqlite_file:"+dBFile ),
 		    toGet =  cms.VPSet(
 			    cms.PSet(
@@ -223,8 +273,13 @@ if options.usePrivateSQLite:
 				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFchs"),
 				    label= cms.untracked.string("AK8PFchs")
 				    ),
-			    )
+			    ), 
 		    )
+    if "Data" in options.DataProcessing:
+      process.jec.timetype   = cms.string('runnumber')
+      process.jec.firstValue = cms.uint64(iovStart)
+      process.jec.lastValue  = cms.uint64(iovEnd)
+      process.jec.interval   = cms.uint64(1)
     # FastSim JEC is not available for Puppi jets
     if "FastSim" not in options.DataProcessing:
       process.jec.toGet.append(cms.PSet(
@@ -388,7 +443,6 @@ listBtagDiscriminatorsAK8 = [
 		]
 
 runMC = ("MC" in options.DataProcessing)
-
 
 # JER Twiki:
 #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Scale_factors
@@ -605,7 +659,6 @@ process.muonUserData = cms.EDProducer(
     ### TTRIGGER ###
     triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
-    hltMuonFilter  = cms.InputTag(hltMuonFilterLabel),
     hltPath            = cms.string("HLT_IsoMu40_eta2p1_v11"),
     hlt2reco_deltaRmax = cms.double(0.1),
     # mainROOTFILEdir    = cms.string("../data/")
