@@ -521,6 +521,33 @@ jLabelAK8	= 'selectedPatJetsAK8PFCHS'
 jLabelPuppi	= 'selectedPatJetsAK4PFPuppi'
 jLabelAK8Puppi 	= 'selectedPatJetsAK8PFPuppi'
 
+
+process.ak8PFJetsPuppiValueMap = cms.EDProducer("RecoJetToPatJetDeltaRValueMapProducer",
+				    src = cms.InputTag("ak8PFJetsCHS"),
+				    matched = cms.InputTag("patJetsAK8PFPuppi"),                                         
+				    distMax = cms.double(0.8),
+				    values = cms.vstring([
+					'userFloat("NjettinessAK8Puppi:tau1")',
+					'userFloat("NjettinessAK8Puppi:tau2")',
+					'userFloat("NjettinessAK8Puppi:tau3")',
+					'pt','eta','phi','mass'
+				    ]),
+				    valueLabels = cms.vstring( [
+					'NjettinessAK8PuppiTau1',
+					'NjettinessAK8PuppiTau2',
+					'NjettinessAK8PuppiTau3',
+					'pt','eta','phi','mass'
+				    ])
+		)
+getattr( process, 'patJetsAK8PFCHS' ).userData.userFloats.src += [cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau1'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau2'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','NjettinessAK8PuppiTau3'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','pt'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','eta'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','phi'),
+					   cms.InputTag('ak8PFJetsPuppiValueMap','mass'),
+					   ]
+
 ### ---------------------------------------------------------------------------
 ### Removing the HF from the MET computation as from 7 Aug 2015 recommendations
 ### ---------------------------------------------------------------------------
