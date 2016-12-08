@@ -726,6 +726,10 @@ jetToolboxAK8Vars = (
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:phi')")
         ),
      cms.PSet(
+        tag = cms.untracked.string("MassPuppi"),
+        quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:mass')")
+        ),
+     cms.PSet(
         tag = cms.untracked.string("tau1Puppi"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau1')")
         ),
