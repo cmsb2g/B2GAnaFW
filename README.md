@@ -4,7 +4,7 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a development branch of the B2G EDMNtuples to be used for 2016 Data and Spring16 MC
+This is a development branch of the B2G EDMNtuples to be used for 2016 re-reco (Runs2016B-G) and PromtReco (Run2016H) data, and the Summer16 MC
 
 ## Instructions
 
@@ -12,8 +12,8 @@ This is a development branch of the B2G EDMNtuples to be used for 2016 Data and 
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 
 ###OR in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
-cmsrel CMSSW_8_0_20
-cd CMSSW_8_0_20/src
+cmsrel CMSSW_8_0_24_patch1
+cd CMSSW_8_0_24_patch1/src
 cmsenv
 ```
 
@@ -23,19 +23,26 @@ setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily  (this is not need
 git cms-init
 ```
 
- * Necessary for the VID tool and the EGamma Ids (and a temporary fix for loose cut based ID)
+ * Necessary for the running the new Electron IDs (cut-based and MVA)
 ```
-git cms-merge-topic ikrav:egm_id_80X_v1
-```
+git cms-merge-topic ikrav:egm_id_80X_v2
 
- * Path for running MET significance on the data
-```
-git cms-merge-topic cms-met:METRecipe_8020
+scram b -j 10
+
+cd $CMSSW_BASE/external/slc6_amd64_gcc530
+
+git clone git@github.com:ikrav/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
+
+cd data/RecoEgamma/ElectronIdentification/data
+
+git checkout egm_id_80X_v1
+
+cd $CMSSW_BASE/src
 ```
 
  * Apply latest Run II MET filters that are not in MINIAOD
 ```
-git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
+git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 ```
 
  * Temporary checkouts:
@@ -45,10 +52,11 @@ git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
  * Clone the github repository
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V2
+
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 ```
 
- * Compile
+ * Compile (patience please!)
 ```
 scram b -j 10
 ```
