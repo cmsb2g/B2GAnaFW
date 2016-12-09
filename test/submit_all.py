@@ -80,6 +80,7 @@ def main():
       inFiles = glob.glob( options.inputFiles )
       config.JobType.inputFiles = inFiles #options.inputFiles
     config.JobType.pyCfgParams = options.pyCfgParams
+    config.JobType.sendExternalFolder = True
     
     config.Data.inputDataset = None
     config.Data.splitting = ''
