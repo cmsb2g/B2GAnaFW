@@ -76,7 +76,7 @@ options.register('useNoHFMET',
     'Adding met without HF and relative jets')
 
 options.register('usePrivateSQLite',
-    False,
+    True,
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Take Jet Energy Corrections from private SQL file')
