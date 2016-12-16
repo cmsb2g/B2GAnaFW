@@ -93,12 +93,17 @@ The script B2GAnaFW/test/submit_all.py can be used for mass submission of crab j
 
 To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to submit.
 
-Example usage: 
+ * Example usage: 
 
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_reHLT" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p1 -i 'JECs/*.db'
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p1 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-280385_13TeV_PromptReco_Collisions16_JSON_NoL1T_v2.txt"
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_Summer16" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db'
 ```
-Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing" (recommended).
+
+ * For data please note that there are different JECs for different run periods. Please refer to test/b2gedmntuples_cfg.py#L6-L13 for the full list of settings for the switch "DataProcessing". For instance, to run on Run2016G do
+```
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X_Run2016G_23Sep2016" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON_LowLowPU.txt" usePrivateSQLite=True
+```
+
+Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing".
 
 See all options with ```python submit_all.py --help```
