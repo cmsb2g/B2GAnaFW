@@ -101,7 +101,7 @@ python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN 
 
  * For data please note that there are different JECs for different run periods. Please refer to test/b2gedmntuples_cfg.py#L6-L13 for the full list of settings for the switch "DataProcessing". For instance, to run on Run2016G do
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X_Run2016G_23Sep2016" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON_LowLowPU.txt" usePrivateSQLite=True
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X_Run2016G_23Sep2016" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" usePrivateSQLite=True
 ```
 
 Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing".
