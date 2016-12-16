@@ -11,7 +11,9 @@ This is a development branch of the B2G EDMNtuples to be used for 2016 re-reco (
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 
-###OR in bash: export SCRAM_ARCH=slc6_amd64_gcc530)
+```
+###OR in bash: ```export SCRAM_ARCH=slc6_amd64_gcc530```
+```
 cmsrel CMSSW_8_0_24_patch1
 cd CMSSW_8_0_24_patch1/src
 cmsenv
@@ -33,8 +35,13 @@ git cms-merge-topic ikrav:egm_id_80X_v2
 git cms-merge-topic cms-met:METRecipe_8020
 ```
 
+ * Compile 
+```
 scram b -j 10
+```
 
+ * Check out packages needed for electron ID
+```
 cd $CMSSW_BASE/external/slc6_amd64_gcc530
 
 git clone git@github.com:ikrav/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
