@@ -57,7 +57,7 @@ git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_8_0_X_V2
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.3
 
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 ```
