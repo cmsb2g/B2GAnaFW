@@ -10,12 +10,14 @@ This is a development branch of the B2G EDMNtuples to be used for 2016 re-reco (
 
  * Make a new CMSSW area:
 ```
-setenv SCRAM_ARCH slc6_amd64_gcc530 
-```
-###OR in bash: ```export SCRAM_ARCH=slc6_amd64_gcc530```
-```
+setenv SCRAM_ARCH slc6_amd64_gcc530 ; ###chs/ tcsh 
+
+export SCRAM_ARCH=slc6_amd64_gcc530 ; ### bash
+
 cmsrel CMSSW_8_0_24_patch1
+
 cd CMSSW_8_0_24_patch1/src
+
 cmsenv
 ```
 
