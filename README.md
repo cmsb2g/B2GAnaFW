@@ -26,6 +26,12 @@ git cms-init
  * Necessary for the running the new Electron IDs (cut-based and MVA)
 ```
 git cms-merge-topic ikrav:egm_id_80X_v2
+```
+
+ * For MET significance in the data
+```
+git cms-merge-topic cms-met:METRecipe_8020
+```
 
 scram b -j 10
 
