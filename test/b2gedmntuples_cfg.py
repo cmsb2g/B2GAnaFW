@@ -412,6 +412,7 @@ if options.usePrivateSQLiteForJER:
 				    ),
 				)
 			)
+    ) 
     process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
 
