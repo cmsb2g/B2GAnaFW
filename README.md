@@ -66,7 +66,7 @@ git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 
  * Clone the github repository
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.3
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.4
 
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 ```
@@ -96,12 +96,12 @@ To run, prepare a text file CRAB/tosubmit.txt with dataset names of samples to s
  * Example usage: 
 
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_Summer16" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db'
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=MC_MiniAODv2_80X_Summer16" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p4 -i 'JECs/*.db'
 ```
 
  * For data please note that there are different JECs for different run periods. Please refer to test/b2gedmntuples_cfg.py#L6-L13 for the full list of settings for the switch "DataProcessing". For instance, to run on Run2016G do
 ```
-python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X_Run2016G_23Sep2016" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p3 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" usePrivateSQLite=True
+python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN -p "DataProcessing=Data_80X_Run2016G_23Sep2016" -o "/store/group/phys_b2g/" -v B2GAnaFW_80X_V2p4 -i 'JECs/*.db' -l "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt" usePrivateSQLite=True
 ```
 
 Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing".
