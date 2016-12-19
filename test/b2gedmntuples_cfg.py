@@ -30,11 +30,13 @@ header = """
 ###    Running on 25 ns FastSim MC in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_FastSim'
 ###
+### **** If you are running a test, locally, add the option runCRAB=False at the end. ****
+###
 ### *****************************************************************************************
 """
 print header
 
-import sys
+import sys, os
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as opts
 import copy
@@ -92,6 +94,12 @@ options.register('forceResiduals',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Whether to force residuals to be applied')
+
+options.register('runCRAB',
+    True,
+    opts.VarParsing.multiplicity.singleton,
+    opts.VarParsing.varType.bool,
+    'Whether to run local or in CRAB')
 
 options.register('globalTag',
     '',
@@ -192,18 +200,17 @@ process.source = cms.Source("PoolSource",
     )
 #from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValTTbarPileUpMINIAODSIM
 #process.source.fileNames = filesRelValTTbarPileUpMINIAODSIM
+
 ### Setting global tag 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag.globaltag = options.globalTag 
-
 
 #process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Services_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load("RecoEgamma/PhotonIdentification/PhotonIDValueMapProducer_cfi")
 process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 #process.load('RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff')
@@ -248,38 +255,38 @@ if options.usePrivateSQLite:
         'MC_MiniAODv2_80X_FastSim' \
         .\n")
     
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    import os
-    
     # JEC
-    dBFile = jec_era+".db"
+    process.load("CondCore.CondDB.CondDB_cfi")
+    dBFile = ('' if options.runCRAB else 'JECs/' )+jec_era+".db"
     print "\nUsing private SQLite file", dBFile, "\n"
     process.jec = cms.ESSource("PoolDBESSource",
-        CondDBSetup,
-		    connect = cms.string( "sqlite_file:"+dBFile ),
-		    toGet =  cms.VPSet(
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PF"),
-				    label= cms.untracked.string("AK4PF")
-				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFchs"),
-				    label= cms.untracked.string("AK4PFchs")
-				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PF"),
-				    label= cms.untracked.string("AK8PF")
-				    ),
-			    cms.PSet(
-				    record = cms.string("JetCorrectionsRecord"),
-				    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFchs"),
-				    label= cms.untracked.string("AK8PFchs")
-				    ),
-			    ), 
+		    process.CondDB.clone(
+			    connect = cms.string( "sqlite_file:"+dBFile ),
+			    toGet =  cms.VPSet(
+				    cms.PSet(
+					    record = cms.string("JetCorrectionsRecord"),
+					    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PF"),
+					    label= cms.untracked.string("AK4PF")
+					    ),
+				    cms.PSet(
+					    record = cms.string("JetCorrectionsRecord"),
+					    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK4PFchs"),
+					    label= cms.untracked.string("AK4PFchs")
+					    ),
+				    cms.PSet(
+					    record = cms.string("JetCorrectionsRecord"),
+					    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PF"),
+					    label= cms.untracked.string("AK8PF")
+					    ),
+				    cms.PSet(
+					    record = cms.string("JetCorrectionsRecord"),
+					    tag = cms.string("JetCorrectorParametersCollection_"+jec_era+"_AK8PFchs"),
+					    label= cms.untracked.string("AK8PFchs")
+					    ),
+				    )
+			    )
 		    )
+
     if "Data" in options.DataProcessing:
       process.jec.timetype   = cms.string('runnumber')
       process.jec.firstValue = cms.uint64(iovStart)
@@ -337,90 +344,76 @@ if options.usePrivateSQLiteForJER:
     # JER
     #   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyResolution#Accessing_factors_from_Global_Ta
     process.load("JetMETCorrections.Modules.JetResolutionESProducer_cfi")
-    process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = cms.string('sqlite_file:'+jer_era+"_JER.db"), # '_JER' added to filename to distinguish from JEC file
-            toGet = cms.VPSet(
-                # Resolution
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PF'),
-                    label  = cms.untracked.string('AK4PF_pt')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFchs'),
-                    label  = cms.untracked.string('AK4PFchs_pt')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFPuppi'),
-                    label  = cms.untracked.string('AK4PFPuppi_pt')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PF'),
-                    label  = cms.untracked.string('AK8PF_pt')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFchs'),
-                    label  = cms.untracked.string('AK8PFchs_pt')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFPuppi'),
-                    label  = cms.untracked.string('AK8PFPuppi_pt')
-                    ),
-                # Scale factors
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PF'),
-                    label  = cms.untracked.string('AK4PF')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFchs'),
-                    label  = cms.untracked.string('AK4PFchs')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFPuppi'),
-                    label  = cms.untracked.string('AK4PFPuppi')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PF'),
-                    label  = cms.untracked.string('AK8PF')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFchs'),
-                    label  = cms.untracked.string('AK8PFchs')
-                    ),
-                cms.PSet(
-                    record = cms.string('JetResolutionScaleFactorRcd'),
-                    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFPuppi'),
-                    label  = cms.untracked.string('AK8PFPuppi')
-                    ),
-                ),
-            )
+    process.jer = cms.ESSource("PoolDBESSource",
+		    process.CondDB.clone(
+			    connect = cms.string('sqlite_file:'+jer_era+"_JER.db"), # '_JER' added to filename to distinguish from JEC file
+			    toGet = cms.VPSet(
+				# Resolution
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PF'),
+				    label  = cms.untracked.string('AK4PF_pt')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFchs'),
+				    label  = cms.untracked.string('AK4PFchs_pt')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK4PFPuppi'),
+				    label  = cms.untracked.string('AK4PFPuppi_pt')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PF'),
+				    label  = cms.untracked.string('AK8PF_pt')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFchs'),
+				    label  = cms.untracked.string('AK8PFchs_pt')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_PtResolution_AK8PFPuppi'),
+				    label  = cms.untracked.string('AK8PFPuppi_pt')
+				    ),
+				# Scale factors
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK4PF'),
+				    label  = cms.untracked.string('AK4PF')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFchs'),
+				    label  = cms.untracked.string('AK4PFchs')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK4PFPuppi'),
+				    label  = cms.untracked.string('AK4PFPuppi')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK8PF'),
+				    label  = cms.untracked.string('AK8PF')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFchs'),
+				    label  = cms.untracked.string('AK8PFchs')
+				    ),
+				cms.PSet(
+				    record = cms.string('JetResolutionScaleFactorRcd'),
+				    tag    = cms.string('JR_'+jer_era+'_SF_AK8PFPuppi'),
+				    label  = cms.untracked.string('AK8PFPuppi')
+				    ),
+				)
+			)
     process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
-
-### ------------------------------------------------------------------
-### Puppi
-### (https://twiki.cern.ch/twiki/bin/viewauth/CMS/PUPPI)
-### ------------------------------------------------------------------
-'''
-process.load('CommonTools/PileupAlgos/Puppi_cff')
-process.puppi.candName = cms.InputTag('packedPFCandidates')
-process.puppi.vertexName = cms.InputTag('offlineSlimmedPrimaryVertices')
-process.puppi.useExistingWeights = cms.bool(True)
-
-#process.puppiOnTheFly = process.puppi.clone()
-
-#process.puppiOnTheFly.useExistingWeights = True
-'''
 
 ### ------------------------------------------------------------------
 ### Recluster jets and adding subtructure tools from jetToolbox 
@@ -535,14 +528,14 @@ process.ak8PFJetsPuppiValueMap = cms.EDProducer("RecoJetToPatJetDeltaRValueMapPr
 					'userFloat("NjettinessAK8Puppi:tau1")',
 					'userFloat("NjettinessAK8Puppi:tau2")',
 					'userFloat("NjettinessAK8Puppi:tau3")',
-          'userFloat("ak8PFJetsPuppiSoftDropMass")', 
+          				'userFloat("ak8PFJetsPuppiSoftDropMass")', 
 					'pt','eta','phi','mass'
 				    ]),
 				    valueLabels = cms.vstring( [
 					'NjettinessAK8PuppiTau1',
 					'NjettinessAK8PuppiTau2',
 					'NjettinessAK8PuppiTau3',
-          'softDropMassPuppi',
+					'softDropMassPuppi',
 					'pt','eta','phi','mass'
 				    ])
 		)
