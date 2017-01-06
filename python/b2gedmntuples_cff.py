@@ -137,6 +137,10 @@ muonVars = (
         quantity = cms.untracked.string("userFloat('isMediumMuon')")
         ),
     cms.PSet(
+        tag = cms.untracked.string("IsMediumMuon2016"),
+        quantity = cms.untracked.string("userFloat('isMediumMuon2016')")
+        ),
+    cms.PSet(
         tag = cms.untracked.string("IsTightMuon"),
         quantity = cms.untracked.string("userFloat('isTightMuon')")
         ),
