@@ -37,6 +37,13 @@ git cms-merge-topic ikrav:egm_id_80X_v2
 git cms-merge-topic cms-met:METRecipe_8020
 ```
 
+ * For running the new double b tagger training
+```
+git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
+git fetch --tags btv-cmssw
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
+```
+
  * Compile 
 ```
 scram b -j 10
