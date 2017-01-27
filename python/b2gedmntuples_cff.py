@@ -172,6 +172,23 @@ muonVars = (
        tag = cms.untracked.string("IsTrackerMuon"),
        quantity = cms.untracked.string("isTrackerMuon")
        ),
+   ### MEDIUM2016
+   cms.PSet(
+       tag = cms.untracked.string("CombQualChi2LocalPos"),
+       quantity = cms.untracked.string("combinedQuality.chi2LocalPosition")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("CombQualTrkKink"),
+       quantity = cms.untracked.string("combinedQuality.trkKink")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("InTrkValidFraction"),
+       quantity = cms.untracked.string("? innerTrack.isNonnull ? innerTrack.validFraction : -900")
+       ),
+   cms.PSet(
+       tag = cms.untracked.string("SegmentCompatibility"),
+       quantity = cms.untracked.string("userFloat('segmentCompatibility')")
+       ),
    ### TIGHT
    cms.PSet(
        tag = cms.untracked.string("GlbTrkNormChi2"),

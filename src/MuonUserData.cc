@@ -247,6 +247,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     // 2016 Medium ID
     // https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2?rev=27#MediumID2016_to_be_used_with_Run
     bool isMediumMuon2016 = isMediumMuon_23Sep2016(m);
+    double segmentCompatibility = muon::segmentCompatibility(m);
 
     // impact parameters
     double dxy = m.muonBestTrack()->dxy(PV.position());     
@@ -291,6 +292,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     m.addUserFloat("isMediumMuon2016", isMediumMuon2016);
     m.addUserFloat("isTightMuon", isTightMuon);
     m.addUserFloat("isHighPtMuon", isHighPtMuon);
+    m.addUserFloat("segmentCompatibility", segmentCompatibility);
     m.addUserFloat("dxy",         dxy);
     m.addUserFloat("dxyErr",      dxyErr);
     m.addUserFloat("dz",          dz);
