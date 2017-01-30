@@ -49,6 +49,7 @@ class  MuonUserData : public edm::EDProducer {
     bool isMatchedWithTrigger(const pat::Muon, trigger::TriggerObjectCollection,int&,double&,double);
     void put( edm::Event& evt, double value, const char* instanceName);
     float getEA(float eta);
+    bool isMediumMuon_23Sep2016(const reco::Muon&);
 
     TH1F* convertTGraph2TH1F(TGraphAsymmErrors* g);
     double getSF_muonID(double, double);
@@ -243,6 +244,11 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     bool isTightMuon = m.isTightMuon(PV);
     bool isHighPtMuon = m.isHighPtMuon(PV);
 
+    // 2016 Medium ID
+    // https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2?rev=27#MediumID2016_to_be_used_with_Run
+    bool isMediumMuon2016 = isMediumMuon_23Sep2016(m);
+    double segmentCompatibility = muon::segmentCompatibility(m);
+
     // impact parameters
     double dxy = m.muonBestTrack()->dxy(PV.position());     
     double dxyErr = m.muonBestTrack()->dxyError();     
@@ -283,8 +289,10 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     m.addUserFloat("isSoftMuon",  isSoftMuon);
     m.addUserFloat("isLooseMuon", isLooseMuon);
     m.addUserFloat("isMediumMuon", isMediumMuon);
+    m.addUserFloat("isMediumMuon2016", isMediumMuon2016);
     m.addUserFloat("isTightMuon", isTightMuon);
     m.addUserFloat("isHighPtMuon", isHighPtMuon);
+    m.addUserFloat("segmentCompatibility", segmentCompatibility);
     m.addUserFloat("dxy",         dxy);
     m.addUserFloat("dxyErr",      dxyErr);
     m.addUserFloat("dz",          dz);
@@ -469,6 +477,17 @@ float MuonUserData::getEA(float eta){
   if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0433;
   if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.0577;
   return effArea;
+}
+
+bool MuonUserData::isMediumMuon_23Sep2016(const reco::Muon & recoMu) {
+  bool goodGlob = recoMu.isGlobalMuon() && 
+    recoMu.globalTrack()->normalizedChi2() < 3 && 
+    recoMu.combinedQuality().chi2LocalPosition < 12 && 
+    recoMu.combinedQuality().trkKink < 20; 
+  bool isMedium = muon::isLooseMuon(recoMu) && 
+    recoMu.innerTrack()->validFraction() > 0.49 && 
+    muon::segmentCompatibility(recoMu) > (goodGlob ? 0.303 : 0.451); 
+  return isMedium; 
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
