@@ -6,8 +6,7 @@ header = """
 ###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of
 ###        'Data_80X_Run2016H_PromptReco', 
 ###        'Data_80X_Run2016BCD_23Sep2016', 
-###        'Data_80X_Run2016E_23Sep2016', 
-###        'Data_80X_Run2016F_23Sep2016', 
+###        'Data_80X_Run2016EF_23Sep2016', 
 ###        'Data_80X_Run2016G_23Sep2016', 
 ###        'MC_MiniAODv2_80X_Summer16', 
 ###        'MC_MiniAODv2_80X_FastSim'
@@ -18,10 +17,8 @@ header = """
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016H_PromptReco'
 ###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016BCD):
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016BCD_23Sep2016'
-###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016E):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016E_23Sep2016'
-###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016F):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016F_23Sep2016'
+###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016EF):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016EF_23Sep2016'
 ###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016G):
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016G_23Sep2016'
 ### 
@@ -63,8 +60,7 @@ options.register('DataProcessing',
     'Data processing types. Options are:\
         Data_80X_Run2016H_PromptReco, \
         Data_80X_Run2016BCD_23Sep2016, \
-        Data_80X_Run2016E_23Sep2016, \
-        Data_80X_Run2016F_23Sep2016, \
+        Data_80X_Run2016EF_23Sep2016, \
         Data_80X_Run2016G_23Sep2016, \
         MC_MiniAODv2_80X_Summer16, \
         MC_MiniAODv2_80X_FastSim'
@@ -94,6 +90,13 @@ options.register('forceResiduals',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Whether to force residuals to be applied')
+
+options.register('removeResidualsFromMET',
+    False,
+    opts.VarParsing.multiplicity.singleton,
+    opts.VarParsing.varType.bool,
+    'Whether to remove residuals from T1 MET data')
+
 
 options.register('runCRAB',
     True,
@@ -129,11 +132,10 @@ else:
     options.globalTag="80X_dataRun2_Prompt_v15"
   elif options.DataProcessing in [
         'Data_80X_Run2016BCD_23Sep2016', 
-        'Data_80X_Run2016E_23Sep2016', 
-        'Data_80X_Run2016F_23Sep2016', 
+        'Data_80X_Run2016EF_23Sep2016', 
         'Data_80X_Run2016G_23Sep2016', 
       ]:
-    options.globalTag="80X_dataRun2_2016SeptRepro_v5"    
+    options.globalTag="80X_dataRun2_2016SeptRepro_v7"    
   elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
     options.globalTag="80X_mcRun2_asymptotic_2016_TrancheIV_v6"
   elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
@@ -143,8 +145,7 @@ else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
       'Data_80X_Run2016H_PromptReco', \
       'Data_80X_Run2016BCD_23Sep2016', \
-      'Data_80X_Run2016E_23Sep2016', \
-      'Data_80X_Run2016F_23Sep2016', \
+      'Data_80X_Run2016EF_23Sep2016', \
       'Data_80X_Run2016G_23Sep2016', \
       'MC_MiniAODv2_80X_Summer16', \
       'MC_MiniAODv2_80X_FastSim' \
@@ -221,35 +222,30 @@ if ("Data" in options.DataProcessing and options.forceResiduals): corrections.ex
 ### External JEC =====================================================================================================
 if options.usePrivateSQLite:
     if options.DataProcessing=="Data_80X_Run2016H_PromptReco":
-      jec_era = "Spring16_25nsV10All_DATA" 
-      iovStart = 281010
+      jec_era = "Summer16_23Sep2016AllV4_DATA" 
+      iovStart = 280919
       iovEnd   = 284044
     elif options.DataProcessing=="Data_80X_Run2016BCD_23Sep2016":
-      jec_era = "Spring16_25nsV10All_DATA" 
+      jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 1
       iovEnd   = 276811 
-    elif options.DataProcessing=="Data_80X_Run2016E_23Sep2016":
-      jec_era = "Spring16_25nsV10All_DATA" 
+    elif options.DataProcessing=="Data_80X_Run2016EF_23Sep2016":
+      jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 276831
-      iovEnd   = 277420
-    elif options.DataProcessing=="Data_80X_Run2016F_23Sep2016":
-      jec_era = "Spring16_25nsV10All_DATA" 
-      iovStart = 277772
       iovEnd   = 278801
     elif options.DataProcessing=="Data_80X_Run2016G_23Sep2016":
-      jec_era = "Spring16_25nsV10All_DATA" 
+      jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 278802
-      iovEnd   = 284044
+      iovEnd   = 280385
     elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
-      jec_era = "Spring16_25nsV10_MC" 
+      jec_era = "Summer16_23Sep2016V4_MC" 
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
       jec_era = "Spring16_25nsFastSimMC_V1" 
     else: 
       sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
         'Data_80X_Run2016H_PromptReco', \
         'Data_80X_Run2016BCD_23Sep2016', \
-        'Data_80X_Run2016E_23Sep2016', \
-        'Data_80X_Run2016F_23Sep2016', \
+        'Data_80X_Run2016EF_23Sep2016', \
         'Data_80X_Run2016G_23Sep2016', \
         'MC_MiniAODv2_80X_Summer16', \
         'MC_MiniAODv2_80X_FastSim' \
@@ -592,7 +588,7 @@ if options.useNoHFMET:
 ### the lines below remove the L2L3 residual corrections when processing data
 ### -------------------------------------------------------------------
 
-if ("Data" in options.DataProcessing and  options.forceResiduals):
+if ("Data" in options.DataProcessing and options.removeResidualsFromMET):
   #Take new pat jets as input of the ntuples
   #process.patJetCorrFactors.levels = corrections 
   if options.useNoHFMET:
