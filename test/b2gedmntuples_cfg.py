@@ -137,7 +137,7 @@ else:
       ]:
     options.globalTag="80X_dataRun2_2016SeptRepro_v7"    
   elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
-    options.globalTag="80X_mcRun2_asymptotic_2016_TrancheIV_v6"
+    options.globalTag="80X_mcRun2_asymptotic_2016_TrancheIV_v8"
   elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
     options.globalTag="80X_mcRun2_asymptotic_2016_miniAODv2_v1"
     options.usePrivateSQLite = True
@@ -563,7 +563,7 @@ from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMet
 
 #For a full met computation, remove the pfCandColl input
 runMetCorAndUncFromMiniAOD(process,
-		isData=("Data" in options.DataProcessing),
+                           isData=("Data" in options.DataProcessing),
 		)
 
 from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
@@ -588,7 +588,7 @@ if options.useNoHFMET:
 ### the lines below remove the L2L3 residual corrections when processing data
 ### -------------------------------------------------------------------
 
-if ("Data" in options.DataProcessing and options.removeResidualsFromMET):
+if (options.removeResidualsFromMET):
   #Take new pat jets as input of the ntuples
   #process.patJetCorrFactors.levels = corrections 
   if options.useNoHFMET:
