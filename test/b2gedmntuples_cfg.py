@@ -650,14 +650,15 @@ process.skimmedPatElectrons = cms.EDFilter(
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
     #    src = cms.InputTag(metLabel, "", "PAT"),
-    src = cms.InputTag(metLabel, "", metProcess),
+#    src = cms.InputTag(metLabel, "", metProcess),
+    src = cms.InputTag(metLabel),
     cut = cms.string("")
     )
 
 process.skimmedPatPuppiMET = cms.EDFilter(
     "PATMETSelector",
     #    src = cms.InputTag(metLabel, "", "PAT"),
-    src = cms.InputTag(puppimetLabel, "", metProcess),
+    src = cms.InputTag(puppimetLabel),
     cut = cms.string("")
     )
 
