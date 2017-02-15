@@ -8,76 +8,50 @@ This is a development branch of the B2G EDMNtuples to be used for 2016 re-reco (
 
 ## Instructions
 
+### Working release
  * Make a new CMSSW area:
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc530 ; ###chs/ tcsh 
 
 export SCRAM_ARCH=slc6_amd64_gcc530 ; ### bash
 
-cmsrel CMSSW_8_0_24_patch1
+cmsrel CMSSW_8_0_26_patch1
 
-cd CMSSW_8_0_24_patch1/src
+cd CMSSW_8_0_26_patch1/src
 
 cmsenv
 ```
-
  * Mirror for github
 ```
 setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily  (this is not needed, it just boost your git clone)
 git cms-init
 ```
 
- * Necessary for the running the new Electron IDs (cut-based and MVA)
-```
-git cms-merge-topic ikrav:egm_id_80X_v2
-```
-
+### Temporary checkouts:
  * For MET significance in the data
 ```
 git cms-merge-topic cms-met:METRecipe_8020
 ```
-
+ * Apply latest Run II MET filters that are not in MINIAOD
+```
+git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
+```
  * For running the new double b tagger training
 ```
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch --tags btv-cmssw
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 ```
-
  * Compile 
 ```
 scram b -j 10
 ```
 
- * Check out packages needed for electron ID
-```
-cd $CMSSW_BASE/external/slc6_amd64_gcc530
-
-git clone git@github.com:ikrav/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
-
-cd data/RecoEgamma/ElectronIdentification/data
-
-git checkout egm_id_80X_v1
-
-cd $CMSSW_BASE/src
-```
-
- * Apply latest Run II MET filters that are not in MINIAOD
-```
-git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
-```
-
- * Temporary checkouts:
-```
-```
-
- * Clone the github repository
+### Clone the github repositories
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.4
-
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 ```
-
  * Compile (patience please!)
 ```
 scram b -j 10
