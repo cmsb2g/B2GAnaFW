@@ -1,7 +1,5 @@
 # B2GAnaFW
 
-
-bla
 Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG) of the Compact Muon Solenoid (CMS) Experiment
 
 ## Version
@@ -90,3 +88,4 @@ python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN 
 Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing".
 
 See all options with ```python submit_all.py --help```
+bla
