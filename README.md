@@ -47,6 +47,12 @@ git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_fr
 scram b -j 10
 ```
 
+ * EGamma recipies
+```
+git cms-merge-topic ikrav:egm_id_80X_v3_photons
+```
+
+
 ### Clone the github repositories
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.5
