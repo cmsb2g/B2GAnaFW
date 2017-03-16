@@ -47,10 +47,8 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
-  bool isMatchedWithTrigger();
-  bool passIDWP();
-  float EA25nsPho(float eta);
-  float EA25nsNeu(float eta);
+  float EASP16(float eta,int type);
+
   EDGetTokenT< double > rhoLabel_;
   EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
   edm::EDGetToken                      photonsMiniAODToken_;
@@ -91,7 +89,7 @@ PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
 
 void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<edm::View<pat::Photon> > photonS;
+  edm::Handle<edm::View<pat::Photon> > photonHandle;
   edm::Handle< double > rhoH;
   edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
   edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
@@ -100,7 +98,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::ValueMap<float> > isop_idvar;
   edm::Handle<edm::ValueMap<float> > ison_idvar;
   edm::Handle<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMap;
-  iEvent.getByToken(photonsMiniAODToken_,photonS);
+  iEvent.getByToken(photonsMiniAODToken_,photonHandle);
   iEvent.getByToken(rhoLabel_,rhoH);
   iEvent.getByToken(phoLooseIdMapToken_ ,loose_id_decisions);
   iEvent.getByToken(phoMediumIdMapToken_,medium_id_decisions);
@@ -122,12 +120,10 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   //Photon Loop
 
   for (size_t i = 0; i < phoColl->size(); ++i){
-    const auto pho = photonS->ptrAt(i);
+    //const Ptr<pat::Photon> pho(photonHandle,i); 
+    const auto pho = photonHandle->ptrAt(i);
     pat::Photon & phoi = (*phoColl)[i];
-   if(phoi.hadTowOverEm() > 0.15 ) continue;
-   
   
-    
     bool pho_isLoose  = (*loose_id_decisions)[pho];
     bool pho_isMedium = (*medium_id_decisions)[pho];
     bool pho_isTight  = (*tight_id_decisions)[pho];
@@ -136,9 +132,10 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     float pho_isoP       = (*isop_idvar)[pho];
     float pho_isoN       = (*ison_idvar)[pho];
     float pho_isoC       = (*isoc_idvar)[pho];
-    float abseta = fabs(pho->eta());    
-    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*EA25nsPho(abseta)) ;
-    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EA25nsNeu(abseta));
+    float abseta         = fabs(pho->eta());    
+    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*EASP16(abseta,2)) ;
+    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EASP16(abseta,1));
+    float pho_isoCea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EASP16(abseta,0));
 
 
     //showershapes 
@@ -174,16 +171,11 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
     phoi.addUserFloat("isoN",pho_isoN);
     phoi.addUserFloat("isoP_EAcor",pho_isoPea);
     phoi.addUserFloat("isoN_EAcor",pho_isoNea);
-    // the ea corrections correspond to sp15 IDs which did not have ISO C eas - thus variable removed. 
-
+    phoi.addUserFloat("isoC_EAcor",pho_isoCea);
 
     phoi.addUserInt("isLoose",    pho_isLoose);
     phoi.addUserInt("isMedium",   pho_isMedium);
     phoi.addUserInt("isTight",    pho_isTight);
-    
-
-
-
 
   }
 //EOF photons loop
@@ -192,53 +184,41 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 }
 
 float
-PhotonUserData::EA25nsPho(float eta){
+PhotonUserData::EASP16(float eta,int type){
   //Returns the Effective areas for the PF:gamma Isolation
-
+  //Taken from here: https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Selection_implementation_details
+  
  float effArea = 0; 
-  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.1271;
-  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.1101;
-  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.0756;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.1175;
-  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.1498;
-  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.1857;
-  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.2183;
+
+ //----type 0 charged hadron  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 0) effArea = 0.0360;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 0) effArea = 0.0377;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 0) effArea = 0.0306;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 0) effArea = 0.0283;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 0) effArea = 0.0254;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 0) effArea = 0.0217;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 0) effArea = 0.0167;
+
+   //----type 1 neutral hadron  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 1) effArea = 0.0597;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 1) effArea = 0.0807;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 1) effArea = 0.0629;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 1) effArea = 0.0197;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 1) effArea = 0.0184;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 1) effArea = 0.0284;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 1) effArea = 0.0591;
+
+   //----type 2 photons  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 2) effArea = 0.1210;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 2) effArea = 0.1107;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 2) effArea = 0.0699;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 2) effArea = 0.1056;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 2) effArea = 0.1457;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 2) effArea = 0.1719;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 2) effArea = 0.1998;
+
   return effArea;
-
 }
-
-
-float
-PhotonUserData::EA25nsNeu(float eta){
-  //Returns the Effective areas for the PF:h0 Isolation
-  float effArea = 0; 
-  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.0599;
-  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.0819;
-  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.0696;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0360;
-  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.0360;
-  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.0462;
-  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.0656;
-  return effArea;
-
-}
-
-
-
-
-
-bool
-PhotonUserData::isMatchedWithTrigger(){
-  return true;
-}
-
-
-bool PhotonUserData::passIDWP(){
- 
-  return true;
-}
-
-
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(PhotonUserData);

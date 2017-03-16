@@ -749,9 +749,24 @@ process.jetUserDataAK8 = cms.EDProducer(
     candSVTagInfos         = cms.string("pfInclusiveSecondaryVertexFinder"), 
 )
 
+
+process.photonJetsUserData = cms.EDProducer(
+    'PhotonJets',
+    phoLabel = cms.InputTag("slimmedPhotons"),
+    pv        = cms.InputTag(pvLabel),
+    rho               = cms.InputTag(rhoLabel),
+    packedPFCands = cms.InputTag("packedPFCandidates"),
+    jetLabel  = cms.InputTag("jetUserDataAK8"),
+    ebReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEBRecHits"),
+    eeReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEERecHits")
+
+    )
+
+
+
 process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
-    jetLabel  = cms.InputTag('jetUserDataAK8'),
+    jetLabel  = cms.InputTag('photonJetsUserData'),
     #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
     #vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
     vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
@@ -809,6 +824,7 @@ process.electronUserData = cms.EDProducer(
     eleMediumIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
     eleTightIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
     eleHEEPIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60"),
+    eleMVAIdValue = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
     eleIdVerbose = cms.bool(False)
     )
 
@@ -816,25 +832,13 @@ process.photonUserData = cms.EDProducer(
     'PhotonUserData',
     rho                     = cms.InputTag(rhoLabel),
     pholabel                = cms.InputTag("slimmedPhotons"),
-    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-loose"),
-    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-medium"),
-    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring15-25ns-V1-standalone-tight"),
+    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
+    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
+    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
     phoChgIsoMap            = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta")
-    )
-
-process.photonJets = cms.EDProducer(
-    'PhotonJets',
-    phoLabel = cms.InputTag("skimmedPatPhotons"),
-    pv        = cms.InputTag(pvLabel),
-    rho               = cms.InputTag(rhoLabel),
-    packedPFCands = cms.InputTag("packedPFCandidates"),
-    jetLabel  = cms.InputTag("slimmedJetsAK8"),
-    ebReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEBRecHits"),
-    eeReducedRecHitCollection = cms.InputTag("reducedEgamma:reducedEERecHits")
-
     )
 
 process.vertexInfo = cms.EDProducer(
@@ -859,19 +863,32 @@ dataFormat = DataFormat.MiniAOD
 switchOnVIDPhotonIdProducer(process, dataFormat)
 switchOnVIDElectronIdProducer(process, dataFormat)
 
+
+### -------------------------------------------------------------------
+### Latest EGamma recomendations Moriond 17
+### -------------------------------------------------------------------
+
 # define which IDs we want to produce
-my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff']
+my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff','RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
+
+my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
+    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
 
 #add them to the VID producer
 for idmod in my_phoid_modules:
   setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-
-#
-
-my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
-    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
 for idmod in my_eid_modules:
   setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+
+#set on which collection to run on - here filtered collections are selected.
+process.egmGsfElectronIDs.physicsObjectSrc     = 'skimmedPatElectrons'
+process.egmPhotonIDs.physicsObjectSrc          = 'slimmedPhotons'
+process.electronMVAValueMapProducer.srcMiniAOD = 'skimmedPatElectrons'
+process.photonIDValueMapProducer.srcMiniAOD    = 'slimmedPhotons'
+
+
+
+#
 
 
 process.egmGsfElectronIDs.physicsObjectSrc = 'skimmedPatElectrons'

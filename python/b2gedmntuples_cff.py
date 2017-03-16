@@ -1158,18 +1158,7 @@ photons.src = cms.InputTag("photonUserData")
 
 
 ###photonjets                                                                                                                              
-photonjets =  cms.EDProducer(
-    "CandViewNtpProducer",
-    src=cms.InputTag("photonJets"),
-    lazyParser=cms.untracked.bool(True),
-    prefix=cms.untracked.string("basic"),
-    eventInfo=cms.untracked.bool(False),
-    variables = cms.VPSet(
-    cms.PSet(
-        tag = cms.untracked.string("JetIndex"),
-        quantity = cms.untracked.string("userInt('jetIndex')")
-      
-        ),
+photonjets =  (
     cms.PSet(
         tag = cms.untracked.string("PhotonIndex"),
         quantity = cms.untracked.string("userInt('phoIndex')")
@@ -1231,12 +1220,7 @@ photonjets =  cms.EDProducer(
         quantity = cms.untracked.string("userFloat('SubEne2')")
         ),
 
-    )
 )
-#photonjets = copy.deepcopy(PhotonVars)                                                                                                    
-#photonjets.variables += photonJetVars                                                                                                     
-#photonjets = photonJetVars                                                                                                                
-#photonjets.prefix = cms.untracked.string("phoJets")
 
 
 qglVars = (
@@ -1273,6 +1257,7 @@ jetsAK8CHS = copy.deepcopy(basic)
 jetsAK8CHS.variables += jetVars
 jetsAK8CHS.variables += jetVarsForSys
 jetsAK8CHS.variables += jetToolboxAK8Vars
+jetsAK8CHS.variables += photonjets
 jetsAK8CHS.prefix = cms.untracked.string("jetAK8CHS")
 jetsAK8CHS.src = cms.InputTag("boostedJetUserDataAK8")
 jetKeysAK8CHS = copy.deepcopy( jetKeys )
