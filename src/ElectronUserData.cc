@@ -68,6 +68,7 @@ private:
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleTightIdFullInfoMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > electronMVAIdMapToken_;
  
   bool verboseIdFlag_;
 
@@ -98,6 +99,7 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
    eleTightIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleTightIdFullInfoMap"))),
    electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleHEEPIdFullInfoMap"))),
+   electronMVAIdMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleMVAIdValue"))),
    verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
@@ -153,11 +155,13 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > medium_id_cutflow_data;
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > tight_id_cutflow_data;
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > heep_id_cutflow_data;
+  edm::Handle<edm::ValueMap<float> > mva_id_data;
   iEvent.getByToken(eleVetoIdFullInfoMapToken_,veto_id_cutflow_data);
   iEvent.getByToken(eleLooseIdFullInfoMapToken_,loose_id_cutflow_data);
   iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
   iEvent.getByToken(eleTightIdFullInfoMapToken_,tight_id_cutflow_data);
   iEvent.getByToken(electronHEEPIdMapToken_,heep_id_cutflow_data);
+  iEvent.getByToken(electronMVAIdMapToken_,mva_id_data);
   //passVetoId_.clear();     
   //passTightId_.clear();
 
@@ -214,7 +218,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
   for (size_t i = 0; i< eleColl->size(); i++){
     pat::Electron & el = (*eleColl)[i];
-
+   
     // Isolation
     GsfElectron::PflowIsolationVariables pfIso = el.pfIsolationVariables();
 
@@ -263,6 +267,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool vidMedium  = (*medium_id_cutflow_data)[ elPtr ].cutFlowPassed();
     bool vidTight = (*tight_id_cutflow_data)[ elPtr ].cutFlowPassed();
     bool vidHEEP  = (*heep_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    
+    float mvaval = (*mva_id_data)[ elPtr ]; 
+    // if(mvaval > 0.1 ) cout<<"true ele "<<mvaval<<endl;
+
 
 
     //retrieving bits from fullflowcutData  and masking rel iso EA cut isolation cut
@@ -326,7 +334,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("vidMediumnoiso",    vidMedium_noiso );
     el.addUserFloat("vidTightnoiso",    vidTight_noiso );
     el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
-
+    el.addUserFloat("mvaIDvalue", mvaval);
   }
 
   iEvent.put( eleColl );

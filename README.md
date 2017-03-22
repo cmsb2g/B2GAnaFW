@@ -47,6 +47,12 @@ git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_fr
 scram b -j 10
 ```
 
+ * EGamma recipies
+```
+git cms-merge-topic ikrav:egm_id_80X_v3_photons
+```
+
+
 ### Clone the github repositories
 ```
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b v8.0.x_v2.5
@@ -88,3 +94,4 @@ python submit_all.py -c b2gedmntuples_cfg.py -f CRAB/tosubmit.txt -s T2_CH_CERN 
 Note that the ```-i``` option is not needed if the JECs are taken from the global tag, specified using the option "DataProcessing".
 
 See all options with ```python submit_all.py --help```
+bla

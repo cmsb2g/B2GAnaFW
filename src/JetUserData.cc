@@ -250,7 +250,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
       }
       // ... and gaussian smear the rest
       if (!isGenMatched && JERSF>1) {
-	double sigma = std::sqrt(JERSF * JERSF - 1) * PtResolution;
+	double sigma = std::sqrt(JERSF * JERSF - 1) * PtResolution ;
 	smearedP4 *= 1 + rnd_.Gaus(0, sigma);
       }
     }
