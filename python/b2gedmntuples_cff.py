@@ -686,22 +686,6 @@ jetToolboxAK8Vars = (
         tag = cms.untracked.string("vSubjetPuppiIndex1"),
         quantity = cms.untracked.string("? hasUserInt('VSubjetPuppi1') ? userInt('VSubjetPuppi1') : -1 ")
         ),
-#     cms.PSet(
-#        tag = cms.untracked.string("topSubjetIndex0"),
-#        quantity = cms.untracked.string("? hasUserInt('TopSubjet0') ? userInt('TopSubjet0') : -1 ")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("topSubjetIndex1"),
-#        quantity = cms.untracked.string("? hasUserInt('TopSubjet1') ? userInt('TopSubjet1') : -1 ")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("topSubjetIndex2"),
-#        quantity = cms.untracked.string("? hasUserInt('TopSubjet2') ? userInt('TopSubjet2') : -1 ")
-#        ),
-#     cms.PSet(
-#        tag = cms.untracked.string("topSubjetIndex3"),
-#        quantity = cms.untracked.string("? hasUserInt('TopSubjet3') ? userInt('TopSubjet3') : -1 ")
-#        ),
      cms.PSet(
         tag = cms.untracked.string("tau1CHS"),
         quantity = cms.untracked.string("userFloat('NjettinessAK8CHS:tau1')")
@@ -762,6 +746,10 @@ jetToolboxAK8Vars = (
         tag = cms.untracked.string("tau3Puppi"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3')")
         ),
+     cms.PSet(
+        tag = cms.untracked.string("subjetSumMassSoftDropPuppi"),
+        quantity = cms.untracked.string("? hasUserFloat('subjetSumMassSoftDropPuppi') ? userFloat('subjetSumMassSoftDropPuppi') : -999 ")
+        ),
 )
 
 ### jet variables
@@ -802,7 +790,7 @@ jetToolboxAK8SubjetVars = (
      cms.PSet(
         tag = cms.untracked.string("tau3"),
         quantity = cms.untracked.string("userFloat('NsubjettinessAK8PFCHSSoftDropSubjets:tau3')")
-        )
+        ),
 )
 
 
@@ -1161,63 +1149,63 @@ photons.src = cms.InputTag("photonUserData")
 photonjets =  (
     cms.PSet(
         tag = cms.untracked.string("PhotonIndex"),
-        quantity = cms.untracked.string("userInt('phoIndex')")
+        quantity = cms.untracked.string("? hasUserInt('phoIndex') ? userInt('phoIndex') : -999 ")
             ),
     cms.PSet(
         tag = cms.untracked.string("SubwGammatIndex"),
-        quantity = cms.untracked.string("userInt('subIndex')")
+        quantity = cms.untracked.string("? hasUserInt('subIndex') ? userInt('subIndex') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("PhotonSubjetFrac"),
-        quantity = cms.untracked.string("userFloat('phoSubjetPtFrac')")
+        quantity = cms.untracked.string("? hasUserFloat('phoSubjetPtFrac') ? userFloat('phoSubjetPtFrac') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPt0"),
-        quantity = cms.untracked.string("userFloat('SubPt0')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPt0') ? userFloat('SubPt0') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPt1"),
-        quantity = cms.untracked.string("userFloat('SubPt1')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPt1') ? userFloat('SubPt1') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPt2"),
-        quantity = cms.untracked.string("userFloat('SubPt2')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPt2') ? userFloat('SubPt2') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEta0"),
-        quantity = cms.untracked.string("userFloat('SubEta0')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEta0') ? userFloat('SubEta0') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEta1"),
-        quantity = cms.untracked.string("userFloat('SubEta1')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEta1') ? userFloat('SubEta1') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEta2"),
-        quantity = cms.untracked.string("userFloat('SubEta2')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEta2') ? userFloat('SubEta2') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPhi0"),
-        quantity = cms.untracked.string("userFloat('SubPhi0')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPhi0') ? userFloat('SubPhi0') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPhi1"),
-        quantity = cms.untracked.string("userFloat('SubPhi1')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPhi1') ? userFloat('SubPhi1') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetPhi2"),
-        quantity = cms.untracked.string("userFloat('SubPhi2')")
+        quantity = cms.untracked.string("? hasUserFloat('SubPhi2') ? userFloat('SubPhi2') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEne0"),
-        quantity = cms.untracked.string("userFloat('SubEne0')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEne0') ? userFloat('SubEne0') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEne1"),
-        quantity = cms.untracked.string("userFloat('SubEne1')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEne1') ? userFloat('SubEne1') : -999 ")
         ),
     cms.PSet(
         tag = cms.untracked.string("SubjetEne2"),
-        quantity = cms.untracked.string("userFloat('SubEne2')")
+        quantity = cms.untracked.string("? hasUserFloat('SubEne2') ? userFloat('SubEne2') : -999 ")
         ),
 
 )

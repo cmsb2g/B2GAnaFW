@@ -4,23 +4,23 @@ header = """
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
 ###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of
-###        'Data_80X_Run2016H_PromptReco', 
-###        'Data_80X_Run2016BCD_23Sep2016', 
-###        'Data_80X_Run2016EF_23Sep2016', 
-###        'Data_80X_Run2016G_23Sep2016', 
+###        'Data_80X_Run2016H_03Feb2017', 
+###        'Data_80X_Run2016BCD_03Feb2017', 
+###        'Data_80X_Run2016EF_03Feb2017', 
+###        'Data_80X_Run2016G_03Feb2017', 
 ###        'MC_MiniAODv2_80X_Summer16', 
 ###        'MC_MiniAODv2_80X_FastSim'
 ###
 ### Examples: 
 ###
-###    Running on 25 ns data in 80x PromptReco (Run2016H):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016H_PromptReco'
-###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016BCD):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016BCD_23Sep2016'
-###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016EF):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016EF_23Sep2016'
-###    Running on 25 ns data in 80x 23Sep2016 ReReco (Run2016G):
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016G_23Sep2016'
+###    Running on 25 ns data in 80x 03Feb2017 (Run2016H):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016H_03Feb2017'
+###    Running on 25 ns data in 80x 03Feb2017 ReReco (Run2016BCD):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016BCD_03Feb2017'
+###    Running on 25 ns data in 80x 03Feb2017 ReReco (Run2016EF):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016EF_03Feb2017'
+###    Running on 25 ns data in 80x 03Feb2017 ReReco (Run2016G):
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_80X_Run2016G_03Feb2017'
 ### 
 ###    Running on 25 ns MC Sumemer16 in 80x:
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_MiniAODv2_80X_Summer16'
@@ -42,7 +42,8 @@ options = opts.VarParsing ('analysis')
 
 options.register('sample',
      #'/store/mc/RunIISummer16MiniAODv2/BulkGravTohhTohbbhbb_narrow_M-1000_13TeV-madgraph/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/70000/289B3CE4-89B8-E611-89BF-D8D385AE8B08.root',
-     '/store/data/Run2016H/JetHT/MINIAOD/PromptReco-v3/000/284/036/00000/1ABD0A12-619F-E611-AAFC-02163E013674.root',
+     #'/store/data/Run2016H/JetHT/MINIAOD/03Feb2017_ver2-v1/80000/74D27915-1AEB-E611-A0B3-001E67E6F8AA.root',
+     '/store/data/Run2016C/JetHT/MINIAOD/03Feb2017-v1/110000/86F82CD1-C7EB-E611-ACD3-008CFA110B08.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -58,10 +59,10 @@ options.register('DataProcessing',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
     'Data processing types. Options are:\
-        Data_80X_Run2016H_PromptReco, \
-        Data_80X_Run2016BCD_23Sep2016, \
-        Data_80X_Run2016EF_23Sep2016, \
-        Data_80X_Run2016G_23Sep2016, \
+        Data_80X_Run2016BCD_03Feb2017, \
+        Data_80X_Run2016EF_03Feb2017, \
+        Data_80X_Run2016G_03Feb2017, \
+        Data_80X_Run2016H_03Feb2017, \
         MC_MiniAODv2_80X_Summer16, \
         MC_MiniAODv2_80X_FastSim'
     )
@@ -128,12 +129,12 @@ if options.DataProcessing == "":
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="Data_80X_Run2016H_PromptReco":
+  if options.DataProcessing=="Data_80X_Run2016H_03Feb2017":
     options.globalTag="80X_dataRun2_Prompt_v15"
   elif options.DataProcessing in [
-        'Data_80X_Run2016BCD_23Sep2016', 
-        'Data_80X_Run2016EF_23Sep2016', 
-        'Data_80X_Run2016G_23Sep2016', 
+        'Data_80X_Run2016BCD_03Feb2017', 
+        'Data_80X_Run2016EF_03Feb2017', 
+        'Data_80X_Run2016G_03Feb2017', 
       ]:
     options.globalTag="80X_dataRun2_2016SeptRepro_v7"    
   elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
@@ -143,10 +144,10 @@ else:
     options.usePrivateSQLite = True
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
-      'Data_80X_Run2016H_PromptReco', \
-      'Data_80X_Run2016BCD_23Sep2016', \
-      'Data_80X_Run2016EF_23Sep2016', \
-      'Data_80X_Run2016G_23Sep2016', \
+      'Data_80X_Run2016H_03Feb2017', \
+      'Data_80X_Run2016BCD_03Feb2017', \
+      'Data_80X_Run2016EF_03Feb2017', \
+      'Data_80X_Run2016G_03Feb2017', \
       'MC_MiniAODv2_80X_Summer16', \
       'MC_MiniAODv2_80X_FastSim' \
       .\n")
@@ -221,32 +222,32 @@ if ("Data" in options.DataProcessing and options.forceResiduals): corrections.ex
 
 ### External JEC =====================================================================================================
 if options.usePrivateSQLite:
-    if options.DataProcessing=="Data_80X_Run2016H_PromptReco":
+    if options.DataProcessing=="Data_80X_Run2016H_03Feb2017":
       jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 280919
-      iovEnd   = 284044
-    elif options.DataProcessing=="Data_80X_Run2016BCD_23Sep2016":
+      iovEnd   = 999999  #284044
+    elif options.DataProcessing=="Data_80X_Run2016BCD_03Feb2017":
       jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 1
       iovEnd   = 276811 
-    elif options.DataProcessing=="Data_80X_Run2016EF_23Sep2016":
+    elif options.DataProcessing=="Data_80X_Run2016EF_03Feb2017":
       jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 276831
       iovEnd   = 278801
-    elif options.DataProcessing=="Data_80X_Run2016G_23Sep2016":
+    elif options.DataProcessing=="Data_80X_Run2016G_03Feb2017":
       jec_era = "Summer16_23Sep2016AllV4_DATA" 
       iovStart = 278802
       iovEnd   = 280385
     elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
-      jec_era = "Summer16_23Sep2016V4_MC" 
+      jec_era = "Summer16_03Feb2017V4_MC" 
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
       jec_era = "Spring16_25nsFastSimMC_V1" 
     else: 
       sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
-        'Data_80X_Run2016H_PromptReco', \
-        'Data_80X_Run2016BCD_23Sep2016', \
-        'Data_80X_Run2016EF_23Sep2016', \
-        'Data_80X_Run2016G_23Sep2016', \
+        'Data_80X_Run2016H_03Feb2017', \
+        'Data_80X_Run2016BCD_03Feb2017', \
+        'Data_80X_Run2016EF_03Feb2017', \
+        'Data_80X_Run2016G_03Feb2017', \
         'MC_MiniAODv2_80X_Summer16', \
         'MC_MiniAODv2_80X_FastSim' \
         .\n")
@@ -766,10 +767,9 @@ process.photonJetsUserData = cms.EDProducer(
 
 process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
-    jetLabel  = cms.InputTag('photonJetsUserData'),
-    #topjetLabel = cms.InputTag('patJetsCMSTopTagCHSPacked'),
-    #vjetLabel = cms.InputTag('slimmedJetsAK8PFCHSSoftDropPacked', 'SubJets'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
+    jetLabel  = cms.InputTag('jetUserDataAK8'),
+    puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
+    jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
 )
 
@@ -801,9 +801,8 @@ if "FastSim" in options.DataProcessing:
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    #topjetLabel = cms.InputTag('patJetsCMSTopTagPuppiPacked'),
-    #vjetLabel = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked', 'SubJets'),
-    vjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
+    puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
+    jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
 

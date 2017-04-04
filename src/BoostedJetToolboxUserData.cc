@@ -52,7 +52,7 @@ class BoostedJetToolboxUserData : public edm::EDProducer {
 
 
     edm::EDGetTokenT<std::vector<pat::Jet> >     jToken_;
-    //edm::EDGetTokenT<std::vector<pat::Jet> >     tToken_;
+    edm::EDGetTokenT<std::vector<pat::Jet> >     tToken_;
     edm::EDGetTokenT<std::vector<pat::Jet> >     vToken_;
 
     double distMax_;
@@ -62,8 +62,8 @@ class BoostedJetToolboxUserData : public edm::EDProducer {
 
 BoostedJetToolboxUserData::BoostedJetToolboxUserData(const edm::ParameterSet& iConfig) :
   jToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("jetLabel") )),
-  //tToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("topjetLabel")) ),
-  vToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("vjetLabel")) ),
+  tToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("puppiSDjetLabel")) ),
+  vToken_             (consumes<std::vector<pat::Jet> > ( iConfig.getParameter<edm::InputTag>("jetWithSubjetLabel")) ),
   distMax_            ( iConfig.getParameter<double>( "distMax" ) )
 {
   produces<vector<pat::Jet> >();
@@ -72,60 +72,50 @@ BoostedJetToolboxUserData::BoostedJetToolboxUserData(const edm::ParameterSet& iC
 
 void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<std::vector<pat::Jet> > jetHandle, vjetHandle; //topjetHandle
-  iEvent.getByToken(jToken_, jetHandle);
-  //iEvent.getByToken(tToken_, topjetHandle);
-  iEvent.getByToken(vToken_, vjetHandle);
+	edm::Handle<std::vector<pat::Jet> > jetHandle, jetWithSubjetHandle, puppiSDjetHandle;
+	iEvent.getByToken(jToken_, jetHandle);
+	iEvent.getByToken(tToken_, puppiSDjetHandle);
+	iEvent.getByToken(vToken_, jetWithSubjetHandle);
+
+	auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+
+	for (size_t i = 0; i< jetHandle->size(); i++){
+
+		pat::Jet & jet = (*jetColl)[i];
+
+		for ( auto const & puppiSDJet : *puppiSDjetHandle ) {
+
+			float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),puppiSDJet.eta(),puppiSDJet.phi());
+			if ( temp_dR2 < distMax_ ) {
+
+				TLorentzVector puppi_softdrop, puppi_softdrop_subjet;
+				auto const & sbSubjetsPuppi = puppiSDJet.subjets("SoftDrop");
+				for ( auto const & it : sbSubjetsPuppi ) {
+					puppi_softdrop_subjet.SetPtEtaPhiM(it->pt(),it->eta(),it->phi(),it->mass());
+					puppi_softdrop+=puppi_softdrop_subjet;
+				}
+				jet.addUserFloat("subjetSumMassSoftDropPuppi", puppi_softdrop.M() );
+			}
+		}
 
 
-  auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+		for ( auto const & jetWithSubjet : *jetWithSubjetHandle ) {
 
+			float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),jetWithSubjet.eta(),jetWithSubjet.phi());
+			if ( temp_dR2 < distMax_ ) {
+				int vSubjet0=-1, vSubjet1=-1;
+				if ( jetWithSubjet.numberOfDaughters() > 0 )
+				  vSubjet0 = jetWithSubjet.daughterPtr(0).key();
+				if ( jetWithSubjet.numberOfDaughters() > 1 )
+				  vSubjet1 = jetWithSubjet.daughterPtr(1).key();
+				jet.addUserInt("VSubjet0", vSubjet0  );
+				jet.addUserInt("VSubjet1", vSubjet1  );
+				break;
+			}
+		}
 
-  for (size_t i = 0; i< jetHandle->size(); i++){
-    pat::Jet & jet = (*jetColl)[i];
-
-  /*  for ( auto const & topJet : *topjetHandle ) {
-      float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),topJet.eta(),topJet.phi());
-      if ( temp_dR2 < distMax_ ) {
-	int topSubjet0=-1, topSubjet1=-1, topSubjet2=-1, topSubjet3=-1;
-	if ( topJet.numberOfDaughters() > 0 )
-	  topSubjet0 = topJet.daughterPtr(0).key();
-	if ( topJet.numberOfDaughters() > 1 )
-	  topSubjet1 = topJet.daughterPtr(1).key();
-	if ( topJet.numberOfDaughters() > 2 )
-	  topSubjet2 = topJet.daughterPtr(2).key();
-	if ( topJet.numberOfDaughters() > 3 )
-	  topSubjet3 = topJet.daughterPtr(3).key();
-	jet.addUserInt("TopSubjet0", topSubjet0  );
-	jet.addUserInt("TopSubjet1", topSubjet1  );
-	jet.addUserInt("TopSubjet2", topSubjet2  );
-	jet.addUserInt("TopSubjet3", topSubjet3  );	
-	break;
-      }
-
-    }*/
-
-
-
-    for ( auto const & vJet : *vjetHandle ) {
-      float temp_dR2 = reco::deltaR2(jet.eta(),jet.phi(),vJet.eta(),vJet.phi());
-      if ( temp_dR2 < distMax_ ) {
-
-	int vSubjet0=-1, vSubjet1=-1;
-	if ( vJet.numberOfDaughters() > 0 )
-	  vSubjet0 = vJet.daughterPtr(0).key();
-	if ( vJet.numberOfDaughters() > 1 )
-	  vSubjet1 = vJet.daughterPtr(1).key();
-	jet.addUserInt("VSubjet0", vSubjet0  );
-	jet.addUserInt("VSubjet1", vSubjet1  );
-	break;
-      }
-
-    }
-
-  } //// Loop over all jets 
-
-  iEvent.put( jetColl );
+	} //// Loop over all jets 
+	iEvent.put( jetColl );
 
 }
 
