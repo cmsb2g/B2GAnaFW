@@ -747,7 +747,7 @@ jetToolboxAK8Vars = (
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3')")
         ),
      cms.PSet(
-        tag = cms.untracked.string("subjetSumMassSoftDropPuppi"),
+        tag = cms.untracked.string("uncorrSDMassAK8Puppi"),
         quantity = cms.untracked.string("? hasUserFloat('subjetSumMassSoftDropPuppi') ? userFloat('subjetSumMassSoftDropPuppi') : -999 ")
         ),
 )
