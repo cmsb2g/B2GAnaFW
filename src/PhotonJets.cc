@@ -418,7 +418,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  FJparticlesUPDATED.push_back( PhoC );
 	}
 	//Find the new jet
-	fastjet::ClusterSequence clust_seq_08_Updated(FJparticlesUPDATED, jet_def_ca8);
+	fastjet::ClusterSequence clust_seq_08_Updated(FJparticlesUPDATED, jet_def_kt8);
 	std::vector<fastjet::PseudoJet>  jetUpdated = sorted_by_pt(clust_seq_08_Updated.exclusive_jets_up_to(1));
 	
 	if(jetUpdated[0].has_pieces()){
