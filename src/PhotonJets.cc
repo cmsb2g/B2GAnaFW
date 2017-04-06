@@ -244,16 +244,13 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
      //Now add the photon in
       //Take the resulting cands and built again the jet , recluster in exlusive 3 subjets
 
-      fastjet::JetDefinition jet_def_ca8(fastjet::cambridge_algorithm,0.8); 
-      fastjet::ClusterSequence clust_seq_08(FJparticles, jet_def_ca8);
+      fastjet::JetDefinition jet_def_kt8(fastjet::kt_algorithm,0.8); 
+      fastjet::ClusterSequence clust_seq_08(FJparticles, jet_def_kt8);
       std::vector<fastjet::PseudoJet>  jetnew = sorted_by_pt(clust_seq_08.exclusive_jets_up_to(1));
-     
+     	
+      Pruner pruner(fastjet::kt_algorithm,0.1,0.5);
+      PseudoJet jetnew = pruner(jet_new[0]);  	
 
-      fastjet::PseudoJet sub0; 
-      fastjet::PseudoJet sub1; 
-      fastjet::PseudoJet suba; 
-      fastjet::PseudoJet subb;
-      fastjet::PseudoJet subc; 
 
       TVector3 subj1,subj2,subj3;
       float subjf1 = -1; 
@@ -268,8 +265,15 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
       subj2.SetPtEtaPhi(0,0,0);
       subj3.SetPtEtaPhi(0,0,0);
     
-      if(jetnew[0].has_pieces()){
-	jetnew[0].has_parents(sub0,sub1);
+      if(jetnew.has_pieces()){
+
+        fastjet::PseudoJet sub0; 
+        fastjet::PseudoJet sub1; 
+        fastjet::PseudoJet suba; 
+        fastjet::PseudoJet subb;
+        fastjet::PseudoJet subc; 
+	      
+	jetnew.has_parents(sub0,sub1);
 	if(sub0.m() > sub1.m() && sub0.has_pieces() && sub0.m() > 0 ) {
 	  sub0.has_parents(suba,subb);
 	  if(suba.pt() > 10 && subb.pt() >  10 && sub1.pt() > 10 ){
@@ -305,7 +309,13 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	    pat::Photon & pho = (*phoColl)[ipho];
 	    double pho_pt  = pho.pt(); 
 	    double pho_eta = pho.eta();
-	    if(pho_pt < 20 || fabs(pho_eta) > 2.4 ) continue;
+            double pho_hoe = pho.hadTowOverEm();
+            double pho_sie = pho.full5x5_sigmaIetaIeta();
+
+	    if(pho_pt < 20  || fabs(pho_eta) > 2.4 || pho_hoe > 0.09 ) continue;
+            if(fabs(pho_eta) <1.479 && pho_sie  > 0.0105) continue;
+            if(fabs(pho_eta) >1.479 && pho_sie  > 0.0305) continue;
+
 	    double pho_phi = pho.phi(); 
 	    TVector3 phovect; 
 	    phovect.SetPtEtaPhi(pho_pt,pho_eta,pho_phi);
@@ -412,6 +422,12 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	std::vector<fastjet::PseudoJet>  jetUpdated = sorted_by_pt(clust_seq_08_Updated.exclusive_jets_up_to(1));
 	
 	if(jetUpdated[0].has_pieces()){
+          fastjet::PseudoJet sub0;
+          fastjet::PseudoJet sub1;
+          fastjet::PseudoJet suba;
+          fastjet::PseudoJet subb;
+          fastjet::PseudoJet subc;
+
 	  jetUpdated[0].has_parents(sub0,sub1);
 	  if(sub0.m() > sub1.m() && sub0.has_pieces() && sub0.m() > 0 ) {
 	    sub0.has_parents(suba,subb);
@@ -471,7 +487,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	    seta0 = subj3.Eta();  seta1 = subj1.Eta();  seta2 = subj2.Eta();
 	  }
 
-	}
+	
 	
 	int pho_s1 = -1; 
 	int pho_s2 = -1; 
@@ -586,7 +602,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	}
 	  
       }//eof good subjets
-    
+    }    
 
   }//EOF FOUND photon in the jet
     
