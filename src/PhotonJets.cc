@@ -47,6 +47,7 @@
 #include "fastjet/tools/Filter.hh"
 #include <fastjet/ClusterSequence.hh>
 #include <fastjet/ClusterSequenceArea.hh>
+#include <fastjet/tools/Pruner.hh>
 
 
 
