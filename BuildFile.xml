@@ -1,3 +1,4 @@
+<Flags CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"/>
 <use   name="FWCore/PluginManager"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/MessageLogger"/>
@@ -23,7 +24,6 @@
 <use   name="Geometry/Records"/>
 <use   name="HLTrigger/HLTcore"/>
 <use   name="RecoEcal/EgammaCoreTools"/>
-<use   name="Utilities/Timing"/>
 <use   name="CondFormats/HLTObjects"/>
 <use   name="root"/>
 <use   name="DataFormats/CSCRecHit"/>
@@ -55,6 +55,7 @@
 <use   name="RecoJets/JetProducers"/>
 <use   name="JetMETCorrections/Algorithms"/>
 <use   name="JetMETCorrections/Objects"/>
+<use   name="JetMETCorrections/Modules"/>
 <use   name="RecoVertex/AdaptiveVertexFit"/>
 <use   name="RecoLocalCalo/EcalRecAlgos"/>
 <use   name="DataFormats/ParticleFlowCandidate"/>

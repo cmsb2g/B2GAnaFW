@@ -47,11 +47,10 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
-  bool isMatchedWithTrigger();
-  bool passIDWP();
-  float IsoCalc();
-  InputTag rhoLabel_;
-  InputTag phoLabel_;
+  float EASP16(float eta,int type);
+
+  EDGetTokenT< double > rhoLabel_;
+  EDGetTokenT< std::vector< pat::Photon > > phoLabel_;
   edm::EDGetToken                      photonsMiniAODToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoLooseIdMapToken_;
   edm::EDGetTokenT<edm::ValueMap<bool> > phoMediumIdMapToken_;
@@ -59,9 +58,6 @@ private:
   edm::EDGetTokenT<edm::ValueMap<float> > phoISOCMapToken_;
   edm::EDGetTokenT<edm::ValueMap<float> > phoISOPMapToken_;
   edm::EDGetTokenT<edm::ValueMap<float> > phoISONMapToken_;
-  EffectiveAreas effAreaChHadrons_;
-  EffectiveAreas effAreaNeuHadrons_;
-  EffectiveAreas effAreaPhotons_;
   edm::EDGetTokenT<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMapToken_;
   
   InputTag triggerResultsLabel_, triggerSummaryLabel_;
@@ -76,8 +72,8 @@ private:
 //Necessary for the  Isolation Rho Correction
 
 PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
-  rhoLabel_(iConfig.getParameter<edm::InputTag>("rho")), //rhofixedgridRhoFastjet All"
-  phoLabel_(iConfig.getParameter<edm::InputTag>("pholabel")),
+  rhoLabel_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), //rhofixedgridRhoFastjet All"
+  phoLabel_(consumes<std::vector<pat::Photon>>(iConfig.getParameter<edm::InputTag>("pholabel"))), 
   photonsMiniAODToken_(consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>("pholabel"))),
   phoLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoLooseIdMap"))),
   phoMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("phoMediumIdMap"))),
@@ -85,9 +81,6 @@ PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
   phoISOCMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoChgIsoMap"))),
   phoISOPMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoPhoIsoMap"))),
   phoISONMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("phoNeuIsoMap"))),
-  effAreaChHadrons_( (iConfig.getParameter<edm::FileInPath>("effAreaChHadFile")).fullPath() ),
-  effAreaNeuHadrons_( (iConfig.getParameter<edm::FileInPath>("effAreaNeuHadFile")).fullPath() ),
-  effAreaPhotons_( (iConfig.getParameter<edm::FileInPath>("effAreaPhoFile")).fullPath() ),
   full5x5SigmaIEtaIEtaMapToken_(consumes <edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
@@ -96,7 +89,7 @@ PhotonUserData::PhotonUserData(const edm::ParameterSet& iConfig):
 
 void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  edm::Handle<edm::View<pat::Photon> > photonS;
+  edm::Handle<edm::View<pat::Photon> > photonHandle;
   edm::Handle< double > rhoH;
   edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
   edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
@@ -105,8 +98,8 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::ValueMap<float> > isop_idvar;
   edm::Handle<edm::ValueMap<float> > ison_idvar;
   edm::Handle<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMap;
-  iEvent.getByToken(photonsMiniAODToken_,photonS);
-  iEvent.getByLabel(rhoLabel_,rhoH);
+  iEvent.getByToken(photonsMiniAODToken_,photonHandle);
+  iEvent.getByToken(rhoLabel_,rhoH);
   iEvent.getByToken(phoLooseIdMapToken_ ,loose_id_decisions);
   iEvent.getByToken(phoMediumIdMapToken_,medium_id_decisions);
   iEvent.getByToken(phoTightIdMapToken_ ,tight_id_decisions);
@@ -117,7 +110,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   edm::Handle<std::vector<pat::Photon> > photonS2;
-  iEvent.getByLabel(phoLabel_, photonS2);
+  iEvent.getByToken(phoLabel_, photonS2);
   auto_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*photonS2) );
 
   //rho
@@ -125,106 +118,107 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
   rho_ = *rhoH;
 
   //Photon Loop
-  for (size_t i = 0; i < photonS->size(); ++i){
-    const auto pho = photonS->ptrAt(i);
+
+  for (size_t i = 0; i < phoColl->size(); ++i){
+    //const Ptr<pat::Photon> pho(photonHandle,i); 
+    const auto pho = photonHandle->ptrAt(i);
     pat::Photon & phoi = (*phoColl)[i];
-    if(pho->pt() < 15 ) continue;
-    if(pho->hadTowOverEm() > 0.15 ) continue;
+  
     bool pho_isLoose  = (*loose_id_decisions)[pho];
     bool pho_isMedium = (*medium_id_decisions)[pho];
     bool pho_isTight  = (*tight_id_decisions)[pho];
   
     //Isolations raw and EA corrected
-    float pho_isoC       = (*isoc_idvar)[pho];
     float pho_isoP       = (*isop_idvar)[pho];
     float pho_isoN       = (*ison_idvar)[pho];
-    
-    
-    float abseta = fabs(pho->eta());    
-
-    float pho_isoCea     = std::max( float(0.0) ,(*isoc_idvar)[pho] - rho_*effAreaChHadrons_.getEffectiveArea(abseta));
-    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*effAreaPhotons_.getEffectiveArea(abseta)) ;
-    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta));
+    float pho_isoC       = (*isoc_idvar)[pho];
+    float abseta         = fabs(pho->eta());    
+    float pho_isoPea     = std::max( float(0.0) ,(*isop_idvar)[pho] - rho_*EASP16(abseta,2)) ;
+    float pho_isoNea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EASP16(abseta,1));
+    float pho_isoCea     = std::max( float(0.0) ,(*ison_idvar)[pho] - rho_*EASP16(abseta,0));
 
 
     //showershapes 
     float pho_r9 = pho->r9();
     float pho_sieie = (*full5x5SigmaIEtaIEtaMap)[pho];
     float pho_hoe = pho->hadTowOverEm();
+    float pho_sieip = pho->sep(); 
+    float pho_sipip = pho->spp(); 
+  
+    float pho_e1x5     = pho->e1x5(); 
+    float pho_e5x5     = pho->e5x5(); 
+  
 
-    //Kinematical 
-    float phophi = pho->phi();
-    float phoeta = pho->eta();
+    //Photon Ele discrimination 
 
-    float pho_eta = pho->superCluster()->eta();
-    float pho_phi = pho->superCluster()->phi();
-    float pho_pt  = pho->pt();
+    bool hasPixelSeed = pho->hasPixelSeed(); 
+    bool pho_eleveto  = pho->passElectronVeto();
 
-    float pho_ene =pho->energy();
-    
-    //other
-    bool pho_hasPixelSeed = pho->hasPixelSeed(); 
-
-    
-
-
-
-    //Kinematical
-    phoi.addUserFloat("phoSceta",pho_eta);
-    phoi.addUserFloat("phoScphi",pho_phi);
-    phoi.addUserFloat("phoEta",phoeta);
-    phoi.addUserFloat("phoPhi",phophi);
-
-    phoi.addUserFloat("phopt",pho_pt);
-    phoi.addUserFloat("phoen",pho_ene);
-
-    //Showe shapes
-    phoi.addUserInt("hasPixelSeed", pho_hasPixelSeed);
+    phoi.addUserInt("hasPixelSeed", hasPixelSeed);
+    phoi.addUserInt("eleveto", pho_eleveto); //
     phoi.addUserFloat("sigmaIetaIeta", pho_sieie);
+    phoi.addUserFloat("sigmaIetaIphi",pho_sieip); //
+    phoi.addUserFloat("sigmaIphiIphi",pho_sipip); //
+    phoi.addUserFloat("e1x5",pho_e1x5); //
+    phoi.addUserFloat("e5x5",pho_e5x5); //
     phoi.addUserFloat("hoe", pho_hoe);
     phoi.addUserFloat("r9",  pho_r9);
-
+    
     
     //isolation
     phoi.addUserFloat("isoC",pho_isoC);
     phoi.addUserFloat("isoP",pho_isoP);
     phoi.addUserFloat("isoN",pho_isoN);
-    phoi.addUserFloat("isoC_EAcor",pho_isoCea);
     phoi.addUserFloat("isoP_EAcor",pho_isoPea);
     phoi.addUserFloat("isoN_EAcor",pho_isoNea);
+    phoi.addUserFloat("isoC_EAcor",pho_isoCea);
 
-    phoi.addUserFloat("isLoose",    pho_isLoose);
-    phoi.addUserFloat("isMedium",   pho_isMedium);
-    phoi.addUserFloat("isTight",    pho_isTight);
+    phoi.addUserInt("isLoose",    pho_isLoose);
+    phoi.addUserInt("isMedium",   pho_isMedium);
+    phoi.addUserInt("isTight",    pho_isTight);
 
-
-
-  }//EOF photons loop
+  }
+//EOF photons loop
   iEvent.put( phoColl );
-  
 
 }
 
 float
-PhotonUserData::IsoCalc(){
+PhotonUserData::EASP16(float eta,int type){
+  //Returns the Effective areas for the PF:gamma Isolation
+  //Taken from here: https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Selection_implementation_details
+  
+ float effArea = 0; 
 
-  return 2.0;
+ //----type 0 charged hadron  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 0) effArea = 0.0360;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 0) effArea = 0.0377;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 0) effArea = 0.0306;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 0) effArea = 0.0283;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 0) effArea = 0.0254;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 0) effArea = 0.0217;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 0) effArea = 0.0167;
 
+   //----type 1 neutral hadron  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 1) effArea = 0.0597;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 1) effArea = 0.0807;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 1) effArea = 0.0629;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 1) effArea = 0.0197;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 1) effArea = 0.0184;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 1) effArea = 0.0284;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 1) effArea = 0.0591;
+
+   //----type 2 photons  EAs
+  if(abs(eta)>0.0 && abs(eta)<=1.0 && type == 2) effArea = 0.1210;
+  if(abs(eta)>1.0 && abs(eta)<=1.479 && type == 2) effArea = 0.1107;
+  if(abs(eta)>1.479 && abs(eta)<=2.0 && type == 2) effArea = 0.0699;
+  if(abs(eta)>2.0 && abs(eta)<=2.2 && type == 2) effArea = 0.1056;
+  if(abs(eta)>2.2 && abs(eta)<=2.3 && type == 2) effArea = 0.1457;
+  if(abs(eta)>2.3 && abs(eta)<=2.4 && type == 2) effArea = 0.1719;
+  if(abs(eta)>2.4 && abs(eta)<=2.5 && type == 2) effArea = 0.1998;
+
+  return effArea;
 }
-
-
-bool
-PhotonUserData::isMatchedWithTrigger(){
-  return true;
-}
-
-
-bool PhotonUserData::passIDWP(){
- 
-  return true;
-}
-
-
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(PhotonUserData);

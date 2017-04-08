@@ -45,30 +45,34 @@ public:
 
 private:
   void produce( edm::Event &, const edm::EventSetup & );
-  float getEA(float);
-  float getEAOld(float);
-  float getEAWithGenWeightOld(float);
   bool isMatchedWithTrigger(const pat::Electron, trigger::TriggerObjectCollection,int&);
-  bool passIDWP(string, bool, float, float, float, float, float, float, float, bool, int);
-
   void printCutFlowResult(vid::CutFlowResult &cutflow);
-
-  InputTag eleLabel_, pvLabel_, packedPFCandsLabel_, convLabel_, rho_;
-  InputTag triggerResultsLabel_, triggerSummaryLabel_;
+  float getEA(float eta);
+  EDGetTokenT< std::vector< pat::Electron > > eleLabel_;
+  EDGetTokenT< std::vector< reco::Vertex > > pvLabel_;
+  EDGetTokenT< pat::PackedCandidateCollection > packedPFCandsLabel_;
+  EDGetTokenT< reco::ConversionCollection > convLabel_;
+  EDGetTokenT< reco::BeamSpot > beamLabel_;
+  EDGetTokenT< double > rho_;
+  EDGetTokenT< double > rho_miniIso_;
+  EDGetTokenT< edm::TriggerResults > triggerResultsLabel_;
+  EDGetTokenT< trigger::TriggerEvent > triggerSummaryLabel_;
   InputTag hltElectronFilterLabel_;
   TString hltPath_;
   HLTConfigProvider hltConfig;
   int triggerBit;
   int debug_; 
   // ----------member data ---------------------------
-
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronVetoIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronLooseIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronMediumIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<bool> > electronTightIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleVetoIdFullInfoMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleLooseIdFullInfoMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
-
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleTightIdFullInfoMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > electronGPMvaValueMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<int>  > electronGPMvaCatMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > electronHZZMvaValueMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<int> > electronHZZMvaCatMapToken_;
+ 
   bool verboseIdFlag_;
 
   //  std::vector<Float_t> pt_;
@@ -82,21 +86,26 @@ private:
 
 
 ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
-   eleLabel_(iConfig.getParameter<edm::InputTag>("eleLabel")),
-   pvLabel_(iConfig.getParameter<edm::InputTag>("pv")),   // "offlinePrimaryVertex"
-   packedPFCandsLabel_(iConfig.getParameter<edm::InputTag>("packedPFCands")),
-   convLabel_(iConfig.getParameter<edm::InputTag>("conversion")),   // "offlinePrimaryVertex"
-   rho_( iConfig.getParameter<edm::InputTag>("rho")),
-   triggerResultsLabel_(iConfig.getParameter<edm::InputTag>("triggerResults")),
-   triggerSummaryLabel_(iConfig.getParameter<edm::InputTag>("triggerSummary")),
+   eleLabel_(consumes<std::vector<pat::Electron>>(iConfig.getParameter<edm::InputTag>("eleLabel"))), 
+   pvLabel_(consumes<std::vector<reco::Vertex>>(iConfig.getParameter<edm::InputTag>("pv"))), // "offlinePrimaryVertex"
+   packedPFCandsLabel_(consumes<pat::PackedCandidateCollection>(iConfig.getParameter<edm::InputTag>("packedPFCands"))), 
+   convLabel_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversion"))),   // "offlinePrimaryVertex"
+   beamLabel_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("beamSpot"))), 
+   rho_(consumes<double>(iConfig.getParameter<edm::InputTag>("rho"))), 
+   rho_miniIso_(consumes<double>(edm::InputTag("fixedGridRhoFastjetCentralNeutral"))),
+   triggerResultsLabel_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResults"))),
+   triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
    hltPath_ (iConfig.getParameter<std::string>("hltPath")),
-   electronVetoIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronVetoIdMap"))),
-   electronLooseIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronLooseIdMap"))),
-   electronMediumIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronMediumIdMap"))),
-   electronTightIdMapToken_(consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("electronTightIdMap"))),
-   electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("electronHEEPIdMap"))), 
+   eleVetoIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleVetoIdFullInfoMap"))),
+   eleLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleLooseIdFullInfoMap"))),
    eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
+   eleTightIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleTightIdFullInfoMap"))),
+   electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleHEEPIdFullInfoMap"))),
+   electronGPMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleGPMvaValueMap"))),
+   electronGPMvaCatMapToken_(consumes<edm::ValueMap<int>   >(iConfig.getParameter<edm::InputTag>("eleGPMvaCatMap"))),
+   electronHZZMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaValueMap"))),
+   electronHZZMvaCatMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaCatMap"))),
    verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
@@ -109,12 +118,13 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     
   //PV
   edm::Handle<std::vector<reco::Vertex> > vertices;
-  iEvent.getByLabel(pvLabel_, vertices);
+  iEvent.getByToken(pvLabel_, vertices);
 
   //RHO
-  edm::Handle<double> rhoHandle;
-  iEvent.getByLabel(rho_,rhoHandle);
-  double rho = *rhoHandle; 
+  edm::Handle<double> rhoHandle, rhoHandle_miniIso;
+  iEvent.getByToken(rho_,rhoHandle);
+  iEvent.getByToken(rho_miniIso_,rhoHandle_miniIso);
+  double rho = *rhoHandle, rho_miniIso = *rhoHandle_miniIso;
 
   if(debug_>=1) cout<<"vtx size " << vertices->size()<<endl; 
 
@@ -127,37 +137,44 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     
   //Electrons
   edm::Handle<std::vector<pat::Electron> > eleHandle;
-  iEvent.getByLabel(eleLabel_, eleHandle);
+  iEvent.getByToken(eleLabel_, eleHandle);
   
   auto_ptr<vector<pat::Electron> > eleColl( new vector<pat::Electron> (*eleHandle) );
 
   //PackedPFCands for Mini-iso
   edm::Handle<pat::PackedCandidateCollection> packedPFCands;
-  iEvent.getByLabel(packedPFCandsLabel_, packedPFCands);
+  iEvent.getByToken(packedPFCandsLabel_, packedPFCands);
 
   Handle<reco::BeamSpot> bsHandle;
-  iEvent.getByLabel("offlineBeamSpot", bsHandle);
+  iEvent.getByToken(beamLabel_, bsHandle);
   const reco::BeamSpot &beamspot = *bsHandle.product();
     
   Handle<reco::ConversionCollection> conversions;
-  iEvent.getByLabel(convLabel_, conversions);
+  iEvent.getByToken(convLabel_, conversions);
   //  iEvent.getByLabel("reducedEgamma:reducedConversions", conversions);
 
 
   // Electron ID
   // Get the electron ID data from the event stream.
-  edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
-  edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
-  edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
-  edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > HEEP_id_cutflow_data;
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > veto_id_cutflow_data;
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > loose_id_cutflow_data;
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > medium_id_cutflow_data;
-  iEvent.getByToken(electronVetoIdMapToken_,veto_id_decisions);
-  iEvent.getByToken(electronLooseIdMapToken_,loose_id_decisions);
-  iEvent.getByToken(electronMediumIdMapToken_,medium_id_decisions);
-  iEvent.getByToken(electronTightIdMapToken_,tight_id_decisions);
-  iEvent.getByToken(electronHEEPIdMapToken_,HEEP_id_cutflow_data);
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > tight_id_cutflow_data;
+  edm::Handle<edm::ValueMap<vid::CutFlowResult> > heep_id_cutflow_data;
+  edm::Handle<edm::ValueMap<float> > mva_id_data;
+  edm::Handle<edm::ValueMap<float> > GPMva_values;
+  edm::Handle<edm::ValueMap<int> >   GPMva_cats;
+  edm::Handle<edm::ValueMap<float> > HZZMva_values;
+  edm::Handle<edm::ValueMap<int> >   HZZMva_cats;
+   iEvent.getByToken(eleVetoIdFullInfoMapToken_,veto_id_cutflow_data);
+  iEvent.getByToken(eleLooseIdFullInfoMapToken_,loose_id_cutflow_data);
   iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
+  iEvent.getByToken(eleTightIdFullInfoMapToken_,tight_id_cutflow_data);
+  iEvent.getByToken(electronHEEPIdMapToken_,heep_id_cutflow_data);
+  iEvent.getByToken(electronGPMvaValueMapToken_,  GPMva_values);
+  iEvent.getByToken(electronGPMvaCatMapToken_,    GPMva_cats);
+  iEvent.getByToken(electronHZZMvaValueMapToken_, HZZMva_values);
+  iEvent.getByToken(electronHZZMvaCatMapToken_,   HZZMva_cats);
   //passVetoId_.clear();     
   //passTightId_.clear();
 
@@ -166,74 +183,69 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   maskCuts.push_back("GsfEleTrkPtIsoCut_0"); 
   maskCuts.push_back("GsfEleEmHadD1IsoRhoCut_0");   
   
-  // TRIGGER
-  bool changedConfig = false;
-  if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
-    cout << "Initialization of HLTConfigProvider failed!!" << endl;
-    return;
-  }
+  //// TRIGGER
+  //bool changedConfig = false;
+  //if (!hltConfig.init(iEvent.getRun(), iSetup, "HLT", changedConfig)) {
+  //  cout << "Initialization of HLTConfigProvider failed!!" << endl;
+  //  return;
+  //}
 
-  
-  if (changedConfig){
-    std::cout << "the curent menu is " << hltConfig.tableName() << " "<< hltConfig.triggerNames().size() <<endl; 
-    triggerBit = -1;
-    for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
-      if(debug_ ==99) cout<<"trigName " <<j<<" "<< hltConfig.triggerNames()[j] <<endl; 
-      if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) triggerBit = j;
-    }
-    if (triggerBit == -1) cout << "HLT path not found" << endl;
-  }
-  edm::Handle<edm::TriggerResults> triggerResults;
-  iEvent.getByLabel(triggerResultsLabel_, triggerResults);
-  if (size_t(triggerBit) < triggerResults->size() )
-    if (triggerResults->accept(triggerBit))
-      std::cout << "event pass : " << hltPath_ << std::endl;
-  // if (triggerResults->accept(triggerBit)){ //crashing here to be understood!
-  //   std::cout << "event pass : " << hltPath_ << std::endl;
-  // }
+  //
+  //if (changedConfig){
+  //  std::cout << "the curent menu is " << hltConfig.tableName() << " "<< hltConfig.triggerNames().size() <<endl; 
+  //  triggerBit = -1;
+  //  for (size_t j = 0; j < hltConfig.triggerNames().size(); j++) {
+  //    if(debug_ ==99) cout<<"trigName " <<j<<" "<< hltConfig.triggerNames()[j] <<endl; 
+  //    if (TString(hltConfig.triggerNames()[j]).Contains(hltPath_)) triggerBit = j;
+  //  }
+  //  if (triggerBit == -1) cout << "HLT path not found" << endl;
+  //}
+  //edm::Handle<edm::TriggerResults> triggerResults;
+  //iEvent.getByToken(triggerResultsLabel_, triggerResults);
+  //if (size_t(triggerBit) < triggerResults->size() )
+  //  if (triggerResults->accept(triggerBit))
+  //    std::cout << "event pass : " << hltPath_ << std::endl;
+  //// if (triggerResults->accept(triggerBit)){ //crashing here to be understood!
+  ////   std::cout << "event pass : " << hltPath_ << std::endl;
+  //// }
 
-  edm::Handle<trigger::TriggerEvent> triggerSummary;
-  iEvent.getByLabel(triggerSummaryLabel_, triggerSummary);
+  //edm::Handle<trigger::TriggerEvent> triggerSummary;
+  //iEvent.getByToken(triggerSummaryLabel_, triggerSummary);
 
-  //find the index corresponding to the event
-  if(false){ ///to be done after understanding which trigger(s) to use.
-  size_t ElectronFilterIndex = (*triggerSummary).filterIndex(hltElectronFilterLabel_);
-  trigger::TriggerObjectCollection allTriggerObjects = triggerSummary->getObjects();
-  trigger::TriggerObjectCollection ElectronLegObjects;
-  if (ElectronFilterIndex < (*triggerSummary).sizeFilters()) { //check if the trigger object is present
-    //save the trigger objects corresponding to ele leg
-    const trigger::Keys &keysElectrons = (*triggerSummary).filterKeys(ElectronFilterIndex);
-    for (size_t j = 0; j < keysElectrons.size(); j++) {
-      trigger::TriggerObject foundObject = (allTriggerObjects)[keysElectrons[j]];
-      ElectronLegObjects.push_back(foundObject);
-    }
-  }
-  if( debug_ >=1)  std::cout << "ElectronLegObjects: " << ElectronLegObjects.size() << std::endl;
-  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
-  }
-
+  ////find the index corresponding to the event
+  //if(false){ ///to be done after understanding which trigger(s) to use.
+  //size_t ElectronFilterIndex = (*triggerSummary).filterIndex(hltElectronFilterLabel_);
+  //trigger::TriggerObjectCollection allTriggerObjects = triggerSummary->getObjects();
+  //trigger::TriggerObjectCollection ElectronLegObjects;
+  //if (ElectronFilterIndex < (*triggerSummary).sizeFilters()) { //check if the trigger object is present
+  //  //save the trigger objects corresponding to ele leg
+  //  const trigger::Keys &keysElectrons = (*triggerSummary).filterKeys(ElectronFilterIndex);
+  //  for (size_t j = 0; j < keysElectrons.size(); j++) {
+  //    trigger::TriggerObject foundObject = (allTriggerObjects)[keysElectrons[j]];
+  //    ElectronLegObjects.push_back(foundObject);
+  //  }
+  //}
+  //if( debug_ >=1)  std::cout << "ElectronLegObjects: " << ElectronLegObjects.size() << std::endl;
+  ///////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////  /////////
+  //}
 
   for (size_t i = 0; i< eleColl->size(); i++){
     pat::Electron & el = (*eleColl)[i];
-
+   
     // Isolation
     GsfElectron::PflowIsolationVariables pfIso = el.pfIsolationVariables();
-    // Compute isolation with delta beta correction for PU
 
-    bool isEB = el.isEB() ? true : false;
-    //float ptEle  = el.pt();
-    //float etaEle = el.superCluster()->eta();
-    float dEtaIn = el.deltaEtaSuperClusterTrackAtVtx();
-    float dPhiIn = el.deltaPhiSuperClusterTrackAtVtx();
+    //Cut variables     
+    float dEtaInSeed = el.superCluster().isNonnull() && el.superCluster()->seed().isNonnull() ? el.deltaEtaSuperClusterTrackAtVtx() - el.superCluster()->eta() + el.superCluster()->seed()->eta() : std::numeric_limits<float>::max();  // the cutID uses the absolute of this variable
+    float dPhiIn = el.deltaPhiSuperClusterTrackAtVtx(); // the cutID uses the absolute of this variable
     float full5x5 = el.full5x5_sigmaIetaIeta();
     float hoe = el.hadronicOverEm();
-    float absiso = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
-    float relIsoWithDBeta_ = absiso/el.pt();
-    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&el), 0.05, 0.2, 10., false);
+   
     double EA = getEA(el.eta());
-    //double rho = 1.0;
-    float absiso_EA = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
+    float absiso_EA = pfIso.sumChargedHadronPt + std::max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
     float relIsoWithEA_ = absiso_EA/el.pt();
+    float missHits = el.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+
     float ooEmooP_; 
     if( el.ecalEnergy() == 0 ){
       printf("Electron energy is zero!\n");
@@ -242,47 +254,79 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
       printf("Electron energy is not finite!\n");
       ooEmooP_ = 998;
     }else{
-      ooEmooP_ = fabs(1.0/el.ecalEnergy() - el.eSuperClusterOverP()/el.ecalEnergy() );
+      ooEmooP_ = std::abs(1.0/el.ecalEnergy() - el.eSuperClusterOverP()/el.ecalEnergy() );
     }
+
+    //Other variables
+    float absisoWithDBeta = pfIso.sumChargedHadronPt + max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
+    float relIsoWithDBeta_ = absisoWithDBeta/el.pt();
+    double miniIso = getPFMiniIsolation(packedPFCands, dynamic_cast<const reco::Candidate *>(&el), 0.05, 0.2, 10., false, true, EA, rho_miniIso);
+   
     // Impact parameter
-    float d0 = (-1) * el.gsfTrack()->dxy(vtxPoint);
-    float dz = el.gsfTrack()->dz(vtxPoint);
+    float dxy   = el.gsfTrack()->dxy(vtxPoint);
+    float dz    = el.gsfTrack()->dz(vtxPoint);
+    float dB    = el.dB (pat::Electron::PV3D);
+    float dBErr = el.edB(pat::Electron::PV3D);
 
-
-    if(debug_>=1) cout<<" ele " << i <<" pt "<< el.pt()<<" eta "<<el.eta()<<"fabs(1/E-1/P) "<< ooEmooP_ <<" d0 "<< d0 <<" dz " << dz <<" iso " << relIsoWithDBeta_<<endl; 		    
-    
-    float missHits = el.gsfTrack()->hitPattern().numberOfLostTrackerHits(HitPattern::MISSING_INNER_HITS);
-    // conversion rejection match
+    if(debug_>=1) cout<<" ele " << i <<" pt "<< el.pt()<<" eta "<<el.eta()<<"fabs(1/E-1/P) "<< ooEmooP_ <<" dxy "<< dxy <<" dz " << dz <<" iso " << relIsoWithDBeta_<<endl; 		    
+     // conversion rejection match
     bool hasMatchConv = ConversionTools::hasMatchedConversion(el, conversions, beamspot.position());
 
-    bool isVeto = passIDWP("VETO",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isLoose = passIDWP("LOOSE",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isMedium = passIDWP("MEDIUM",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
-    bool isTight = passIDWP("TIGHT",isEB, dEtaIn, dPhiIn, full5x5, hoe, d0, dz, ooEmooP_, hasMatchConv, missHits);
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
     const Ptr<pat::Electron> elPtr(eleHandle, i);
-    //std::cout<<"ValueMap: "<<veto_id_decisions->contains(elPtr.id())<<std::endl;
-    bool vidVeto  = (*veto_id_decisions)[ elPtr ];
-    bool vidLoose  = (*loose_id_decisions)[ elPtr ];
-    bool vidMedium  = (*medium_id_decisions)[ elPtr ];
-    bool vidTight = (*tight_id_decisions)[ elPtr ];
-    bool vidHEEP  = (*HEEP_id_cutflow_data)[ elPtr ].cutFlowPassed();
-    bool vidHEEP_noiso     = (*HEEP_id_cutflow_data)[ elPtr ].getCutFlowResultMasking(maskCuts).cutFlowPassed();
-    //passVetoId_.push_back( isPassVeto );
-    //passTightId_.push_back( isPassTight );
+    bool vidVeto  = (*veto_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidLoose  = (*loose_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidMedium  = (*medium_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidTight = (*tight_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidHEEP  = (*heep_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    
+    float gp_mva_val  = (*GPMva_values)[ elPtr ];
+    int   gp_mva_cat  = (*GPMva_cats)[ elPtr ];
+    float hzz_mva_val = (*HZZMva_values)[ elPtr ];
+    int   hzz_mva_cat = (*HZZMva_cats)[ elPtr ];
+    // if(gp_mva_val > 0.1 ) cout<<"true ele "<<mvaval<<endl;
+
+
+
+    //retrieving bits from fullflowcutData  and masking rel iso EA cut isolation cut
+    const int cutIndexToMask = 7;     // this is the relative iso cut index - one can verify with printing out the full info 
+    vid::CutFlowResult fullCutFlowData = (*veto_id_cutflow_data)[elPtr]; 
+    vid::CutFlowResult maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+    bool vidVeto_noiso    =  (int) maskedCutFlowData.cutFlowPassed();
+
+    fullCutFlowData = (*loose_id_cutflow_data)[elPtr];
+    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+    bool vidLoose_noiso   =  (int) maskedCutFlowData.cutFlowPassed();
+
+    fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
+    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+    bool vidMedium_noiso  =  (int) maskedCutFlowData.cutFlowPassed();
+
+    fullCutFlowData = (*tight_id_cutflow_data)[elPtr];
+    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+    bool vidTight_noiso   =  (int) maskedCutFlowData.cutFlowPassed();
+
+    fullCutFlowData = (*heep_id_cutflow_data)[elPtr];
+    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(7); //7 is for trackIsoPt and 8 for hademd1 check printout
+    vid::CutFlowResult maskedCutFlowData2 = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
+    maskedCutFlowData2 = fullCutFlowData.getCutFlowResultMasking(8);
+    bool vidHEEP_noiso     = (int) maskedCutFlowData.cutFlowPassed() && (int) maskedCutFlowData2.cutFlowPassed() ;    
+
     if( verboseIdFlag_ ) {
       vid::CutFlowResult fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
       edm::LogInfo("DEBUG:VID") << "CutFlow, full info for cand with pt= " << elPtr->pt();
       printCutFlowResult(fullCutFlowData);
     }
 
-    el.addUserFloat("dEtaIn",      dEtaIn);
+    el.addUserFloat("dEtaInSeed",  dEtaInSeed);
     el.addUserFloat("dPhiIn",      dPhiIn);
     el.addUserFloat("full5x5",     full5x5);
     el.addUserFloat("hoe",         hoe);
-    el.addUserFloat("d0",          d0);
+    el.addUserFloat("dxy",         dxy);
     el.addUserFloat("dz",          dz);
+    el.addUserFloat("dB",          dB);
+    el.addUserFloat("dBErr",       dBErr);
     el.addUserFloat("ooEmooP",     ooEmooP_);
     el.addUserFloat("missHits",     missHits);
     el.addUserFloat("hasMatchConv",     hasMatchConv);   
@@ -294,22 +338,22 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("sumPhotonEt",  pfIso.sumPhotonEt );
     el.addUserFloat("sumPUPt", pfIso.sumPUPt  );
 
-
     el.addUserFloat("rho", rho );
     el.addUserFloat("EA", EA );
-    el.addUserFloat("isVeto",     isVeto);
-    el.addUserFloat("isLoose",    isLoose);
-    el.addUserFloat("isMedium",   isMedium);
-    el.addUserFloat("isTight",    isTight);
     el.addUserFloat("vidVeto",    vidVeto );
     el.addUserFloat("vidLoose",   vidLoose );
     el.addUserFloat("vidMedium",  vidMedium );
     el.addUserFloat("vidTight",   vidTight );
     el.addUserFloat("vidHEEP",    vidHEEP );
+    el.addUserFloat("vidVetonoiso",    vidVeto_noiso );
+    el.addUserFloat("vidLoosenoiso",    vidLoose_noiso );
+    el.addUserFloat("vidMediumnoiso",    vidMedium_noiso );
+    el.addUserFloat("vidTightnoiso",    vidTight_noiso );
     el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
-
-
-
+    el.addUserFloat("vidMvaGPvalue",  gp_mva_val);
+    el.addUserInt  ("vidMvaGPcateg",  gp_mva_cat);
+    el.addUserFloat("vidMvaHZZvalue", hzz_mva_val);
+    el.addUserInt  ("vidMvaHZZcateg", hzz_mva_cat);
   }
 
   iEvent.put( eleColl );
@@ -333,88 +377,22 @@ ElectronUserData::isMatchedWithTrigger(const pat::Electron p, trigger::TriggerOb
 }
 
 
-float ElectronUserData::getEA(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
+float ElectronUserData::getEA(float eta){
+  //These are Effective areas suitable for 80X samples post ICHEP
   float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=1.0) effArea = 0.1752;
-  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.1862;
-  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.1411;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.1534;
-  if(abs(eta)>2.2 && abs(eta)<=2.3) effArea = 0.1903;
-  if(abs(eta)>2.3 && abs(eta)<=2.4) effArea = 0.2243;
-  if(abs(eta)>2.4 && abs(eta)<=2.5) effArea = 0.2687;
+  if(abs(eta)>0.0 && abs(eta)<=1.0)   effArea = 0.1703;
+  if(abs(eta)>1.0 && abs(eta)<=1.479) effArea = 0.1715;
+  if(abs(eta)>1.479 && abs(eta)<=2.0) effArea = 0.1213;
+  if(abs(eta)>2.0 && abs(eta)<=2.2)   effArea = 0.1230;
+  if(abs(eta)>2.2 && abs(eta)<=2.3)   effArea = 0.1635;
+  if(abs(eta)>2.3 && abs(eta)<=2.4)   effArea = 0.1937;
+  if(abs(eta)>2.4 && abs(eta)<=5.0)   effArea = 0.2393;
   return effArea;
 }
 
 
-float ElectronUserData::getEAWithGenWeightOld(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
-  float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.0958;
-  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0940;
-  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0616;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0708;
-  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1321;
-  return effArea;
-}
 
 
-float ElectronUserData::getEAOld(float eta)
-{
-  // The following values refer to EA for cone 0.3 and fixedGridRhoFastjetAll. 
-  // They are valid for electrons only, different EA are available for muons.
-  float effArea = 0.;
-  if(abs(eta)>0.0 && abs(eta)<=0.8) effArea = 0.1013;
-  if(abs(eta)>0.8 && abs(eta)<=1.3) effArea = 0.0988;
-  if(abs(eta)>1.3 && abs(eta)<=2.0) effArea = 0.0572;
-  if(abs(eta)>2.0 && abs(eta)<=2.2) effArea = 0.0842;
-  if(abs(eta)>2.2 && abs(eta)<=2.5) effArea = 0.1530;
-  return effArea;
-}
-
-bool ElectronUserData::passIDWP(string WP, bool isEB, float dEtaIn, float dPhiIn, float full5x5, float hoe, float d0, float dz, float ooemoop, bool conv, int missHits){
-  bool pass = false;
-
-  if(WP == "VETO"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0126 ) && (fabs(dPhiIn) <  0.107 ) && (full5x5 < 0.012 ) && (hoe <  0.186 ) && (fabs(d0) < 0.0621 ) && (fabs(dz) <  0.613 ) && (fabs(ooemoop) <  0.239 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.0109 ) && (fabs(dPhiIn) <  0.219 ) && (full5x5 < 0.0339 ) && (hoe <  0.0962 ) && (fabs(d0) < 0.279 ) && (fabs(dz) < 0.947 ) && (fabs(ooemoop) < 0.141 ) && !conv && (missHits <= 3);
-    }
-  }
-  if(WP == "LOOSE"){
-    if(isEB){
-      pass = (fabs(dEtaIn) < 0.00976 ) && (fabs(dPhiIn) < 0.0929 ) && (full5x5 <  0.0105 ) && (hoe < 0.0765 ) && (fabs(d0) < 0.0227 ) && (fabs(dz) < 0.379 ) && (fabs(ooemoop) <  0.184 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) < 0.00952 ) && (fabs(dPhiIn) < 0.181 ) && (full5x5 < 0.0318 ) && (hoe < 0.0824 ) && (fabs(d0) < 0.242 ) && (fabs(dz) < 0.921 ) && (fabs(ooemoop) < 0.125 ) && !conv && (missHits <= 1);
-    }
-  }
-
-  if(WP == "MEDIUM"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0094 ) && (fabs(dPhiIn) <  0.0296 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0151 ) && (fabs(dz) <  0.238 ) && (fabs(ooemoop) <  0.118 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.00773 ) && (fabs(dPhiIn) <  0.148 ) && (full5x5 <  0.0287 ) && (hoe <  0.0546 ) && (fabs(d0) <  0.0535 ) && (fabs(dz) <  0.572 ) && (fabs(ooemoop) <  0.104 ) && !conv && (missHits <= 1);
-    }
-  }
-
-  if(WP == "TIGHT"){
-    if(isEB){
-      pass = (fabs(dEtaIn) <  0.0095 ) && (fabs(dPhiIn) <  0.0291 ) && (full5x5 <  0.0101 ) && (hoe <  0.0372 ) && (fabs(d0) <  0.0144 ) && (fabs(dz) <  0.323 ) && (fabs(ooemoop) <  0.0174 ) && !conv && (missHits <= 2);
-    }
-    else{
-      pass = (fabs(dEtaIn) <  0.00762 ) && (fabs(dPhiIn) <  0.0439 ) && (full5x5 <  0.0287 ) && (hoe <  0.0544 ) && (fabs(d0) <  0.0377 ) && (fabs(dz) <  0.571 ) && (fabs(ooemoop) <  0.01 ) && !conv && (missHits <= 1);
-    }
-  }
-  return pass;
-}
 
 void ElectronUserData::printCutFlowResult(vid::CutFlowResult &cutflow){
 
