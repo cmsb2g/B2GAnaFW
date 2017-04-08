@@ -68,7 +68,10 @@ private:
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleTightIdFullInfoMapToken_;
   edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<float> > electronMVAIdMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > electronGPMvaValueMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<int>  > electronGPMvaCatMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > electronHZZMvaValueMapToken_;
+  edm::EDGetTokenT<edm::ValueMap<int> > electronHZZMvaCatMapToken_;
  
   bool verboseIdFlag_;
 
@@ -99,7 +102,10 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
    eleTightIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleTightIdFullInfoMap"))),
    electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleHEEPIdFullInfoMap"))),
-   electronMVAIdMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleMVAIdValue"))),
+   electronGPMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleGPMvaValueMap"))),
+   electronGPMvaCatMapToken_(consumes<edm::ValueMap<int>   >(iConfig.getParameter<edm::InputTag>("eleGPMvaCatMap"))),
+   electronHZZMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaValueMap"))),
+   electronHZZMvaCatMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaCatMap"))),
    verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
@@ -156,12 +162,19 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > tight_id_cutflow_data;
   edm::Handle<edm::ValueMap<vid::CutFlowResult> > heep_id_cutflow_data;
   edm::Handle<edm::ValueMap<float> > mva_id_data;
-  iEvent.getByToken(eleVetoIdFullInfoMapToken_,veto_id_cutflow_data);
+  edm::Handle<edm::ValueMap<float> > GPMva_values;
+  edm::Handle<edm::ValueMap<int> >   GPMva_cats;
+  edm::Handle<edm::ValueMap<float> > HZZMva_values;
+  edm::Handle<edm::ValueMap<int> >   HZZMva_cats;
+   iEvent.getByToken(eleVetoIdFullInfoMapToken_,veto_id_cutflow_data);
   iEvent.getByToken(eleLooseIdFullInfoMapToken_,loose_id_cutflow_data);
   iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
   iEvent.getByToken(eleTightIdFullInfoMapToken_,tight_id_cutflow_data);
   iEvent.getByToken(electronHEEPIdMapToken_,heep_id_cutflow_data);
-  iEvent.getByToken(electronMVAIdMapToken_,mva_id_data);
+  iEvent.getByToken(electronGPMvaValueMapToken_,  GPMva_values);
+  iEvent.getByToken(electronGPMvaCatMapToken_,    GPMva_cats);
+  iEvent.getByToken(electronHZZMvaValueMapToken_, HZZMva_values);
+  iEvent.getByToken(electronHZZMvaCatMapToken_,   HZZMva_cats);
   //passVetoId_.clear();     
   //passTightId_.clear();
 
@@ -268,8 +281,11 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     bool vidTight = (*tight_id_cutflow_data)[ elPtr ].cutFlowPassed();
     bool vidHEEP  = (*heep_id_cutflow_data)[ elPtr ].cutFlowPassed();
     
-    float mvaval = (*mva_id_data)[ elPtr ]; 
-    // if(mvaval > 0.1 ) cout<<"true ele "<<mvaval<<endl;
+    float gp_mva_val  = (*GPMva_values)[ elPtr ];
+    int   gp_mva_cat  = (*GPMva_cats)[ elPtr ];
+    float hzz_mva_val = (*HZZMva_values)[ elPtr ];
+    int   hzz_mva_cat = (*HZZMva_cats)[ elPtr ];
+    // if(gp_mva_val > 0.1 ) cout<<"true ele "<<mvaval<<endl;
 
 
 
@@ -334,7 +350,10 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("vidMediumnoiso",    vidMedium_noiso );
     el.addUserFloat("vidTightnoiso",    vidTight_noiso );
     el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
-    el.addUserFloat("mvaIDvalue", mvaval);
+    el.addUserFloat("vidMvaGPvalue",  gp_mva_val);
+    el.addUserInt  ("vidMvaGPcateg",  gp_mva_cat);
+    el.addUserFloat("vidMvaHZZvalue", hzz_mva_val);
+    el.addUserInt  ("vidMvaHZZcateg", hzz_mva_cat);
   }
 
   iEvent.put( eleColl );

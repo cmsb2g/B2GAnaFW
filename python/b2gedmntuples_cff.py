@@ -1042,6 +1042,22 @@ electronVars = (
         tag = cms.untracked.string("vidHEEPnoiso"),
         quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
         ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaGPvalue"),
+        quantity = cms.untracked.string("userFloat('vidMvaGPvalue')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaGPcateg"),
+        quantity = cms.untracked.string("userInt('vidMvaGPcateg')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaHZZvalue"),
+        quantity = cms.untracked.string("userFloat('vidMvaHZZvalue')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaHZZcateg"),
+        quantity = cms.untracked.string("userInt('vidMvaHZZcateg')")
+        ),
     )
 
 
