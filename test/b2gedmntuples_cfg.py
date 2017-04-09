@@ -172,7 +172,7 @@ triggerResultsLabel 	 = "TriggerResults"
 triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if "MC" in options.DataProcessing: 
+if "MC" in options.DataProcessing or "03Feb2017" in options.DataProcessing:
   metProcess = "PAT"
 else:
   metProcess = "RECO"
