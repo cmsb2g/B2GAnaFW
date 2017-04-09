@@ -801,7 +801,7 @@ if "FastSim" in options.DataProcessing:
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
+    puppiSDjetLabel = cms.InputTag('slimmedJetsAK8'),
     jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )

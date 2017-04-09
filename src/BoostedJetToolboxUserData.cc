@@ -83,22 +83,27 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
 
 		pat::Jet & jet = (*jetColl)[i];
 
-		float min_dR = 9999, uncorrSDMass = -9999;
+		float min_dR = 999, uncorrSDMass = -999, corrSDMass = -999;
 		for ( auto const & puppiSDJet : *puppiSDjetHandle ) {
 
 			float temp_dR = reco::deltaR(jet.eta(),jet.phi(),puppiSDJet.eta(),puppiSDJet.phi());
 			if ( temp_dR < distMax_ && temp_dR < min_dR ) {
 				min_dR = temp_dR;
 				TLorentzVector puppi_softdrop, puppi_softdrop_subjet;
+				TLorentzVector puppi_softdrop_corr, puppi_softdrop_subjet_corr;
 				auto const & sbSubjetsPuppi = puppiSDJet.subjets("SoftDropPuppi");
 				for ( auto const & it : sbSubjetsPuppi ) {
 					puppi_softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(),it->correctedP4(0).eta(),it->correctedP4(0).phi(),it->correctedP4(0).mass());
 					puppi_softdrop+=puppi_softdrop_subjet;
+					puppi_softdrop_subjet_corr.SetPtEtaPhiM(it->pt(),it->eta(),it->phi(),it->mass());
+					puppi_softdrop_corr+=puppi_softdrop_subjet_corr;
 				}
 				uncorrSDMass = puppi_softdrop.M();
+				corrSDMass   = puppi_softdrop_corr.M();
 			}
 		}
-		jet.addUserFloat("subjetSumMassSoftDropPuppi", uncorrSDMass );
+		jet.addUserFloat("uncorrSDMassPuppi", uncorrSDMass );
+		jet.addUserFloat("corrSDMassPuppi",   corrSDMass );
 
 
 		for ( auto const & jetWithSubjet : *jetWithSubjetHandle ) {
