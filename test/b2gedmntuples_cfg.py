@@ -130,7 +130,7 @@ if options.globalTag != "":
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
   if options.DataProcessing=="Data_80X_Run2016H_03Feb2017":
-    options.globalTag="80X_dataRun2_Prompt_v15"
+    options.globalTag="80X_dataRun2_Prompt_v16"
   elif options.DataProcessing in [
         'Data_80X_Run2016BCD_03Feb2017', 
         'Data_80X_Run2016EF_03Feb2017', 
@@ -239,7 +239,7 @@ if options.usePrivateSQLite:
       iovStart = 278802
       iovEnd   = 280385
     elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
-      jec_era = "Summer16_03Feb2017V4_MC" 
+      jec_era = "Summer16_23Sep2016V4_MC" 
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
       jec_era = "Spring16_25nsFastSimMC_V1" 
     else: 
