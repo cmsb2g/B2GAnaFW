@@ -768,7 +768,7 @@ process.photonJetsUserData = cms.EDProducer(
 process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8'),
-    puppiSDjetLabel = cms.InputTag('slimmedJetsAK8'),
+    puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
     jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
 )
@@ -801,7 +801,7 @@ if "FastSim" in options.DataProcessing:
 process.boostedJetUserDataAK8Puppi = cms.EDProducer(
     'BoostedJetToolboxUserData',
     jetLabel  = cms.InputTag('jetUserDataAK8Puppi'),
-    puppiSDjetLabel = cms.InputTag('slimmedJetsAK8'),
+    puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
     jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFPuppiSoftDropPacked'),
     distMax = cms.double(0.8)
     )
