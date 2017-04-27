@@ -130,7 +130,7 @@ if options.globalTag != "":
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
   if options.DataProcessing=="Data_80X_Run2016H_03Feb2017":
-    options.globalTag="80X_dataRun2_Prompt_v15"
+    options.globalTag="80X_dataRun2_Prompt_v16"
   elif options.DataProcessing in [
         'Data_80X_Run2016BCD_03Feb2017', 
         'Data_80X_Run2016EF_03Feb2017', 
@@ -172,7 +172,7 @@ triggerResultsLabel 	 = "TriggerResults"
 triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if "MC" in options.DataProcessing: 
+if "MC" in options.DataProcessing or "03Feb2017" in options.DataProcessing:
   metProcess = "PAT"
 else:
   metProcess = "RECO"
@@ -239,7 +239,7 @@ if options.usePrivateSQLite:
       iovStart = 278802
       iovEnd   = 280385
     elif options.DataProcessing=="MC_MiniAODv2_80X_Summer16":
-      jec_era = "Summer16_03Feb2017V4_MC" 
+      jec_era = "Summer16_23Sep2016V4_MC" 
     elif options.DataProcessing=="MC_MiniAODv2_80X_FastSim":
       jec_era = "Spring16_25nsFastSimMC_V1" 
     else: 
@@ -823,7 +823,10 @@ process.electronUserData = cms.EDProducer(
     eleMediumIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
     eleTightIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
     eleHEEPIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60"),
-    eleMVAIdValue = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
+    eleGPMvaValueMap    = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
+    eleGPMvaCatMap      = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Categories"),
+    eleHZZMvaValueMap   = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"),
+    eleHZZMvaCatMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Categories"),
     eleIdVerbose = cms.bool(False)
     )
 

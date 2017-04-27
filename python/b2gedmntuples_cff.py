@@ -746,9 +746,18 @@ jetToolboxAK8Vars = (
         tag = cms.untracked.string("tau3Puppi"),
         quantity = cms.untracked.string("userFloat('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3')")
         ),
+     # Uncorrected SD mass used for W tagging (needs additional W specific GEN/RECO corrections)
+     # https://twiki.cern.ch/twiki/bin/view/CMS/JetWtagging?rev=54#Working_points_and_scale_factors
+     # --> https://github.com/cms-jet/PuppiSoftdropMassCorr/#get-uncorrected-puppi-soft-drop-mass-from-miniaod
      cms.PSet(
-        tag = cms.untracked.string("uncorrSDMassAK8Puppi"),
-        quantity = cms.untracked.string("? hasUserFloat('subjetSumMassSoftDropPuppi') ? userFloat('subjetSumMassSoftDropPuppi') : -999 ")
+        tag = cms.untracked.string("uncorrSDMassPuppi"),
+        quantity = cms.untracked.string("? hasUserFloat('uncorrSDMassPuppi') ? userFloat('uncorrSDMassPuppi') : -999 ")
+        ),
+     # Corrected (L1L2L3 applied on subjets) SD mass used for top tagging
+     # https://twiki.cern.ch/twiki/bin/view/CMS/JetTopTagging?rev=14#13_TeV_working_points_CMSSW_8_0
+     cms.PSet(
+        tag = cms.untracked.string("corrSDMassPuppi"),
+        quantity = cms.untracked.string("? hasUserFloat('corrSDMassPuppi') ? userFloat('corrSDMassPuppi') : -999 ")
         ),
 )
 
@@ -1041,6 +1050,22 @@ electronVars = (
     cms.PSet(
         tag = cms.untracked.string("vidHEEPnoiso"),
         quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaGPvalue"),
+        quantity = cms.untracked.string("userFloat('vidMvaGPvalue')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaGPcateg"),
+        quantity = cms.untracked.string("userInt('vidMvaGPcateg')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaHZZvalue"),
+        quantity = cms.untracked.string("userFloat('vidMvaHZZvalue')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMvaHZZcateg"),
+        quantity = cms.untracked.string("userInt('vidMvaHZZcateg')")
         ),
     )
 
