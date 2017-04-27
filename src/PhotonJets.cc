@@ -247,7 +247,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
       fastjet::JetDefinition jet_def_kt8(fastjet::kt_algorithm,0.8); 
       fastjet::ClusterSequence clust_seq_08(FJparticles, jet_def_kt8);
-      std::vector<fastjet::PseudoJet>  jetnew = sorted_by_pt(clust_seq_08.exclusive_jets_up_to(1));
+      std::vector<fastjet::PseudoJet>  jet_new = sorted_by_pt(clust_seq_08.exclusive_jets_up_to(1));
      	
       Pruner pruner(fastjet::kt_algorithm,0.1,0.5);
       PseudoJet jetnew = pruner(jet_new[0]);  	
