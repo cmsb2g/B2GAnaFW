@@ -91,7 +91,7 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
 				min_dR = temp_dR;
 				TLorentzVector puppi_softdrop, puppi_softdrop_subjet;
 				TLorentzVector puppi_softdrop_corr, puppi_softdrop_subjet_corr;
-				auto const & sbSubjetsPuppi = puppiSDJet.subjets("SoftDropPuppi");
+				auto const & sbSubjetsPuppi = puppiSDJet.subjets("SoftDrop");
 				for ( auto const & it : sbSubjetsPuppi ) {
 					puppi_softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(),it->correctedP4(0).eta(),it->correctedP4(0).phi(),it->correctedP4(0).mass());
 					puppi_softdrop+=puppi_softdrop_subjet;
