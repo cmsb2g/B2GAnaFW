@@ -767,7 +767,7 @@ process.photonJetsUserData = cms.EDProducer(
 
 process.boostedJetUserDataAK8 = cms.EDProducer(
     'BoostedJetToolboxUserData',
-    jetLabel  = cms.InputTag('jetUserDataAK8'),
+    jetLabel  = cms.InputTag('photonJetsUserData'),
     puppiSDjetLabel = cms.InputTag('packedPatJetsAK8PFPuppiSoftDrop'),
     jetWithSubjetLabel = cms.InputTag('selectedPatJetsAK8PFCHSSoftDropPacked'),
     distMax = cms.double(0.8)
@@ -1009,7 +1009,6 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
     "keep *_photons_*_*",
-    "keep *_photonjets_*_*",
     "keep *_jetsAK4CHS_*_*",
     "keep *_jetsAK8CHS_*_*",
     "keep *_subjetsAK8CHS_*_*",
