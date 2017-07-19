@@ -91,8 +91,8 @@ TriggerUserData::TriggerUserData(const edm::ParameterSet& iConfig):
 
 void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  auto_ptr<vector<float> > triggerBitTree( new vector<float> );
-  auto_ptr<vector<int> > triggerPrescaleTree( new vector<int> );
+  std::unique_ptr<vector<float> > triggerBitTree( new vector<float> );
+  std::unique_ptr<vector<int> > triggerPrescaleTree( new vector<int> );
  
   edm::Handle<edm::TriggerResults> triggerBits;
   edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
@@ -109,8 +109,8 @@ void TriggerUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup
     //std::cout << typeid((hltConfig.triggerNames()[i])).name() << endl;
   }
   
-  iEvent.put( triggerBitTree, "triggerBitTree" );
-  if ( storePrescales_ ) iEvent.put( triggerPrescaleTree, "triggerPrescaleTree" );
+  iEvent.put( std::move(triggerBitTree), "triggerBitTree" );
+  if ( storePrescales_ ) iEvent.put( std::move(triggerPrescaleTree), "triggerPrescaleTree" );
 
 }
 
@@ -124,11 +124,11 @@ TriggerUserData::beginRunProduce(edm::Run& iRun, edm::EventSetup const& iSetup)
     return;
   }
 
-  auto_ptr<vector<std::string> > triggerNameTree( new vector<std::string> );
+  std::unique_ptr<vector<std::string> > triggerNameTree( new vector<std::string> );
   for (unsigned int i = 0, n = hltConfig.triggerNames().size(); i < n; ++i)
     triggerNameTree->push_back(hltConfig.triggerNames()[i]);
 
-  iRun.put(triggerNameTree, "triggerNameTree");
+  iRun.put( std::move(triggerNameTree), "triggerNameTree");
 }
 
 // ------------ method called when ending the processing of a run  ------------

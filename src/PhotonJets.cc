@@ -134,13 +134,13 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //Photons
   edm::Handle<std::vector<pat::Photon> > phoHandle;
   iEvent.getByToken(phoLabel_, phoHandle);
-  auto_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*phoHandle) );
+  std::unique_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*phoHandle) );
   
   
   //Packed PF Cands
   edm::Handle<std::vector<pat::PackedCandidate>> pfCnd1Handle;
   iEvent.getByToken(pckPFCdsLabel_,pfCnd1Handle); 
-  auto_ptr<vector<pat::PackedCandidate> > CandColl( new vector<pat::PackedCandidate> (*pfCnd1Handle) );
+  std::unique_ptr<vector<pat::PackedCandidate> > CandColl( new vector<pat::PackedCandidate> (*pfCnd1Handle) );
 
 
   //edm::Handle< edm::View<reco::Candidate>> pfCndHandle;
@@ -154,7 +154,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //Jet collection
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
   iEvent.getByToken(jLabel_, jetHandle);
-  auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+  std::unique_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
   edm::Handle< double > rhoH;
   iEvent.getByToken(rhoLabel_,rhoH);
@@ -625,7 +625,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
     jett.addUserFloat("SubEne2",sen2);
   
   }//EOF loop over jets
-  iEvent.put( jetColl );
+  iEvent.put( std::move(jetColl) );
 
 }
 

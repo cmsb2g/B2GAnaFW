@@ -40,7 +40,7 @@ void JetKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(jLabel_, jetHandle);
-  std::auto_ptr< index_collection > keys( new index_collection () );
+  std::unique_ptr< index_collection > keys( new index_collection () );
 
   for ( auto const & jet : *jetHandle ){
 
@@ -56,7 +56,7 @@ void JetKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   } //// Loop over all jets 
 
-  iEvent.put( keys );
+  iEvent.put( std::move(keys) );
 
 }
 

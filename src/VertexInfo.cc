@@ -79,15 +79,15 @@ void VertexInfo::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetu
   
   // primary vertices
 
-  std::auto_ptr<int> npv (new int() );
-  std::auto_ptr<std::vector<float>> vx (new std::vector<float> );
-  std::auto_ptr<std::vector<float>> vy (new std::vector<float> );
-  std::auto_ptr<std::vector<float>> vz (new std::vector<float> );
+  std::unique_ptr<int> npv (new int() );
+  std::unique_ptr<std::vector<float>> vx (new std::vector<float> );
+  std::unique_ptr<std::vector<float>> vy (new std::vector<float> );
+  std::unique_ptr<std::vector<float>> vz (new std::vector<float> );
 
-  std::auto_ptr< std::vector< float > >chi_(new std::vector< float >) ;
-  std::auto_ptr< std::vector< float > >rho_ (new std::vector< float >) ;
-  std::auto_ptr< std::vector< float > >z_ (new std::vector< float >) ;
-  std::auto_ptr< std::vector< int > >ndof_ (new std::vector< int >) ;
+  std::unique_ptr< std::vector< float > >chi_(new std::vector< float >) ;
+  std::unique_ptr< std::vector< float > >rho_ (new std::vector< float >) ;
+  std::unique_ptr< std::vector< float > >z_ (new std::vector< float >) ;
+  std::unique_ptr< std::vector< int > >ndof_ (new std::vector< int >) ;
 
   *npv = vertices->size();
 
@@ -103,15 +103,15 @@ void VertexInfo::produce(edm::Event & iEvent, const edm::EventSetup & iEventSetu
   }
 
 
-  iEvent.put( npv, "npv"); 
-  iEvent.put( vx, "vx"); 
-  iEvent.put( vy, "vy"); 
-  iEvent.put( vz, "vz"); 
+  iEvent.put( std::move(npv), "npv"); 
+  iEvent.put( std::move(vx), "vx"); 
+  iEvent.put( std::move(vy), "vy"); 
+  iEvent.put( std::move(vz), "vz"); 
 
-  iEvent.put(chi_,"chi");
-  iEvent.put(rho_,"rho");
-  iEvent.put(z_,"z");
-  iEvent.put(ndof_,"ndof");
+  iEvent.put( std::move(chi_),"chi");
+  iEvent.put( std::move(rho_),"rho");
+  iEvent.put( std::move(z_),"z");
+  iEvent.put( std::move(ndof_),"ndof");
 }
 
 VertexInfo::~VertexInfo(){;}

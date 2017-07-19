@@ -151,7 +151,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   //Muons
   edm::Handle<std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(muLabel_, muonHandle);
-  auto_ptr<vector<pat::Muon> > muonColl( new vector<pat::Muon> (*muonHandle) );
+  std::unique_ptr<vector<pat::Muon> > muonColl( new vector<pat::Muon> (*muonHandle) );
 
   //PackedPFCands for Mini-isolation
   edm::Handle<pat::PackedCandidateCollection> packedPFCands;
@@ -329,7 +329,7 @@ void MuonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   }
 
-  iEvent.put( muonColl );
+  iEvent.put( std::move(muonColl) );
 
 }
 
@@ -368,8 +368,8 @@ MuonUserData::isMatchedWithTrigger(const pat::Muon p, trigger::TriggerObjectColl
   void 
 MuonUserData::put(edm::Event& evt, double value, const char* instanceName)
 {
-  std::auto_ptr<double> varPtr(new double(value));
-  evt.put(varPtr, instanceName);
+  std::unique_ptr<double> varPtr(new double(value));
+  evt.put(std::move(varPtr), instanceName);
 }
 
   double

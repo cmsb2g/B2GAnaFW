@@ -111,7 +111,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   edm::Handle<std::vector<pat::Photon> > photonS2;
   iEvent.getByToken(phoLabel_, photonS2);
-  auto_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*photonS2) );
+  std::unique_ptr<vector<pat::Photon> > phoColl( new vector<pat::Photon> (*photonS2) );
 
   //rho
   float rho_;
@@ -179,7 +179,7 @@ void PhotonUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   }
 //EOF photons loop
-  iEvent.put( phoColl );
+  iEvent.put( std::move(phoColl) );
 
 }
 

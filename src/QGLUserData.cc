@@ -51,7 +51,7 @@ void QGLUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   edm::Handle<edm::View<pat::Jet> > jets;
   iEvent.getByLabel(jLabel_, jetHandle);
   iEvent.getByLabel(jLabel_, jets);
-  auto_ptr<std::vector<pat::Jet> > jetColl( new std::vector<pat::Jet> (*jetHandle) );
+  std::unique_ptr<std::vector<pat::Jet> > jetColl( new std::vector<pat::Jet> (*jetHandle) );
 
   edm::Handle<edm::ValueMap<float>> qgHandle; 
   iEvent.getByLabel(qgToken_, qgHandle);
@@ -68,7 +68,7 @@ void QGLUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
   }
 
 
-  iEvent.put( jetColl );
+  iEvent.put( std::move(jetColl) );
 
 }
 

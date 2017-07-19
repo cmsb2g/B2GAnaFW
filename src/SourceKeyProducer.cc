@@ -39,7 +39,7 @@ void SourceKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
 
   edm::Handle<edm::View<reco::Candidate> > candHandle;
   iEvent.getByToken(jLabel_, candHandle);
-  std::auto_ptr< index_collection > keys( new index_collection () );
+  std::unique_ptr< index_collection > keys( new index_collection () );
 
   for ( auto const & cand : *candHandle ){
 
@@ -54,7 +54,7 @@ void SourceKeyProducer::produce( edm::Event& iEvent, const edm::EventSetup& iSet
 
   } //// Loop over all cands 
 
-  iEvent.put( keys );
+  iEvent.put( std::move(keys) );
 
 }
 

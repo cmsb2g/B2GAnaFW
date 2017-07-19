@@ -115,7 +115,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   edm::Handle<std::vector<pat::Jet> > jetHandle, packedjetHandle;
   iEvent.getByToken(jLabel_, jetHandle);
-  auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+  std::unique_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
 
   //// TRIGGER (this is not really needed ...)
@@ -319,7 +319,7 @@ void JetUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   } //// Loop over all jets 
 
-  iEvent.put( jetColl );
+  iEvent.put( std::move(jetColl) );
 
 }
 

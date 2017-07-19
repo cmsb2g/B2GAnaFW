@@ -37,9 +37,9 @@ EventUserData::EventUserData(const edm::ParameterSet& iConfig):
 void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   ///pileup   
-  std::auto_ptr<int> puNtrueInt (new int);
-  std::auto_ptr<std::vector<int> > puBX(  new std::vector<int> );
-  std::auto_ptr<std::vector<int> > puNInt( new std::vector<int> );
+  std::unique_ptr<int> puNtrueInt (new int);
+  std::unique_ptr<std::vector<int> > puBX(  new std::vector<int> );
+  std::unique_ptr<std::vector<int> > puNInt( new std::vector<int> );
 
   if ( ! iEvent.eventAuxiliary().isRealData() ) {
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
@@ -53,9 +53,9 @@ void EventUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) 
     }
   }
 
-  iEvent.put(puBX,"puBX");
-  iEvent.put(puNInt,"puNInt");
-  iEvent.put(puNtrueInt,"puNtrueInt");
+  iEvent.put(std::move(puBX),"puBX");
+  iEvent.put(std::move(puNInt),"puNInt");
+  iEvent.put(std::move(puNtrueInt),"puNtrueInt");
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

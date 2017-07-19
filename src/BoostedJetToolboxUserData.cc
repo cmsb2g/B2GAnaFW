@@ -77,7 +77,7 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
 	iEvent.getByToken(tToken_, puppiSDjetHandle);
 	iEvent.getByToken(vToken_, jetWithSubjetHandle);
 
-	auto_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
+  std::unique_ptr<vector<pat::Jet> > jetColl( new vector<pat::Jet> (*jetHandle) );
 
 	for (size_t i = 0; i< jetHandle->size(); i++){
 
@@ -122,7 +122,7 @@ void BoostedJetToolboxUserData::produce( edm::Event& iEvent, const edm::EventSet
 		}
 
 	} //// Loop over all jets 
-	iEvent.put( jetColl );
+	iEvent.put( std::move(jetColl) );
 
 }
 
