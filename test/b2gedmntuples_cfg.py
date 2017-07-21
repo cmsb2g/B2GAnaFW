@@ -108,8 +108,8 @@ if options.globalTag != "":
 else: 
   if options.DataProcessing=="Data_92X_Run2017B":
     options.globalTag="92X_dataRun2_Prompt_v4"
-  elif options.DataProcessing=="MC_MiniAODv2_92X": ### to test relVal
-    options.globalTag="92X_dataRun2_Prompt_v4"
+#  elif options.DataProcessing=="MC_MiniAODv2_92X": ### to test relVal
+#    options.globalTag="92X_dataRun2_Prompt_v4"
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
       'Data_92X_Run2017B', \
@@ -163,8 +163,8 @@ process.source = cms.Source("PoolSource",
       options.sample
       )
     )
-from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValTTbarPileUpMINIAODSIM
-process.source.fileNames = filesRelValTTbarPileUpMINIAODSIM
+#from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValTTbarPileUpMINIAODSIM
+#process.source.fileNames = filesRelValTTbarPileUpMINIAODSIM
 
 ### Setting global tag 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -909,14 +909,12 @@ process.filteredPrunedGenParticles = cms.EDProducer(
 )
 
 ### Including ntuplizer 
-#process.options.allowUnscheduled = cms.untracked.bool(True)
 process.load("Analysis.B2GAnaFW.b2gedmntuples_cff")
 
 process.edmNtuplesOut = cms.OutputModule(
     "PoolOutputModule",
     fileName = cms.untracked.string('B2GEDMNtuple.root'),
     outputCommands = cms.untracked.vstring(
-    #"drop *",
     "keep *_muons_*_*",
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
