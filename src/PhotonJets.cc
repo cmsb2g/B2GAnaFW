@@ -305,7 +305,7 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	   }
 	}
 	
-	if(subj1.Pt() > 0 && subj2.Pt() > 0 && subj3.Pt() > 0  ){
+	if(subj1.Pt() > 10 && subj2.Pt() > 10 && subj3.Pt() > 10  ){
 	  for(size_t ipho = 0; ipho < (*phoColl).size();ipho++){
 	    pat::Photon & pho = (*phoColl)[ipho];
 	    double pho_pt  = pho.pt(); 
@@ -586,19 +586,24 @@ void PhotonJets::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 	if(sbja > sbjb && sbja > sbjc) {
 	  photon_subjet_frac = sbja;
-	  subindx = 1; 
+	  if(suba.pt() > subc.pt()  )   subindx = 1; 
+	  if(suba.pt() < subc.pt()  )   subindx = 2; 
 	  phoindx = pho_s1; 
 	}
 
 	if(sbjb > sbja && sbjb > sbjc) {
 	  photon_subjet_frac = sbjb;
-	  subindx = 2; 
+	  if(subb.pt() > subc.pt()  )   subindx = 2; 
+	  if(suba.pt() < subc.pt()  )   subindx = 3; 
+	  if(subb.pt() < subc.pt()  )     subindx = 3;  
 	  phoindx = pho_s2; 
  	}
 
 	if(sbjc > sbja && sbjc > sbjb) {
 	  photon_subjet_frac = sbjc;
-	  subindx = 3; 
+	  if(subb.pt() > subc.pt()  )   subindx = 3; 
+	  if(suba.pt() < subc.pt()  )   subindx = 1; 
+	  if(subb.pt() < subc.pt() && suba.pt() > subc.pt() ) subindx = 2; 
 	  phoindx = pho_s3; 
 	}
 	  
