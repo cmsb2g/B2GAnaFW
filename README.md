@@ -4,17 +4,17 @@ Analysis framework for Beyond Two Generations (B2G) Physics Analysis Group (PAG)
 
 ## Version
 
-This is a development branch of the B2G EDMNtuples to be used for 2017 data (Runs2017A-B) taken using `CMSSW_9_2_X`.
+This is a development branch of the B2G EDMNtuples to be used for 2017 data (Runs2017A-B) taken using `CMSSW_9_4_4`.
 
 ## Instructions
 
 ### Working release
  * Make a new CMSSW area:
 ```
-setenv SCRAM_ARCH slc6_amd64_gcc530 ; ###chs/ tcsh 
-export SCRAM_ARCH=slc6_amd64_gcc530 ; ### bash
-cmsrel CMSSW_9_2_6
-cd CMSSW_9_2_6/src
+setenv SCRAM_ARCH slc6_amd64_gcc630 ; ###chs/ tcsh 
+export SCRAM_ARCH=slc6_amd64_gcc630 ; ### bash
+cmsrel CMSSW_9_4_4
+cd CMSSW_9_4_4/src
 cmsenv
 ```
  * Mirror for github
@@ -29,8 +29,8 @@ git cms-init
 
 ### Clone the github repositories
 ```
-git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_9_2_X_V0
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_91X_v1
+git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_9_4_X_V0
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 ```
  * Compile (patience please!)
 ```
