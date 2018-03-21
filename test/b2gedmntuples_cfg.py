@@ -4,7 +4,7 @@ header = """
 ###    The globalTag is automatically chosen according to the input 'DataProcessing' value. 
 ###    However it can be explictily specified to override the default option.
 ###    Remember that the value of 'DataProcessing' is not set by default. The user has the choice of
-###        'Data_92X_Run2017B', 
+###        'Data_94X', 'MC_Fall17MiniAOD' 
 ###
 ### Examples: 
 ###
@@ -25,7 +25,7 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     '/store/data/Run2017B/JetHT/MINIAOD/PromptReco-v2/000/298/678/00000/D4B883E8-A766-E711-A280-02163E01A250.root', 
+     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -100,19 +100,19 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_94X and MC_Fall17MiniAOD.\n")
 
 
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="Data_92X_Run2017B":
-    options.globalTag="92X_dataRun2_Prompt_v4"
-#  elif options.DataProcessing=="MC_MiniAODv2_92X": ### to test relVal
-#    options.globalTag="92X_dataRun2_Prompt_v4"
+  if options.DataProcessing=="Data_94x":
+    options.globalTag="94X_dataRun2_v6"
+  elif options.DataProcessing=="MC_Fall17MiniAOD": ### to test relVal
+    options.globalTag="94X_mc2017_realistic_v14"
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
-      'Data_92X_Run2017B', \
+      'Data_94X', 'MC_Fall17MiniAOD' \
       .\n")
 
 ###inputTag labels
