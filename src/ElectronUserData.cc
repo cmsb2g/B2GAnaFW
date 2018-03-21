@@ -244,7 +244,7 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     double EA = getEA(el.eta());
     float absiso_EA = pfIso.sumChargedHadronPt + std::max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - rho * EA );
     float relIsoWithEA_ = absiso_EA/el.pt();
-    float missHits = el.gsfTrack()->hitPattern().numberOfHits(HitPattern::MISSING_INNER_HITS);
+    float missHits = el.gsfTrack()->hitPattern().numberOfAllHits(HitPattern::MISSING_INNER_HITS);
 
     float ooEmooP_; 
     if( el.ecalEnergy() == 0 ){
