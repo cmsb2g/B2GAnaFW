@@ -13,8 +13,8 @@ This is a development branch of the B2G EDMNtuples to be used for 2017 data (Run
 ```
 setenv SCRAM_ARCH slc6_amd64_gcc630 ; ###chs/ tcsh 
 export SCRAM_ARCH=slc6_amd64_gcc630 ; ### bash
-cmsrel CMSSW_9_4_4
-cd CMSSW_9_4_4/src
+cmsrel CMSSW_9_4_6
+cd CMSSW_9_4_6/src
 cmsenv
 ```
  * Mirror for github
