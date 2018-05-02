@@ -9,7 +9,9 @@ header = """
 ### Examples: 
 ###
 ###    Running on 25 ns data in 94X ReReco
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X'
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X' sample='/store/data/Run2017B/SingleMuon/MINIAOD/17Nov2017-v1/40000/0021369B-9BD8-E711-BFE9-FA163EAA42CB.root'
+###    Running on 25 ns data in 94X MC
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAOD' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
 ###
 ### **** If you are running a test, locally, add the option runCRAB=False at the end. ****
 ###
@@ -30,15 +32,6 @@ options.register('sample',
      opts.VarParsing.varType.string,
      'Sample to analyze')
 
-'''Other samples:
-
-2017RunB Muon
-/store/data/Run2017B/SingleMuon/MINIAOD/17Nov2017-v1/40000/0021369B-9BD8-E711-BFE9-FA163EAA42CB.root
-2017RunB JetHT
-/store/data/Run2017B/JetHT/MINIAOD/17Nov2017-v1/20000/0016BE6B-FACC-E711-88D8-B499BAAC0068.root
-MC TT
-/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root
-'''
 
 options.register('outputLabel',
     'B2GEDMNtuple.root',
@@ -756,7 +749,7 @@ process.electronUserData = cms.EDProducer(
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
     eleIdVerbose = cms.bool(False),
-    debugLevel = cms.untracked.int32(2)
+#    debugLevel = cms.untracked.int32(1)
     )
 
 phoInputTag=cms.InputTag(phoLabel) #calibratedPhotons need to be used when running corrections
@@ -773,7 +766,7 @@ process.photonUserData = cms.EDProducer(
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta"),
-    debugLevel = cms.untracked.int32(2)
+#    debugLevel = cms.untracked.int32(1)
     )
 
 process.vertexInfo = cms.EDProducer(
@@ -786,8 +779,6 @@ process.vertexInfo = cms.EDProducer(
 #
 
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
 
 #dataFormat = DataFormat.MiniAOD
 ### -------------------------------------------------------------------
