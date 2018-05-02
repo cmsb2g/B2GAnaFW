@@ -747,9 +747,25 @@ process.electronUserData = cms.EDProducer(
     triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
+    # VID now are called directly from the ElectronID and added as userData in the entuples. Example below of the ones available for 2017 data:
+    #vidLooseLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-loose"),
+    #vidMediumLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-medium"),
+    #vidTightLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-tight"),
+    #vidVetoLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-veto"),
+    #
+    #vidLooseMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wpLoose"),
+    #vidMediumMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wp90"),
+    #vidTightMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wp80"),
+    #
+    #vidLooseNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wpLoose"),
+    #vidMediumNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wp90"),
+    #vidTightNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wp80"),
+    #
+    #vidHEEPLabel = cms.untracked.string("heepElectronID-HEEPV70"),
+
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
     eleIdVerbose = cms.bool(False),
-#    debugLevel = cms.untracked.int32(1)
+    debugLevel = cms.untracked.int32(2)
     )
 
 phoInputTag=cms.InputTag(phoLabel) #calibratedPhotons need to be used when running corrections
@@ -766,7 +782,7 @@ process.photonUserData = cms.EDProducer(
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta"),
-#    debugLevel = cms.untracked.int32(1)
+    debugLevel = cms.untracked.int32(2)
     )
 
 process.vertexInfo = cms.EDProducer(
