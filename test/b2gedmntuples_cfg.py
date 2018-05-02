@@ -765,7 +765,7 @@ process.electronUserData = cms.EDProducer(
 
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
     eleIdVerbose = cms.bool(False),
-    debugLevel = cms.untracked.int32(2)
+#    debugLevel = cms.untracked.int32(2)
     )
 
 phoInputTag=cms.InputTag(phoLabel) #calibratedPhotons need to be used when running corrections
@@ -782,7 +782,7 @@ process.photonUserData = cms.EDProducer(
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
     full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta"),
-    debugLevel = cms.untracked.int32(2)
+#    debugLevel = cms.untracked.int32(2)
     )
 
 process.vertexInfo = cms.EDProducer(
