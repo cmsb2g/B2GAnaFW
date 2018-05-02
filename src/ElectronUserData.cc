@@ -62,18 +62,15 @@ private:
   HLTConfigProvider hltConfig;
   int triggerBit;
   int debug_; 
-  // ----------member data ---------------------------
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleVetoIdFullInfoMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleLooseIdFullInfoMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleMediumIdFullInfoMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > eleTightIdFullInfoMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<vid::CutFlowResult> > electronHEEPIdMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<float> > electronGPMvaValueMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<int>  > electronGPMvaCatMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<float> > electronHZZMvaValueMapToken_;
-  edm::EDGetTokenT<edm::ValueMap<int> > electronHZZMvaCatMapToken_;
- 
+
+  //VID now embedded in slimmed electrons, can just be called from ElectronID.
   bool verboseIdFlag_;
+  TString vidLooseLabel_,vidMediumLabel_,vidTightLabel_,vidVetoLabel_;
+  TString vidLooseNoIsoLabel_,vidMediumNoIsoLabel_,vidTightNoIsoLabel_,vidVetoNoIsoLabel_;
+  TString vidLooseMVALabel_,vidMediumMVALabel_,vidTightMVALabel_,vidVetoMVALabel_;
+  TString vidLooseMVANoIsoLabel_,vidMediumMVANoIsoLabel_,vidTightMVANoIsoLabel_,vidVetoMVANoIsoLabel_;
+  TString vidHEEPLabel_;
+
 
   //  std::vector<Float_t> pt_;
   //  std::vector<Float_t> etaSC_;
@@ -97,16 +94,29 @@ ElectronUserData::ElectronUserData(const edm::ParameterSet& iConfig):
    triggerSummaryLabel_(consumes<trigger::TriggerEvent>(iConfig.getParameter<edm::InputTag>("triggerSummary"))),
    hltElectronFilterLabel_ (iConfig.getParameter<edm::InputTag>("hltElectronFilter")),   //trigger objects we want to match
    hltPath_ (iConfig.getParameter<std::string>("hltPath")),
-   eleVetoIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleVetoIdFullInfoMap"))),
-   eleLooseIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleLooseIdFullInfoMap"))),
-   eleMediumIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleMediumIdFullInfoMap"))),
-   eleTightIdFullInfoMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleTightIdFullInfoMap"))),
-   electronHEEPIdMapToken_(consumes<edm::ValueMap<vid::CutFlowResult> >(iConfig.getParameter<edm::InputTag>("eleHEEPIdFullInfoMap"))),
-   electronGPMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleGPMvaValueMap"))),
-   electronGPMvaCatMapToken_(consumes<edm::ValueMap<int>   >(iConfig.getParameter<edm::InputTag>("eleGPMvaCatMap"))),
-   electronHZZMvaValueMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaValueMap"))),
-   electronHZZMvaCatMapToken_(consumes<edm::ValueMap<int> >(iConfig.getParameter<edm::InputTag>("eleHZZMvaCatMap"))),
-   verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose"))
+   verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose")),
+   vidLooseLabel_(iConfig.getUntrackedParameter<string>("vidLooseLabel","cutBasedElectronID-Fall17-94X-V1-loose")),
+   vidMediumLabel_(iConfig.getUntrackedParameter<string>("vidMediumLabel","cutBasedElectronID-Fall17-94X-V1-medium")),
+   vidTightLabel_(iConfig.getUntrackedParameter<string>("vidTightLabel","cutBasedElectronID-Fall17-94X-V1-tight")),
+   vidVetoLabel_(iConfig.getUntrackedParameter<string>("vidVetoLabel","cutBasedElectronID-Fall17-94X-V1-veto")),
+
+   //No iso available only for MVA at the moment
+   vidLooseNoIsoLabel_(iConfig.getUntrackedParameter<string>("vidLooseNoIsoLabel","")),
+   vidMediumNoIsoLabel_(iConfig.getUntrackedParameter<string>("vidMediumNoIsoLabel","")),
+   vidTightNoIsoLabel_(iConfig.getUntrackedParameter<string>("vidTightNoIsoLabel","")),
+   vidVetoNoIsoLabel_(iConfig.getUntrackedParameter<string>("vidVetoNoIsoLabel","")),
+
+   vidLooseMVALabel_(iConfig.getUntrackedParameter<string>("vidLooseMVALabel","mvaEleID-Fall17-iso-V1-wpLoose")),
+   vidMediumMVALabel_(iConfig.getUntrackedParameter<string>("vidMediumMVALabel","mvaEleID-Fall17-iso-V1-wp90")),
+   vidTightMVALabel_(iConfig.getUntrackedParameter<string>("vidTightMVALabel","mvaEleID-Fall17-iso-V1-wp80")),
+   vidVetoMVALabel_(iConfig.getUntrackedParameter<string>("vidVetoMVALabel","")),
+
+   vidLooseMVANoIsoLabel_(iConfig.getUntrackedParameter<string>("vidLooseNoIsoLabel","mvaEleID-Fall17-noIso-V1-wpLoose")),
+   vidMediumMVANoIsoLabel_(iConfig.getUntrackedParameter<string>("vidMediumNoIsoLabel","mvaEleID-Fall17-noIso-V1-wp90")),
+   vidTightMVANoIsoLabel_(iConfig.getUntrackedParameter<string>("vidTightNoIsoLabel","mvaEleID-Fall17-noIso-V1-wp80")),
+   vidVetoMVANoIsoLabel_(iConfig.getUntrackedParameter<string>("vidVetoNoIsoLabel","")),
+
+   vidHEEPLabel_(iConfig.getUntrackedParameter<string>("vidHEEPLabel","heepElectronID-HEEPV70"))  
 {
   debug_ = iConfig.getUntrackedParameter<int>("debugLevel",int(0));
   
@@ -155,26 +165,6 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
   // Electron ID
-  // Get the electron ID data from the event stream.
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > veto_id_cutflow_data;
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > loose_id_cutflow_data;
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > medium_id_cutflow_data;
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > tight_id_cutflow_data;
-  edm::Handle<edm::ValueMap<vid::CutFlowResult> > heep_id_cutflow_data;
-  edm::Handle<edm::ValueMap<float> > mva_id_data;
-  edm::Handle<edm::ValueMap<float> > GPMva_values;
-  edm::Handle<edm::ValueMap<int> >   GPMva_cats;
-  edm::Handle<edm::ValueMap<float> > HZZMva_values;
-  edm::Handle<edm::ValueMap<int> >   HZZMva_cats;
-   iEvent.getByToken(eleVetoIdFullInfoMapToken_,veto_id_cutflow_data);
-  iEvent.getByToken(eleLooseIdFullInfoMapToken_,loose_id_cutflow_data);
-  iEvent.getByToken(eleMediumIdFullInfoMapToken_,medium_id_cutflow_data);
-  iEvent.getByToken(eleTightIdFullInfoMapToken_,tight_id_cutflow_data);
-  iEvent.getByToken(electronHEEPIdMapToken_,heep_id_cutflow_data);
-  iEvent.getByToken(electronGPMvaValueMapToken_,  GPMva_values);
-  iEvent.getByToken(electronGPMvaCatMapToken_,    GPMva_cats);
-  iEvent.getByToken(electronHZZMvaValueMapToken_, HZZMva_values);
-  iEvent.getByToken(electronHZZMvaCatMapToken_,   HZZMva_cats);
   //passVetoId_.clear();     
   //passTightId_.clear();
 
@@ -275,49 +265,64 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     // Look up the ID decision for this electron in 
     // the ValueMap object and store it. We need a Ptr object as the key.
     const Ptr<pat::Electron> elPtr(eleHandle, i);
-    bool vidVeto  = (*veto_id_cutflow_data)[ elPtr ].cutFlowPassed();
-    bool vidLoose  = (*loose_id_cutflow_data)[ elPtr ].cutFlowPassed();
-    bool vidMedium  = (*medium_id_cutflow_data)[ elPtr ].cutFlowPassed();
-    bool vidTight = (*tight_id_cutflow_data)[ elPtr ].cutFlowPassed();
-    bool vidHEEP  = (*heep_id_cutflow_data)[ elPtr ].cutFlowPassed();
+    bool vidVeto   = true; 
+    bool vidLoose   = true; 
+    bool vidMedium   = true;
+    bool vidTight  = true; 
+
+    bool vidVeto_noiso   = true; 
+    bool vidLoose_noiso   = true; 
+    bool vidMedium_noiso   = true;
+    bool vidTight_noiso  = true; 
+
+    bool vidVeto_mva   = true; 
+    bool vidLoose_mva   = true; 
+    bool vidMedium_mva   = true;
+    bool vidTight_mva  = true; 
+
+    bool vidVeto_mva_noiso   = true; 
+    bool vidLoose_mva_noiso   = true; 
+    bool vidMedium_mva_noiso   = true;
+    bool vidTight_mva_noiso  = true; 
     
-    float gp_mva_val  = (*GPMva_values)[ elPtr ];
-    int   gp_mva_cat  = (*GPMva_cats)[ elPtr ];
-    float hzz_mva_val = (*HZZMva_values)[ elPtr ];
-    int   hzz_mva_cat = (*HZZMva_cats)[ elPtr ];
+    bool vidHEEP   = true; 
+    bool vidHEEP_noiso   = true; 
+    
+
     // if(gp_mva_val > 0.1 ) cout<<"true ele "<<mvaval<<endl;
 
+    //    cout << " electron "<<
+    (vidLooseLabel_=="") ? vidLoose=0 : vidLoose=el.electronID(vidLooseLabel_);
+    if(debug_>=1) cout << " vid loose label "<< vidLooseLabel_ << " vidLoose "<< vidLoose <<endl;; 
+    (vidMediumLabel_=="") ? vidMedium=0 : vidMedium=el.electronID(vidMediumLabel_);
+    if(debug_>=1) cout << " vid medium label "<< vidMediumLabel_ << " vidMedium "<< vidMedium <<endl;; 
+
+    (vidTightLabel_=="") ? vidTight=0 : vidTight=el.electronID(vidTightLabel_);
+    (vidVetoLabel_=="") ? vidVeto=0 : vidVeto=el.electronID(vidVetoLabel_);
+    
+    (vidLooseNoIsoLabel_=="") ? vidLoose_noiso=0 : vidLoose_noiso=el.electronID(vidLooseLabel_);
+    (vidMediumNoIsoLabel_=="") ? vidMedium_noiso=0 : vidMedium_noiso=el.electronID(vidMediumLabel_);
+    (vidTightNoIsoLabel_=="") ? vidTight_noiso=0 : vidTight_noiso=el.electronID(vidTightLabel_);
+    (vidVetoNoIsoLabel_=="") ? vidVeto_noiso=0 : vidVeto_noiso=el.electronID(vidVetoLabel_);
+    
+    (vidLooseMVALabel_=="") ? vidLoose_mva=0 : vidLoose_mva=el.electronID(vidLooseMVALabel_);
+    (vidMediumMVALabel_=="") ? vidMedium_mva=0 : vidMedium_mva=el.electronID(vidMediumMVALabel_);
+    (vidTightMVALabel_=="") ? vidTight_mva=0 : vidTight_mva=el.electronID(vidTightMVALabel_);
+    (vidVetoMVALabel_=="") ? vidVeto_mva=0 : vidVeto_mva=el.electronID(vidVetoMVALabel_);
+
+    (vidLooseMVANoIsoLabel_=="") ? vidLoose_mva_noiso=0 : vidLoose_mva_noiso=el.electronID(vidLooseMVANoIsoLabel_);
+    (vidMediumMVANoIsoLabel_=="") ? vidMedium_mva_noiso=0 : vidMedium_mva_noiso=el.electronID(vidMediumMVANoIsoLabel_);
+    (vidTightMVANoIsoLabel_=="") ? vidTight_mva_noiso=0 : vidTight_mva_noiso=el.electronID(vidTightMVANoIsoLabel_);
+    (vidVetoMVANoIsoLabel_=="") ? vidVeto_mva_noiso=0 : vidVeto_mva_noiso=el.electronID(vidVetoMVANoIsoLabel_);
+
+    (vidHEEPLabel_=="") ? vidHEEP=0 : vidHEEP=el.electronID(vidHEEPLabel_);
 
 
-    //retrieving bits from fullflowcutData  and masking rel iso EA cut isolation cut
-    const int cutIndexToMask = 7;     // this is the relative iso cut index - one can verify with printing out the full info 
-    vid::CutFlowResult fullCutFlowData = (*veto_id_cutflow_data)[elPtr]; 
-    vid::CutFlowResult maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    bool vidVeto_noiso    =  (int) maskedCutFlowData.cutFlowPassed();
-
-    fullCutFlowData = (*loose_id_cutflow_data)[elPtr];
-    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    bool vidLoose_noiso   =  (int) maskedCutFlowData.cutFlowPassed();
-
-    fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
-    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    bool vidMedium_noiso  =  (int) maskedCutFlowData.cutFlowPassed();
-
-    fullCutFlowData = (*tight_id_cutflow_data)[elPtr];
-    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    bool vidTight_noiso   =  (int) maskedCutFlowData.cutFlowPassed();
-
-    fullCutFlowData = (*heep_id_cutflow_data)[elPtr];
-    maskedCutFlowData = fullCutFlowData.getCutFlowResultMasking(7); //7 is for trackIsoPt and 8 for hademd1 check printout
-    vid::CutFlowResult maskedCutFlowData2 = fullCutFlowData.getCutFlowResultMasking(cutIndexToMask);
-    maskedCutFlowData2 = fullCutFlowData.getCutFlowResultMasking(8);
-    bool vidHEEP_noiso     = (int) maskedCutFlowData.cutFlowPassed() && (int) maskedCutFlowData2.cutFlowPassed() ;    
-
-    if( verboseIdFlag_ ) {
-      vid::CutFlowResult fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
-      edm::LogInfo("DEBUG:VID") << "CutFlow, full info for cand with pt= " << elPtr->pt();
-      printCutFlowResult(fullCutFlowData);
-    }
+    //    if( verboseIdFlag_ ) {
+    //  vid::CutFlowResult fullCutFlowData = (*medium_id_cutflow_data)[elPtr];
+    //  edm::LogInfo("DEBUG:VID") << "CutFlow, full info for cand with pt= " << elPtr->pt();
+    //  printCutFlowResult(fullCutFlowData);
+    // }
 
     el.addUserFloat("dEtaInSeed",  dEtaInSeed);
     el.addUserFloat("dPhiIn",      dPhiIn);
@@ -345,15 +350,23 @@ void ElectronUserData::produce( edm::Event& iEvent, const edm::EventSetup& iSetu
     el.addUserFloat("vidMedium",  vidMedium );
     el.addUserFloat("vidTight",   vidTight );
     el.addUserFloat("vidHEEP",    vidHEEP );
+
     el.addUserFloat("vidVetonoiso",    vidVeto_noiso );
     el.addUserFloat("vidLoosenoiso",    vidLoose_noiso );
     el.addUserFloat("vidMediumnoiso",    vidMedium_noiso );
     el.addUserFloat("vidTightnoiso",    vidTight_noiso );
     el.addUserFloat("vidHEEPnoiso",    vidHEEP_noiso );
-    el.addUserFloat("vidMvaGPvalue",  gp_mva_val);
-    el.addUserInt  ("vidMvaGPcateg",  gp_mva_cat);
-    el.addUserFloat("vidMvaHZZvalue", hzz_mva_val);
-    el.addUserInt  ("vidMvaHZZcateg", hzz_mva_cat);
+
+    el.addUserFloat("vidMVAVeto",    vidVeto_mva );
+    el.addUserFloat("vidMVALoose",   vidLoose_mva );
+    el.addUserFloat("vidMVAMedium",  vidMedium_mva );
+    el.addUserFloat("vidMVATight",   vidTight_mva );
+
+    el.addUserFloat("vidMVAVetonoiso",    vidVeto_mva_noiso );
+    el.addUserFloat("vidMVALoosenoiso",   vidLoose_mva_noiso );
+    el.addUserFloat("vidMVAMediumnoiso",  vidMedium_mva_noiso );
+    el.addUserFloat("vidMVATightnoiso",   vidTight_mva_noiso );
+   
   }
 
   iEvent.put( std::move(eleColl) );

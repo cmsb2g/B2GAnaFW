@@ -84,6 +84,12 @@ puppimetFull = metFull.clone(
   prefix = cms.untracked.string("puppimetFull"),
   )
 
+### No HF MET added as default for the time being
+metNoHF = metFull.clone(
+  src = cms.InputTag("skimmedPatMETNoHF"),
+  prefix = cms.untracked.string("metNoHF"),
+  )
+
 ### muon variables
 muonVars = (
    cms.PSet(
@@ -1030,42 +1036,39 @@ electronVars = (
         tag = cms.untracked.string("vidHEEP"),
         quantity = cms.untracked.string("userFloat('vidHEEP')")
         ),
-    # IDs sans iso
+    #MVA IDs
+    cms.PSet(
+        tag = cms.untracked.string("vidMVAVeto"),
+        quantity = cms.untracked.string("userFloat('vidVeto')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMVALoose"),
+        quantity = cms.untracked.string("userFloat('vidMVALoose')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMVAMedium"),
+        quantity = cms.untracked.string("userFloat('vidMVAMedium')")
+        ),
+    cms.PSet(
+        tag = cms.untracked.string("vidMVATight"),
+        quantity = cms.untracked.string("userFloat('vidMVATight')")
+        ),
+    # IDs sans iso:only available for MVA for now
     cms.PSet(
         tag = cms.untracked.string("vidVetonoiso"),
-        quantity = cms.untracked.string("userFloat('vidVetonoiso')")
+        quantity = cms.untracked.string("userFloat('vidMVAVetonoiso')")
         ),
     cms.PSet(
         tag = cms.untracked.string("vidLoosenoiso"),
-        quantity = cms.untracked.string("userFloat('vidLoosenoiso')")
+        quantity = cms.untracked.string("userFloat('vidMVALoosenoiso')")
         ),
     cms.PSet(
         tag = cms.untracked.string("vidMediumnoiso"),
-        quantity = cms.untracked.string("userFloat('vidMediumnoiso')")
+        quantity = cms.untracked.string("userFloat('vidMVAMediumnoiso')")
         ),
     cms.PSet(
         tag = cms.untracked.string("vidTightnoiso"),
-        quantity = cms.untracked.string("userFloat('vidTightnoiso')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("vidHEEPnoiso"),
-        quantity = cms.untracked.string("userFloat('vidHEEPnoiso')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("vidMvaGPvalue"),
-        quantity = cms.untracked.string("userFloat('vidMvaGPvalue')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("vidMvaGPcateg"),
-        quantity = cms.untracked.string("userInt('vidMvaGPcateg')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("vidMvaHZZvalue"),
-        quantity = cms.untracked.string("userFloat('vidMvaHZZvalue')")
-        ),
-    cms.PSet(
-        tag = cms.untracked.string("vidMvaHZZcateg"),
-        quantity = cms.untracked.string("userInt('vidMvaHZZcateg')")
+        quantity = cms.untracked.string("userFloat('vidMVATightnoiso')")
         ),
     )
 
@@ -1365,11 +1368,6 @@ eventInfo =  cms.EDProducer(
     )
 
 
-### No HF MET used as default for the time being
-'''
-metNoHF = copy.deepcopy(metFull)
-metNoHF.prefix = cms.untracked.string("metNoHF")
-metNoHF.src = cms.InputTag("skimmedPatMETNoHF")
-'''
+
 
 print "DONE STANDARD"
