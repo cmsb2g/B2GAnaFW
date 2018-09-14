@@ -8,10 +8,17 @@ header = """
 ###
 ### Examples: 
 ###
+###    Running on 25 ns data in 94X ReReco, Mar 2018, MiniAODv2
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X' sample='/store/data/Run2017F/MET/MINIAOD/31Mar2018-v1/910000/A0858FDD-E73B-E811-803F-0CC47A7C34A6.root'
+###    Running on 25 ns data in 94X MC, MiniAODv2
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv2' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
+###
+### Older version
+###    Previous tags for Nov2017 ReReco are:  'Data_94X_Nov17','MC_Fall17MiniAODv1'\
 ###    Running on 25 ns data in 94X ReReco
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X' sample='/store/data/Run2017B/SingleMuon/MINIAOD/17Nov2017-v1/40000/0021369B-9BD8-E711-BFE9-FA163EAA42CB.root'
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X_Nov17' sample='/store/data/Run2017B/SingleMuon/MINIAOD/17Nov2017-v1/40000/0021369B-9BD8-E711-BFE9-FA163EAA42CB.root'
 ###    Running on 25 ns data in 94X MC
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAOD' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv1' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
 ###
 ### **** If you are running a test, locally, add the option runCRAB=False at the end. ****
 ###
@@ -27,7 +34,8 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
+#     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
+      '/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root ',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -44,8 +52,9 @@ options.register('DataProcessing',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
     'Data processing types. Options are:\
-                   Data_94X and MC_Fall17MiniAOD\
-                   when ReMiniAOD will be available: Data_94XReMiniAOD and MC_Fall17ReMiniAOD'
+                   Data_94X and MC_Fall17MiniAODv2\
+                   Previous version pre-ReMiniAOD for comparison are\
+                   Data_94X_Nov17 and MC_Fall17MiniAODv1'
     )
 
 ### Expert options, do not change.
@@ -104,23 +113,25 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_94X and MC_Fall17MiniAOD.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_94X and MC_Fall17MiniAODv2.\n")
 
 
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="Data_94X":
+  if "Data_94X" in options.DataProcessing:
     options.globalTag="94X_dataRun2_v6"
-  elif options.DataProcessing=="MC_Fall17MiniAOD": ### this does  
+  elif "MC_Fall17MiniAOD"in options.DataProcessing:
     options.globalTag="94X_mc2017_realistic_v14"
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
-      'Data_94X', 'MC_Fall17MiniAOD' \
+      'Data_94X', 'MC_Fall17MiniAODv2' \
+      'Data_94X_Nov17', 'MC_Fall17MiniAODv1' \
       .\n")
 
-if options.DataProcessing=="Data_94X" or  options.DataProcessing=="MC_Fall17MiniAOD": ### Use no HF met until a solution is found
+if "Data_94X" in options.DataProcessing  or  "MC_Fall17MiniAOD" in options.DataProcessing: ### Use no HF met until a solution is found
   options.useNoHFMET=True
+
 
 
 
@@ -141,20 +152,19 @@ particleFlowLabel = 'packedPFCandidates'
 metLabel 	        = 'slimmedMETs'
 puppimetLabel 	  = 'slimmedMETsPuppi'
 metNoHFLabel 	    = 'slimmedMETsNoHF'
-
 triggerResultsLabel 	 = "TriggerResults"
 triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if "MC" in options.DataProcessing:
+if "MC" in options.DataProcessing or "Data_94X" in options.DataProcessing:
   metProcess = "PAT"
-else:
+elif "Nov17" in option.DataProcessing:
   metProcess = "RECO"
 hltProcess = "HLT"
 
 doElectronEnergyCorr=True
-if "ReMiniAOD" in options.DataProcessing:
-  doElectronEnergyCorr=False
+#if "ReMiniAOD" in options.DataProcessing:
+#MiniAODv2*mc2017_realistic  doElectronEnergyCorr=False
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
@@ -201,9 +211,9 @@ if ("Data" in options.DataProcessing and options.forceResiduals): corrections.ex
 
 ### External JEC =====================================================================================================
 if options.usePrivateSQLite:
-  if options.DataProcessing=="Data_94X":
+  if "Data_94X" in options.DataProcessing:
     jec_era="Fall17_17Nov2017BCDEF_V6_DATA"
-  elif options.DataProcessing=="MC_Fall17MiniAOD": ### to test relVal
+  elif "MC_Fall17MiniAOD" in options.DataProcessing: ### to test relVal
     jec_era="Fall17_17Nov2017_V6_MC"
 
     # JEC
@@ -265,7 +275,7 @@ if "Data" in options.DataProcessing:
   jer_era = "Spring16_25nsV6_DATA"
 elif "MC" in options.DataProcessing:
   jer_era = "Spring16_25nsV6_MC"
-else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period.\n")
 
 if options.usePrivateSQLiteForJER:
     # JER
@@ -505,15 +515,26 @@ runMetCorAndUncFromMiniAOD(process,
   postfix="Puppi"
   )
 
+
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
 if options.useNoHFMET:
-	runMetCorAndUncFromMiniAOD(process,
-		  isData=("Data" in options.DataProcessing),
-		  pfCandColl=cms.InputTag("noHFCands"),
-		  recoMetFromPFCs=True,
-		  reclusterJets=True, 
-		  postfix="NoHF"
-		  )
-	jLabelNoHF = 'patJetsNoHF'
+  runMetCorAndUncFromMiniAOD (
+    process,
+    isData = True, # false for MC
+    fixEE2017 = True,
+    postfix = "NoHF"
+#    postx = "ModiedMET"
+    )
+  jLabelNoHF = 'patJetsNoHF'
+
+#	runMetCorAndUncFromMiniAOD(process,#
+#		  isData=("Data" in options.DataProcessing),#
+#		  pfCandColl=cms.InputTag("noHFCands"),
+#		  recoMetFromPFCs=True,
+#		  reclusterJets=True, 
+#		  postfix="NoHF"
+#		  )
 
 ### -------------------------------------------------------------------
 ### the lines below remove the L2L3 residual corrections when processing data
