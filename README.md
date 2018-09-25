@@ -29,8 +29,8 @@ git cms-init
 
 ### Clone the github repositories
 ```
-git cms-merge-topic cms-met:METFixEE2017_949
 git cms-merge-topic cms-egamma:EgammaPostRecoTools_940
+git cms-merge-topic cms-met:METFixEE2017_949
 git clone git@github.com:cmsb2g/B2GAnaFW.git Analysis/B2GAnaFW -b CMSSW_9_4_X_V0
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 ```

@@ -11,7 +11,7 @@ header = """
 ###    Running on 25 ns data in 94X ReReco, Mar 2018, MiniAODv2
 ###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X' sample='/store/data/Run2017F/MET/MINIAOD/31Mar2018-v1/910000/A0858FDD-E73B-E811-803F-0CC47A7C34A6.root'
 ###    Running on 25 ns data in 94X MC, MiniAODv2
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv2' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv2' sample='/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root'
 ###
 ### Older version
 ###    Previous tags for Nov2017 ReReco are:  'Data_94X_Nov17','MC_Fall17MiniAODv1'\
@@ -35,7 +35,7 @@ options = opts.VarParsing ('analysis')
 
 options.register('sample',
 #     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
-      '/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root ',
+      '/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
@@ -1019,6 +1019,6 @@ process.endPath = cms.EndPath(process.edmNtuplesOut)
 process.myTask = cms.Task()
 process.myTask.add(*[getattr(process,prod) for prod in process.producers_()])
 process.myTask.add(*[getattr(process,filt) for filt in process.filters_()])
-process.endpath.associate(process.myTask)
+process.endPath.associate(process.myTask)
 
 open('B2GEntupleFileDump.py','w').write(process.dumpPython())
