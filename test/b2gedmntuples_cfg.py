@@ -8,8 +8,17 @@ header = """
 ###
 ### Examples: 
 ###
-###    Running on 25 ns data in 92X PromptReco
-###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_92X_Run2017B'
+###    Running on 25 ns data in 94X ReReco, Mar 2018, MiniAODv2
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X' sample='/store/data/Run2017F/MET/MINIAOD/31Mar2018-v1/910000/A0858FDD-E73B-E811-803F-0CC47A7C34A6.root'
+###    Running on 25 ns data in 94X MC, MiniAODv2
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv2' sample='/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root'
+###
+### Older version
+###    Previous tags for Nov2017 ReReco are:  'Data_94X_Nov17','MC_Fall17MiniAODv1'\
+###    Running on 25 ns data in 94X ReReco
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='Data_94X_Nov17' sample='/store/data/Run2017B/SingleMuon/MINIAOD/17Nov2017-v1/40000/0021369B-9BD8-E711-BFE9-FA163EAA42CB.root'
+###    Running on 25 ns data in 94X MC
+###        cmsRun b2gedmntuples_cfg.py maxEvents=1000 DataProcessing='MC_Fall17MiniAODv1' sample='/store/mc/RunIIFall17MiniAOD/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0044D634-7FED-E711-B0EF-0242AC130002.root'
 ###
 ### **** If you are running a test, locally, add the option runCRAB=False at the end. ****
 ###
@@ -25,10 +34,12 @@ import copy
 options = opts.VarParsing ('analysis')
 
 options.register('sample',
-     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
+#     '/store/mc/RunIIFall17MiniAOD/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/20000/00108AFB-75FB-E711-A917-0025905B85A0.root',
+      '/store/mc/RunIIFall17MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/10000/04A554D5-966A-E811-AEE2-001EC94B51EC.root',
      opts.VarParsing.multiplicity.singleton,
      opts.VarParsing.varType.string,
      'Sample to analyze')
+
 
 options.register('outputLabel',
     'B2GEDMNtuple.root',
@@ -41,12 +52,14 @@ options.register('DataProcessing',
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.string,
     'Data processing types. Options are:\
-        Data_92X_Run2017B'
+                   Data_94X and MC_Fall17MiniAODv2\
+                   Previous version pre-ReMiniAOD for comparison are\
+                   Data_94X_Nov17 and MC_Fall17MiniAODv1'
     )
 
 ### Expert options, do not change.
 options.register('useNoHFMET',
-    False,
+    False, 
     opts.VarParsing.multiplicity.singleton,
     opts.VarParsing.varType.bool,
     'Adding met without HF and relative jets')
@@ -100,20 +113,27 @@ options.setDefault('maxEvents', 100)
 options.parseArguments()
 
 if options.DataProcessing == "":
-  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_94X and MC_Fall17MiniAOD.\n")
+  sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_94X and MC_Fall17MiniAODv2.\n")
 
 
 if options.globalTag != "": 
   print "!!!!WARNING: You have chosen globalTag as", options.globalTag, ". Please check if this corresponds to your dataset."
 else: 
-  if options.DataProcessing=="Data_94x":
+  if "Data_94X" in options.DataProcessing:
     options.globalTag="94X_dataRun2_v6"
-  elif options.DataProcessing=="MC_Fall17MiniAOD": ### to test relVal
+  elif "MC_Fall17MiniAOD"in options.DataProcessing:
     options.globalTag="94X_mc2017_realistic_v14"
   else:
     sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: \
-      'Data_94X', 'MC_Fall17MiniAOD' \
+      'Data_94X', 'MC_Fall17MiniAODv2' \
+      'Data_94X_Nov17', 'MC_Fall17MiniAODv1' \
       .\n")
+
+if "Data_94X" in options.DataProcessing  or  "MC_Fall17MiniAOD" in options.DataProcessing: ### Use no HF met until a solution is found
+  options.useNoHFMET=True
+
+
+
 
 ###inputTag labels
 rhoLabel          = "fixedGridRhoFastjetAll"
@@ -123,23 +143,28 @@ jetAK8Label       = 'slimmedJetsAK8'
 subjetAK8Label    = 'slimmedJetsAK8PFCHSSoftDropPacked:SubJets'
 muLabel           = 'slimmedMuons'
 elLabel           = 'slimmedElectrons'
-phoLabel          = 'slimmedPhotons'
+#elLabel           = 'calibratedPatElectrons'
+#phoLabel          = 'slimmedPhotons'
+phoLabel          = 'calibratedPatPhotons'
 pvLabel           = 'offlineSlimmedPrimaryVertices'
 convLabel         = 'reducedEgamma:reducedConversions'
 particleFlowLabel = 'packedPFCandidates'    
 metLabel 	        = 'slimmedMETs'
 puppimetLabel 	  = 'slimmedMETsPuppi'
 metNoHFLabel 	    = 'slimmedMETsNoHF'
-
 triggerResultsLabel 	 = "TriggerResults"
 triggerSummaryLabel 	 = "hltTriggerSummaryAOD"
 hltElectronFilterLabel = "hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8"
 
-if "MC" in options.DataProcessing or "03Feb2017" in options.DataProcessing:
+if "MC" in options.DataProcessing or "Data_94X" in options.DataProcessing:
   metProcess = "PAT"
-else:
+elif "Nov17" in option.DataProcessing:
   metProcess = "RECO"
 hltProcess = "HLT"
+
+doElectronEnergyCorr=True
+#if "ReMiniAOD" in options.DataProcessing:
+#MiniAODv2*mc2017_realistic  doElectronEnergyCorr=False
 
 print "\nRunning with DataProcessing option ", options.DataProcessing, " and with global tag", options.globalTag, "\n" 
 
@@ -171,6 +196,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 process.GlobalTag.globaltag = options.globalTag 
 
+
 #process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
 process.load('Configuration.StandardSequences.GeometryDB_cff')
@@ -185,8 +211,11 @@ if ("Data" in options.DataProcessing and options.forceResiduals): corrections.ex
 
 ### External JEC =====================================================================================================
 if options.usePrivateSQLite:
-    sys.exit("!!!!ERROR:No JECs for 2017 data yet. Stay tuned.\n")
-    
+  if "Data_94X" in options.DataProcessing:
+    jec_era="Fall17_17Nov2017BCDEF_V6_DATA"
+  elif "MC_Fall17MiniAOD" in options.DataProcessing: ### to test relVal
+    jec_era="Fall17_17Nov2017_V6_MC"
+
     # JEC
     process.load("CondCore.CondDB.CondDB_cfi")
     dBFile = ('' if options.runCRAB else 'JECs/' )+jec_era+".db"
@@ -246,7 +275,7 @@ if "Data" in options.DataProcessing:
   jer_era = "Spring16_25nsV6_DATA"
 elif "MC" in options.DataProcessing:
   jer_era = "Spring16_25nsV6_MC"
-else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period. Options are: Data_80X, MC_MiniAODv2_80X, MC_MiniAODv2_80X_reHLT or MC_MiniAODv2_80X_FastSim.\n")
+else: sys.exit("!!!!ERROR: Enter 'DataProcessing' period.\n")
 
 if options.usePrivateSQLiteForJER:
     # JER
@@ -460,7 +489,7 @@ getattr( process, 'patJetsAK8PFCHS' ).userData.userFloats.src += [
 					   ]
 
 ### ---------------------------------------------------------------------------
-### Removing the HF from the MET computation as from 7 Aug 2015 recommendations
+### Removing the HF from the MET computation as from 29 Mar 2018 recommendations
 ### ---------------------------------------------------------------------------
 if options.useNoHFMET:
   process.noHFCands = cms.EDFilter("CandPtrSelector",
@@ -486,15 +515,26 @@ runMetCorAndUncFromMiniAOD(process,
   postfix="Puppi"
   )
 
+
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
 if options.useNoHFMET:
-	runMetCorAndUncFromMiniAOD(process,
-		  isData=("Data" in options.DataProcessing),
-		  pfCandColl=cms.InputTag("noHFCands"),
-		  recoMetFromPFCs=True,
-		  reclusterJets=True, 
-		  postfix="NoHF"
-		  )
-	jLabelNoHF = 'patJetsNoHF'
+  runMetCorAndUncFromMiniAOD (
+    process,
+    isData = True, # false for MC
+    fixEE2017 = True,
+    postfix = "NoHF"
+#    postx = "ModiedMET"
+    )
+  jLabelNoHF = 'patJetsNoHF'
+
+#	runMetCorAndUncFromMiniAOD(process,#
+#		  isData=("Data" in options.DataProcessing),#
+#		  pfCandColl=cms.InputTag("noHFCands"),
+#		  recoMetFromPFCs=True,
+#		  reclusterJets=True, 
+#		  postfix="NoHF"
+#		  )
 
 ### -------------------------------------------------------------------
 ### the lines below remove the L2L3 residual corrections when processing data
@@ -547,11 +587,11 @@ process.skimmedPatMuons = cms.EDFilter(
     cut = cms.string("pt > 0.0 && abs(eta) < 2.4")
     )
 
-process.skimmedPatPhotons = cms.EDFilter(
-    "PATPhotonSelector",
-    src = cms.InputTag(phoLabel),
-    cut = cms.string("pt > 10.0 && abs(eta) < 2.4"),
-)
+#process.skimmedPatPhotons = cms.EDFilter(
+#    "PATPhotonSelector",
+#    src = cms.InputTag(phoLabel),
+#    cut = cms.string("pt > 10.0 && abs(eta) < 2.4"),
+#)
 
 process.skimmedPatElectrons = cms.EDFilter(
     "PATElectronSelector",
@@ -559,30 +599,30 @@ process.skimmedPatElectrons = cms.EDFilter(
     cut = cms.string("pt > 10 && abs(eta) < 2.5")
     )
 
+#process.skimmedPatElectrons.cut = cms.string("pt > 10 && abs(eta) < 2.5")
+
 process.skimmedPatMET = cms.EDFilter(
     "PATMETSelector",
-    #    src = cms.InputTag(metLabel, "", "PAT"),
-#    src = cms.InputTag(metLabel, "", metProcess),
     src = cms.InputTag(metLabel),
     cut = cms.string("")
     )
 
 process.skimmedPatPuppiMET = cms.EDFilter(
     "PATMETSelector",
-    #    src = cms.InputTag(metLabel, "", "PAT"),
     src = cms.InputTag(puppimetLabel),
     cut = cms.string("")
     )
 
 
 ##### THERE IS NO slimmedMETsNoHF in miniAODv2
-'''
-process.skimmedPatMETNoHF = cms.EDFilter(
+if( options.useNoHFMET ):
+
+  process.skimmedPatMETNoHF = cms.EDFilter(
     "PATMETSelector",
     src = cms.InputTag(metNoHFLabel, "", metProcess),
     cut = cms.string("")
     )
-'''
+
 
 process.eventUserData = cms.EDProducer(
     'EventUserData',
@@ -664,7 +704,7 @@ process.jetUserDataAK8 = cms.EDProducer(
 
 process.photonJetsUserData = cms.EDProducer(
     'PhotonJets',
-    phoLabel = cms.InputTag("slimmedPhotons"),
+    phoLabel = cms.InputTag("slimmedPhotons","","b2gEDMNtuples"),
     pv        = cms.InputTag(pvLabel),
     rho               = cms.InputTag(rhoLabel),
     packedPFCands = cms.InputTag("packedPFCandidates"),
@@ -728,30 +768,42 @@ process.electronUserData = cms.EDProducer(
     triggerResults = cms.InputTag(triggerResultsLabel,"",hltProcess),
     triggerSummary = cms.InputTag(triggerSummaryLabel,"",hltProcess),
     hltElectronFilter  = cms.InputTag(hltElectronFilterLabel),  ##trigger matching code to be fixed!
+    # VID now are called directly from the ElectronID and added as userData in the entuples. Example below of the ones available for 2017 data:
+    #vidLooseLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-loose"),
+    #vidMediumLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-medium"),
+    #vidTightLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-tight"),
+    #vidVetoLabel = cms.untracked.string("cutBasedElectronID-Fall17-94X-V1-veto"),
+    #
+    #vidLooseMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wpLoose"),
+    #vidMediumMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wp90"),
+    #vidTightMVALabel = cms.untracked.string("mvaEleID-Fall17-iso-V1-wp80"),
+    #
+    #vidLooseNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wpLoose"),
+    #vidMediumNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wp90"),
+    #vidTightNoIsoLabel = cms.untracked.string("mvaEleID-Fall17-noIso-V1-wp80"),
+    #
+    #vidHEEPLabel = cms.untracked.string("heepElectronID-HEEPV70"),
+
     hltPath             = cms.string("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL"),
-    eleVetoIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"),
-    eleLooseIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose"),
-    eleMediumIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
-    eleTightIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
-    eleHEEPIdFullInfoMap = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV60"),
-    eleGPMvaValueMap    = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
-    eleGPMvaCatMap      = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Categories"),
-    eleHZZMvaValueMap   = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Values"),
-    eleHZZMvaCatMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16HZZV1Categories"),
-    eleIdVerbose = cms.bool(False)
+    eleIdVerbose = cms.bool(False),
+#    debugLevel = cms.untracked.int32(2)
     )
 
+phoInputTag=cms.InputTag(phoLabel) #calibratedPhotons need to be used when running corrections
+if not doElectronEnergyCorr:
+  phoInputTag = cms.InputTag("slimmedPhotons","","@skipCurrentProcess") #otherwise slimmed photons do have corrections
 process.photonUserData = cms.EDProducer(
     'PhotonUserData',
     rho                     = cms.InputTag(rhoLabel),
-    pholabel                = cms.InputTag("slimmedPhotons"),
-    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose"),
-    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-medium"),
-    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-tight"),
+    pholabel                = phoInputTag,
+    phoLooseIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-loose"),
+    phoMediumIdMap          = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-medium"),
+    phoTightIdMap           = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-tight"),
     phoChgIsoMap            = cms.InputTag("photonIDValueMapProducer:phoChargedIsolation"),
     phoPhoIsoMap            = cms.InputTag("photonIDValueMapProducer:phoPhotonIsolation"),
     phoNeuIsoMap            = cms.InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"),
-    full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta")
+    full5x5SigmaIEtaIEtaMap = cms.InputTag("photonIDValueMapProducer:phoFull5x5SigmaIEtaIEta"),
+#    debugLevel = cms.untracked.int32(2)
     )
 
 process.vertexInfo = cms.EDProducer(
@@ -764,47 +816,30 @@ process.vertexInfo = cms.EDProducer(
 #
 
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate
 
-#useAOD = False
-#if useAOD == True :
-dataFormat = DataFormat.MiniAOD
-#else :
-#    dataFormat = DataFormat.MiniAOD
-
-switchOnVIDPhotonIdProducer(process, dataFormat)
-switchOnVIDElectronIdProducer(process, dataFormat)
-
-
+#dataFormat = DataFormat.MiniAOD
 ### -------------------------------------------------------------------
-### Latest EGamma recomendations Moriond 17
+### Latest EGamma recomendations for 94X , X>=6
 ### -------------------------------------------------------------------
 
 # define which IDs we want to produce
-my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring15_25ns_V1_cff','RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
+my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_TrueVtx_cff' ]
 
-my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
-    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
+my_eid_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
+                  'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff','RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']
 
-#add them to the VID producer
-for idmod in my_phoid_modules:
-  setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-for idmod in my_eid_modules:
-  setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+#Re-running electron smearing
 
-#set on which collection to run on - here filtered collections are selected.
-process.egmGsfElectronIDs.physicsObjectSrc     = 'skimmedPatElectrons'
-process.egmPhotonIDs.physicsObjectSrc          = 'slimmedPhotons'
-process.electronMVAValueMapProducer.srcMiniAOD = 'skimmedPatElectrons'
-process.photonIDValueMapProducer.srcMiniAOD    = 'slimmedPhotons'
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 
+#If energy smearing is off, this will apply the electronID producing a collection named calibratedPatElectrons
+setupEgammaPostRecoSeq(process,applyEnergyCorrections=doElectronEnergyCorr,
+                       applyVIDOnCorrectedEgamma=doElectronEnergyCorr,
+                       isMiniAOD=True,
+                       eleIDModules=my_eid_modules,
+                       phoIDModules=my_phoid_modules
+                       )
 
-
-#
-
-
-process.egmGsfElectronIDs.physicsObjectSrc = 'skimmedPatElectrons'
 
 from PhysicsTools.PatAlgos.tools.pfTools import *
 ## Adapt primary vertex collection
@@ -820,10 +855,6 @@ process.eventShapePFVars.src = cms.InputTag(particleFlowLabel)
 process.eventShapePFJetVars = pfEventShapeVars.clone()
 process.eventShapePFJetVars.src = cms.InputTag( jLabel )
 
-##### it seems that with the new task module, we need to comment the processs that not run
-#process.centrality = cms.EDProducer("CentralityUserData",
-#    src = cms.InputTag( jLabel )
-#    )                                    
 
 process.TriggerUserData = cms.EDProducer(
     'TriggerUserData',
@@ -918,6 +949,10 @@ process.edmNtuplesOut = cms.OutputModule(
     "keep *_muons_*_*",
     "keep *_vertexInfo_*_*",
     "keep *_electrons_*_*",
+    "keep *_electronUserData_*_*",
+    "keep *_slimmedElectrons_*_*",
+    "keep *_slimmedPhotons_*_*",
+    "keep *_skimmedPatElectrons_*_*",
     "keep *_photons_*_*",
     "keep *_jetsAK4CHS_*_*",
     "keep *_jetsAK8CHS_*_*",
@@ -984,6 +1019,6 @@ process.endPath = cms.EndPath(process.edmNtuplesOut)
 process.myTask = cms.Task()
 process.myTask.add(*[getattr(process,prod) for prod in process.producers_()])
 process.myTask.add(*[getattr(process,filt) for filt in process.filters_()])
-process.endpath.associate(process.myTask)
+process.endPath.associate(process.myTask)
 
 open('B2GEntupleFileDump.py','w').write(process.dumpPython())
